@@ -1,0 +1,2615 @@
+fileFormatVersion: 2
+guid: f95b45164425785479a09d0b34db6376
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -576461455719263305
+    second: StudentWalk_0
+  - first:
+      213: 9015133336601492219
+    second: StudentWalk_1
+  - first:
+      213: -4525975810418003626
+    second: StudentWalk_2
+  - first:
+      213: -1978306613287814038
+    second: StudentWalk_3
+  - first:
+      213: -3978104184997523613
+    second: StudentWalk_4
+  - first:
+      213: 5034845936257241766
+    second: StudentWalk_5
+  - first:
+      213: -5154088338157099218
+    second: StudentWalk_6
+  - first:
+      213: 746917800159618170
+    second: StudentWalk_7
+  - first:
+      213: -8392305443674733013
+    second: StudentWalk_8
+  - first:
+      213: -466746749407425823
+    second: StudentWalk_9
+  - first:
+      213: -2839653008522920054
+    second: StudentWalk_10
+  - first:
+      213: -3146512095797226776
+    second: StudentWalk_11
+  - first:
+      213: -5842779387894099918
+    second: StudentWalk_12
+  - first:
+      213: 8706014196531721198
+    second: StudentWalk_13
+  - first:
+      213: -2392643013234253677
+    second: StudentWalk_14
+  - first:
+      213: 4341944281584206453
+    second: StudentWalk_15
+  - first:
+      213: -2246686465067836634
+    second: StudentWalk_16
+  - first:
+      213: 2155979059815747716
+    second: StudentWalk_17
+  - first:
+      213: -3572103096740497650
+    second: StudentWalk_18
+  - first:
+      213: -9165272023173659392
+    second: StudentWalk_19
+  - first:
+      213: 4429517214025316286
+    second: StudentWalk_20
+  - first:
+      213: -2239956658379687195
+    second: StudentWalk_21
+  - first:
+      213: -997369606342121547
+    second: StudentWalk_22
+  - first:
+      213: -5925120888877565368
+    second: StudentWalk_23
+  - first:
+      213: -1000897194923644188
+    second: StudentWalk_24
+  - first:
+      213: 6647651376769166387
+    second: StudentWalk_25
+  - first:
+      213: -7374251747709747324
+    second: StudentWalk_26
+  - first:
+      213: 4853840948582875035
+    second: StudentWalk_27
+  - first:
+      213: -8051092110493349840
+    second: StudentWalk_28
+  - first:
+      213: 8580544222679796943
+    second: StudentWalk_29
+  - first:
+      213: -4440086345054113546
+    second: StudentWalk_30
+  - first:
+      213: -642088305903485226
+    second: StudentWalk_31
+  - first:
+      213: -5655564752399768715
+    second: StudentWalk_32
+  - first:
+      213: 2373582576184224166
+    second: StudentWalk_33
+  - first:
+      213: 3714541020522407789
+    second: StudentWalk_34
+  - first:
+      213: 869249353152064358
+    second: StudentWalk_35
+  - first:
+      213: -6098020148449919937
+    second: StudentWalk_36
+  - first:
+      213: 8424162412727551674
+    second: StudentWalk_37
+  - first:
+      213: -6987244647565550608
+    second: StudentWalk_38
+  - first:
+      213: -2174697752413243748
+    second: StudentWalk_39
+  - first:
+      213: -8133581949414732294
+    second: StudentWalk_40
+  - first:
+      213: 6245848479482211491
+    second: StudentWalk_41
+  - first:
+      213: 7650073756079114806
+    second: StudentWalk_42
+  - first:
+      213: 7299044137965702458
+    second: StudentWalk_43
+  - first:
+      213: 729904836335280741
+    second: StudentWalk_44
+  - first:
+      213: 4836701888746694079
+    second: StudentWalk_45
+  - first:
+      213: -5899467131308976610
+    second: StudentWalk_46
+  - first:
+      213: 3345267072820101482
+    second: StudentWalk_47
+  - first:
+      213: -92698510907975068
+    second: StudentWalk_48
+  - first:
+      213: -2365710524318924408
+    second: StudentWalk_49
+  - first:
+      213: -1883246099797703064
+    second: StudentWalk_50
+  - first:
+      213: -493814345949681933
+    second: StudentWalk_51
+  - first:
+      213: -1129046674989544984
+    second: StudentWalk_52
+  - first:
+      213: -3326036148175624035
+    second: StudentWalk_53
+  - first:
+      213: 7098249238323681498
+    second: StudentWalk_54
+  - first:
+      213: -5521969806355835591
+    second: StudentWalk_55
+  - first:
+      213: 6083314219996930193
+    second: StudentWalk_56
+  - first:
+      213: 7017101288631553714
+    second: StudentWalk_57
+  - first:
+      213: 1581051661328827204
+    second: StudentWalk_58
+  - first:
+      213: -9011688104912398618
+    second: StudentWalk_59
+  - first:
+      213: 3394962499794677897
+    second: StudentWalk_60
+  - first:
+      213: -5616719997646923625
+    second: StudentWalk_61
+  - first:
+      213: 9199866558459613645
+    second: StudentWalk_62
+  - first:
+      213: -1985753124680345163
+    second: StudentWalk_63
+  - first:
+      213: 5430350763254663669
+    second: StudentWalk_64
+  - first:
+      213: -1213443288663314807
+    second: StudentWalk_65
+  - first:
+      213: 2089652416401957739
+    second: StudentWalk_66
+  - first:
+      213: -688582000030912620
+    second: StudentWalk_67
+  - first:
+      213: 8816642438476285299
+    second: StudentWalk_68
+  - first:
+      213: 2046967983453917163
+    second: StudentWalk_69
+  - first:
+      213: -800461657534177592
+    second: StudentWalk_70
+  - first:
+      213: 5931589379504324172
+    second: StudentWalk_71
+  - first:
+      213: -7726319525631920276
+    second: StudentWalk_72
+  - first:
+      213: 9203884425717491916
+    second: StudentWalk_73
+  - first:
+      213: -953850130770136524
+    second: StudentWalk_74
+  - first:
+      213: 6054505264662777711
+    second: StudentWalk_75
+  - first:
+      213: 2300103286379507808
+    second: StudentWalk_76
+  - first:
+      213: -3799522421654881418
+    second: StudentWalk_77
+  - first:
+      213: 2500884507042206178
+    second: StudentWalk_78
+  - first:
+      213: 3725285026783688709
+    second: StudentWalk_79
+  - first:
+      213: 6167473045970018932
+    second: StudentWalk_80
+  - first:
+      213: 7771736542214558437
+    second: StudentWalk_81
+  - first:
+      213: 7752926020568724559
+    second: StudentWalk_82
+  - first:
+      213: -8234417251759821299
+    second: StudentWalk_83
+  - first:
+      213: -4771180416691172591
+    second: StudentWalk_84
+  - first:
+      213: -38670409728702065
+    second: StudentWalk_85
+  - first:
+      213: -835954062903589107
+    second: StudentWalk_86
+  - first:
+      213: -6233478015714604453
+    second: StudentWalk_87
+  - first:
+      213: 2719448934117852554
+    second: StudentWalk_88
+  - first:
+      213: -6553476790372834864
+    second: StudentWalk_89
+  - first:
+      213: -3720279433450317277
+    second: StudentWalk_90
+  - first:
+      213: 8277537401336051637
+    second: StudentWalk_91
+  - first:
+      213: 6050457689494469334
+    second: StudentWalk_92
+  - first:
+      213: -6359788893894474607
+    second: StudentWalk_93
+  - first:
+      213: 8581139040217933010
+    second: StudentWalk_94
+  - first:
+      213: 3810728061347242941
+    second: StudentWalk_95
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: StudentWalk_0
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 915
+        width: 32
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b316293c5ffff7f0800000000000000
+      internalID: -576461455719263305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_1
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 912
+        width: 31
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfaf9e261003c1d70800000000000000
+      internalID: 9015133336601492219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_2
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 911
+        width: 31
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6513606eaf08031c0800000000000000
+      internalID: -4525975810418003626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_3
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 909
+        width: 31
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6c7c22ed94ab84e0800000000000000
+      internalID: -1978306613287814038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_4
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 909
+        width: 34
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36f4ab5125feac8c0800000000000000
+      internalID: -3978104184997523613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_5
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 912
+        width: 34
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a29e6904bd5fd540800000000000000
+      internalID: 5034845936257241766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_6
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 914
+        width: 33
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e27a927c6fff878b0800000000000000
+      internalID: -5154088338157099218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_7
+      rect:
+        serializedVersion: 2
+        x: 944
+        y: 913
+        width: 33
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a742eea28c59d5a00800000000000000
+      internalID: 746917800159618170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_8
+      rect:
+        serializedVersion: 2
+        x: 1073
+        y: 911
+        width: 33
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b26c03fc9aa888b80800000000000000
+      internalID: -8392305443674733013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_9
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 908
+        width: 33
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ea8089ed48c589f0800000000000000
+      internalID: -466746749407425823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_10
+      rect:
+        serializedVersion: 2
+        x: 1327
+        y: 910
+        width: 33
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8f3f9542a68798d0800000000000000
+      internalID: -2839653008522920054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_11
+      rect:
+        serializedVersion: 2
+        x: 1455
+        y: 912
+        width: 33
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e259887be75554d0800000000000000
+      internalID: -3146512095797226776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_12
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 789
+        width: 31
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23019936a174aeea0800000000000000
+      internalID: -5842779387894099918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_13
+      rect:
+        serializedVersion: 2
+        x: 173
+        y: 783
+        width: 36
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee3f7c909c9f1d870800000000000000
+      internalID: 8706014196531721198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_14
+      rect:
+        serializedVersion: 2
+        x: 298
+        y: 783
+        width: 41
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3902ad13bdf9bced0800000000000000
+      internalID: -2392643013234253677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_15
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 781
+        width: 43
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5728d5ac15fa14c30800000000000000
+      internalID: 4341944281584206453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_16
+      rect:
+        serializedVersion: 2
+        x: 555
+        y: 781
+        width: 41
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62b14ff309a22d0e0800000000000000
+      internalID: -2246686465067836634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_17
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 783
+        width: 32
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4809f7338839bed10800000000000000
+      internalID: 2155979059815747716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_18
+      rect:
+        serializedVersion: 2
+        x: 818
+        y: 784
+        width: 27
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e07b5b9c8275d6ec0800000000000000
+      internalID: -3572103096740497650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_19
+      rect:
+        serializedVersion: 2
+        x: 943
+        y: 786
+        width: 33
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00588e497a96ec080800000000000000
+      internalID: -9165272023173659392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_20
+      rect:
+        serializedVersion: 2
+        x: 1064
+        y: 786
+        width: 43
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb7f474007ec87d30800000000000000
+      internalID: 4429517214025316286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_21
+      rect:
+        serializedVersion: 2
+        x: 1193
+        y: 784
+        width: 46
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5eaf10979431ae0e0800000000000000
+      internalID: -2239956658379687195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_22
+      rect:
+        serializedVersion: 2
+        x: 1326
+        y: 785
+        width: 41
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b7e43890a1a822f0800000000000000
+      internalID: -997369606342121547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_23
+      rect:
+        serializedVersion: 2
+        x: 1457
+        y: 787
+        width: 34
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84ab437b1fdb5cda0800000000000000
+      internalID: -5925120888877565368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_24
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 659
+        width: 26
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ea24efdd491c12f0800000000000000
+      internalID: -1000897194923644188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_25
+      rect:
+        serializedVersion: 2
+        x: 173
+        y: 658
+        width: 34
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33c66f6d4b3314c50800000000000000
+      internalID: 6647651376769166387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_26
+      rect:
+        serializedVersion: 2
+        x: 292
+        y: 661
+        width: 49
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48ff47d1b1569a990800000000000000
+      internalID: -7374251747709747324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_27
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 658
+        width: 49
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9ff68040ae4c5340800000000000000
+      internalID: 4853840948582875035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_28
+      rect:
+        serializedVersion: 2
+        x: 556
+        y: 656
+        width: 46
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 038081cc166c44090800000000000000
+      internalID: -8051092110493349840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_29
+      rect:
+        serializedVersion: 2
+        x: 689
+        y: 656
+        width: 36
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fcc0c544287341770800000000000000
+      internalID: 8580544222679796943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_30
+      rect:
+        serializedVersion: 2
+        x: 818
+        y: 656
+        width: 28
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f0bcf66ef4a162c0800000000000000
+      internalID: -4440086345054113546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_31
+      rect:
+        serializedVersion: 2
+        x: 942
+        y: 656
+        width: 34
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6deb0347618d617f0800000000000000
+      internalID: -642088305903485226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_32
+      rect:
+        serializedVersion: 2
+        x: 1061
+        y: 656
+        width: 47
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 573edf872d56381b0800000000000000
+      internalID: -5655564752399768715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_33
+      rect:
+        serializedVersion: 2
+        x: 1192
+        y: 657
+        width: 50
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a9648af6c8a0f020800000000000000
+      internalID: 2373582576184224166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_34
+      rect:
+        serializedVersion: 2
+        x: 1323
+        y: 661
+        width: 47
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d67eadfa063bc8330800000000000000
+      internalID: 3714541020522407789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_35
+      rect:
+        serializedVersion: 2
+        x: 1459
+        y: 662
+        width: 34
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66bedd36ea1301c00800000000000000
+      internalID: 869249353152064358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_36
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 531
+        width: 26
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3cb772dbfa7f5ba0800000000000000
+      internalID: -6098020148449919937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_37
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 531
+        width: 35
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab6c2dcc413a8e470800000000000000
+      internalID: 8424162412727551674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_38
+      rect:
+        serializedVersion: 2
+        x: 293
+        y: 529
+        width: 45
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0fb1b175302580f90800000000000000
+      internalID: -6987244647565550608
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_39
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 529
+        width: 44
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c96719d8aebe1d1e0800000000000000
+      internalID: -2174697752413243748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_40
+      rect:
+        serializedVersion: 2
+        x: 555
+        y: 530
+        width: 44
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: afd0b918f46bf1f80800000000000000
+      internalID: -8133581949414732294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_41
+      rect:
+        serializedVersion: 2
+        x: 687
+        y: 532
+        width: 36
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ac6374a916bda650800000000000000
+      internalID: 6245848479482211491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_42
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 530
+        width: 30
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63a42a0ac858a2a60800000000000000
+      internalID: 7650073756079114806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_43
+      rect:
+        serializedVersion: 2
+        x: 939
+        y: 528
+        width: 36
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3dc753b8f96b4560800000000000000
+      internalID: 7299044137965702458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_44
+      rect:
+        serializedVersion: 2
+        x: 1066
+        y: 527
+        width: 39
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 562aa99d494212a00800000000000000
+      internalID: 729904836335280741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_45
+      rect:
+        serializedVersion: 2
+        x: 1193
+        y: 525
+        width: 41
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb5253bedba6f1340800000000000000
+      internalID: 4836701888746694079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_46
+      rect:
+        serializedVersion: 2
+        x: 1321
+        y: 527
+        width: 42
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e165c3a96e1e02ea0800000000000000
+      internalID: -5899467131308976610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_47
+      rect:
+        serializedVersion: 2
+        x: 1454
+        y: 531
+        width: 34
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a61c042cda6cc6e20800000000000000
+      internalID: 3345267072820101482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_48
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 403
+        width: 32
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46a5f1a023ba6bef0800000000000000
+      internalID: -92698510907975068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_49
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 401
+        width: 31
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 881419cefce4b2fd0800000000000000
+      internalID: -2365710524318924408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_50
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 399
+        width: 31
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8660bec66ad5dd5e0800000000000000
+      internalID: -1883246099797703064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_51
+      rect:
+        serializedVersion: 2
+        x: 433
+        y: 398
+        width: 31
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f66dacf77e9529f0800000000000000
+      internalID: -493814345949681933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_52
+      rect:
+        serializedVersion: 2
+        x: 558
+        y: 400
+        width: 34
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e98962f702d450f0800000000000000
+      internalID: -1129046674989544984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_53
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 403
+        width: 34
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9822edcebb87d1d0800000000000000
+      internalID: -3326036148175624035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_54
+      rect:
+        serializedVersion: 2
+        x: 815
+        y: 403
+        width: 33
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad85879f21c028260800000000000000
+      internalID: 7098249238323681498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_55
+      rect:
+        serializedVersion: 2
+        x: 943
+        y: 400
+        width: 33
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9355abfb7b50e53b0800000000000000
+      internalID: -5521969806355835591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_56
+      rect:
+        serializedVersion: 2
+        x: 1070
+        y: 398
+        width: 33
+        height: 79
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 190eff36d064c6450800000000000000
+      internalID: 6083314219996930193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_57
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 398
+        width: 32
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bec1dd9170c16160800000000000000
+      internalID: 7017101288631553714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_58
+      rect:
+        serializedVersion: 2
+        x: 1328
+        y: 399
+        width: 33
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 443cb05fb1601f510800000000000000
+      internalID: 1581051661328827204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_59
+      rect:
+        serializedVersion: 2
+        x: 1456
+        y: 404
+        width: 33
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e655102a6d00f280800000000000000
+      internalID: -9011688104912398618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_60
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 275
+        width: 31
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 980b80208645d1f20800000000000000
+      internalID: 3394962499794677897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_61
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 273
+        width: 35
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7981c69bbe66d02b0800000000000000
+      internalID: -5616719997646923625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_62
+      rect:
+        serializedVersion: 2
+        x: 301
+        y: 271
+        width: 41
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc11bf554ed7caf70800000000000000
+      internalID: 9199866558459613645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_63
+      rect:
+        serializedVersion: 2
+        x: 428
+        y: 270
+        width: 43
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b95ec7dd003174e0800000000000000
+      internalID: -1985753124680345163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_64
+      rect:
+        serializedVersion: 2
+        x: 556
+        y: 271
+        width: 41
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f9c0997f3b7c5b40800000000000000
+      internalID: 5430350763254663669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_65
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 275
+        width: 33
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98e242012cbf82fe0800000000000000
+      internalID: -1213443288663314807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_66
+      rect:
+        serializedVersion: 2
+        x: 819
+        y: 277
+        width: 27
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b63ecaf1dcfeffc10800000000000000
+      internalID: 2089652416401957739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_67
+      rect:
+        serializedVersion: 2
+        x: 944
+        y: 275
+        width: 33
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49fed69b15aa176f0800000000000000
+      internalID: -688582000030912620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_68
+      rect:
+        serializedVersion: 2
+        x: 1069
+        y: 274
+        width: 43
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3754301d5910b5a70800000000000000
+      internalID: 8816642438476285299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_69
+      rect:
+        serializedVersion: 2
+        x: 1193
+        y: 273
+        width: 46
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bef4e50298a486c10800000000000000
+      internalID: 2046967983453917163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_70
+      rect:
+        serializedVersion: 2
+        x: 1321
+        y: 275
+        width: 41
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ceda5e0d5034e4f0800000000000000
+      internalID: -800461657534177592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_71
+      rect:
+        serializedVersion: 2
+        x: 1454
+        y: 276
+        width: 33
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4eb5de1d1d315250800000000000000
+      internalID: 5931589379504324172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_72
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 145
+        width: 26
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c677b85c35996c490800000000000000
+      internalID: -7726319525631920276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_73
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 145
+        width: 34
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc824a4fe14cabf70800000000000000
+      internalID: 9203884425717491916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_74
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 145
+        width: 49
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4327c7a1c5e33c2f0800000000000000
+      internalID: -953850130770136524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_75
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 146
+        width: 51
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6f05f6c57ce50450800000000000000
+      internalID: 6054505264662777711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_76
+      rect:
+        serializedVersion: 2
+        x: 550
+        y: 149
+        width: 46
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 060fb53a0cb9bef10800000000000000
+      internalID: 2300103286379507808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_77
+      rect:
+        serializedVersion: 2
+        x: 683
+        y: 151
+        width: 36
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67bf02dfc72654bc0800000000000000
+      internalID: -3799522421654881418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_78
+      rect:
+        serializedVersion: 2
+        x: 818
+        y: 149
+        width: 27
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e1578a753de4b220800000000000000
+      internalID: 2500884507042206178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_79
+      rect:
+        serializedVersion: 2
+        x: 944
+        y: 148
+        width: 34
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 508f5849efed2b330800000000000000
+      internalID: 3725285026783688709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_80
+      rect:
+        serializedVersion: 2
+        x: 1068
+        y: 148
+        width: 46
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 472e6d20f04479550800000000000000
+      internalID: 6167473045970018932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_81
+      rect:
+        serializedVersion: 2
+        x: 1190
+        y: 146
+        width: 50
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e21f9e6531cadb60800000000000000
+      internalID: 7771736542214558437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_82
+      rect:
+        serializedVersion: 2
+        x: 1318
+        y: 145
+        width: 47
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f44b1e1932de79b60800000000000000
+      internalID: 7752926020568724559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_83
+      rect:
+        serializedVersion: 2
+        x: 1451
+        y: 145
+        width: 34
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0ee188232979bd80800000000000000
+      internalID: -8234417251759821299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_84
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 17
+        width: 26
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11b82d790bc59cdb0800000000000000
+      internalID: -4771180416691172591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_85
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 19
+        width: 35
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f894dcc977d967ff0800000000000000
+      internalID: -38670409728702065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_86
+      rect:
+        serializedVersion: 2
+        x: 303
+        y: 19
+        width: 44
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d07461875381664f0800000000000000
+      internalID: -835954062903589107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_87
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 17
+        width: 45
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5acf1665cc3e79a0800000000000000
+      internalID: -6233478015714604453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_88
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 17
+        width: 44
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a85c8e6b56c6db520800000000000000
+      internalID: 2719448934117852554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_89
+      rect:
+        serializedVersion: 2
+        x: 685
+        y: 19
+        width: 35
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d16f0ab49f5d05a0800000000000000
+      internalID: -6553476790372834864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_90
+      rect:
+        serializedVersion: 2
+        x: 820
+        y: 21
+        width: 30
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32a9000f099ee5cc0800000000000000
+      internalID: -3720279433450317277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_91
+      rect:
+        serializedVersion: 2
+        x: 945
+        y: 17
+        width: 36
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b735a50968bfd270800000000000000
+      internalID: 8277537401336051637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_92
+      rect:
+        serializedVersion: 2
+        x: 1071
+        y: 14
+        width: 39
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6da39de363b87f350800000000000000
+      internalID: 6050457689494469334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_93
+      rect:
+        serializedVersion: 2
+        x: 1198
+        y: 13
+        width: 41
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19402f452bd7db7a0800000000000000
+      internalID: -6359788893894474607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_94
+      rect:
+        serializedVersion: 2
+        x: 1325
+        y: 14
+        width: 42
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d42d640e74561770800000000000000
+      internalID: 8581139040217933010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StudentWalk_95
+      rect:
+        serializedVersion: 2
+        x: 1456
+        y: 16
+        width: 34
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db327305bfc62e430800000000000000
+      internalID: 3810728061347242941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      StudentWalk_0: -576461455719263305
+      StudentWalk_1: 9015133336601492219
+      StudentWalk_10: -2839653008522920054
+      StudentWalk_11: -3146512095797226776
+      StudentWalk_12: -5842779387894099918
+      StudentWalk_13: 8706014196531721198
+      StudentWalk_14: -2392643013234253677
+      StudentWalk_15: 4341944281584206453
+      StudentWalk_16: -2246686465067836634
+      StudentWalk_17: 2155979059815747716
+      StudentWalk_18: -3572103096740497650
+      StudentWalk_19: -9165272023173659392
+      StudentWalk_2: -4525975810418003626
+      StudentWalk_20: 4429517214025316286
+      StudentWalk_21: -2239956658379687195
+      StudentWalk_22: -997369606342121547
+      StudentWalk_23: -5925120888877565368
+      StudentWalk_24: -1000897194923644188
+      StudentWalk_25: 6647651376769166387
+      StudentWalk_26: -7374251747709747324
+      StudentWalk_27: 4853840948582875035
+      StudentWalk_28: -8051092110493349840
+      StudentWalk_29: 8580544222679796943
+      StudentWalk_3: -1978306613287814038
+      StudentWalk_30: -4440086345054113546
+      StudentWalk_31: -642088305903485226
+      StudentWalk_32: -5655564752399768715
+      StudentWalk_33: 2373582576184224166
+      StudentWalk_34: 3714541020522407789
+      StudentWalk_35: 869249353152064358
+      StudentWalk_36: -6098020148449919937
+      StudentWalk_37: 8424162412727551674
+      StudentWalk_38: -6987244647565550608
+      StudentWalk_39: -2174697752413243748
+      StudentWalk_4: -3978104184997523613
+      StudentWalk_40: -8133581949414732294
+      StudentWalk_41: 6245848479482211491
+      StudentWalk_42: 7650073756079114806
+      StudentWalk_43: 7299044137965702458
+      StudentWalk_44: 729904836335280741
+      StudentWalk_45: 4836701888746694079
+      StudentWalk_46: -5899467131308976610
+      StudentWalk_47: 3345267072820101482
+      StudentWalk_48: -92698510907975068
+      StudentWalk_49: -2365710524318924408
+      StudentWalk_5: 5034845936257241766
+      StudentWalk_50: -1883246099797703064
+      StudentWalk_51: -493814345949681933
+      StudentWalk_52: -1129046674989544984
+      StudentWalk_53: -3326036148175624035
+      StudentWalk_54: 7098249238323681498
+      StudentWalk_55: -5521969806355835591
+      StudentWalk_56: 6083314219996930193
+      StudentWalk_57: 7017101288631553714
+      StudentWalk_58: 1581051661328827204
+      StudentWalk_59: -9011688104912398618
+      StudentWalk_6: -5154088338157099218
+      StudentWalk_60: 3394962499794677897
+      StudentWalk_61: -5616719997646923625
+      StudentWalk_62: 9199866558459613645
+      StudentWalk_63: -1985753124680345163
+      StudentWalk_64: 5430350763254663669
+      StudentWalk_65: -1213443288663314807
+      StudentWalk_66: 2089652416401957739
+      StudentWalk_67: -688582000030912620
+      StudentWalk_68: 8816642438476285299
+      StudentWalk_69: 2046967983453917163
+      StudentWalk_7: 746917800159618170
+      StudentWalk_70: -800461657534177592
+      StudentWalk_71: 5931589379504324172
+      StudentWalk_72: -7726319525631920276
+      StudentWalk_73: 9203884425717491916
+      StudentWalk_74: -953850130770136524
+      StudentWalk_75: 6054505264662777711
+      StudentWalk_76: 2300103286379507808
+      StudentWalk_77: -3799522421654881418
+      StudentWalk_78: 2500884507042206178
+      StudentWalk_79: 3725285026783688709
+      StudentWalk_8: -8392305443674733013
+      StudentWalk_80: 6167473045970018932
+      StudentWalk_81: 7771736542214558437
+      StudentWalk_82: 7752926020568724559
+      StudentWalk_83: -8234417251759821299
+      StudentWalk_84: -4771180416691172591
+      StudentWalk_85: -38670409728702065
+      StudentWalk_86: -835954062903589107
+      StudentWalk_87: -6233478015714604453
+      StudentWalk_88: 2719448934117852554
+      StudentWalk_89: -6553476790372834864
+      StudentWalk_9: -466746749407425823
+      StudentWalk_90: -3720279433450317277
+      StudentWalk_91: 8277537401336051637
+      StudentWalk_92: 6050457689494469334
+      StudentWalk_93: -6359788893894474607
+      StudentWalk_94: 8581139040217933010
+      StudentWalk_95: 3810728061347242941
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

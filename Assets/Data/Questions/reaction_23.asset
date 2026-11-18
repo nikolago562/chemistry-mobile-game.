@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c464bcf44fcb664282b6257bb523ea8, type: 3}
+  m_Name: reaction_23
+  m_EditorClassIdentifier: Assembly-CSharp::ChemistryGame.ChemistryQuestionSO
+  questionID: reaction_23
+  equationPrompt: 2KOH + H2SO4 -> K2SO4 + ?
+  correctAnswer: 2H2O
+  hintText: "\u10DC\u10D4\u10D8\u10E2\u10E0\u10D0\u10DA\u10D8\u10D6\u10D0\u10EA\u10D8\u10D8\u10E1 \u10E0\u10D4\u10D0\u10E5\u10EA\u10D8\u10D0\u10E8\u10D8 \u10DB\u10DF\u10D0\u10D5\u10D0 \u10D3\u10D0 \u10E2\u10E3\u10E2\u10D4 \u10EC\u10E7\u10D0\u10DA\u10E1 \u10EC\u10D0\u10E0\u10DB\u10DD\u10E5\u10DB\u10DC\u10D8\u10E1."
+  reactionCategory: 4
+  difficultyTier: 3
+  coinReward: 20
+  involvedElements:
+  - K
+  - O
+  - H
+  - S
+  isVisualExperiment: 0

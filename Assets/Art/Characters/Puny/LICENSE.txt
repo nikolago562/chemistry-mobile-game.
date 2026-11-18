@@ -1,0 +1,8 @@
+Puny Characters by Shade / Kurt Gabriel Sotelo
+Source: https://opengameart.org/content/puny-characters
+Creator: https://merchant-shade.itch.io/16x16-puny-characters
+License: CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+
+The source character sheet is preserved unmodified. This game applies its own
+student and teacher clothing palettes using a Unity shader.

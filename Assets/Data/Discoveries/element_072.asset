@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c464bcf44fcb664282b6257bb523ea8, type: 3}
+  m_Name: element_072
+  m_EditorClassIdentifier: Assembly-CSharp::ChemistryGame.ChemistryQuestionSO
+  questionID: element_72
+  equationPrompt: "\u10F0\u10D0\u10E4\u10DC\u10D8\u10E3\u10DB\u10D8 \u2014 \u10D0\u10E2\u10DD\u10DB\u10E3\u10E0\u10D8 \u10DC\u10DD\u10DB\u10D4\u10E0\u10D8 72\n\u10E9\u10D0\u10EC\u10D4\u10E0\u10D4 \u10D4\u10DA\u10D4\u10DB\u10D4\u10DC\u10E2\u10D8\u10E1 \u10E5\u10D8\u10DB\u10D8\u10E3\u10E0\u10D8 \u10E1\u10D8\u10DB\u10D1\u10DD\u10DA\u10DD."
+  correctAnswer: Hf
+  hintText: "\u10E1\u10D8\u10DB\u10D1\u10DD\u10DA\u10DD\u10E1 \u10DE\u10D8\u10E0\u10D5\u10D4\u10DA\u10D8 \u10D0\u10E1\u10DD\u10D0 H. \u10D4\u10DA\u10D4\u10DB\u10D4\u10DC\u10E2\u10D8 1923 \u10EC\u10D4\u10DA\u10E1 \u10D0\u10E6\u10DB\u10DD\u10D0\u10E9\u10D8\u10DC\u10D4\u10E1. \u10D8\u10D2\u10D8 \u10D2\u10D0\u10E0\u10D3\u10D0\u10DB\u10D0\u10D5\u10D0\u10DA\u10D8 \u10DA\u10D8\u10D7\u10DD\u10DC\u10D4\u10D1\u10D8\u10E1 \u10DD\u10EF\u10D0\u10EE\u10E1 \u10DB\u10D8\u10D4\u10D9\u10E3\u10D7\u10D5\u10DC\u10D4\u10D1\u10D0. \u10DB\u10D8\u10E1\u10D8 \u10D0\u10E2\u10DD\u10DB\u10D8\u10E1 \u10D1\u10D8\u10E0\u10D7\u10D5\u10E8\u10D8 72 \u10DE\u10E0\u10DD\u10E2\u10DD\u10DC\u10D8\u10D0."
+  reactionCategory: 5
+  difficultyTier: 1
+  coinReward: 5
+  involvedElements:
+  - Hf
+  isVisualExperiment: 0

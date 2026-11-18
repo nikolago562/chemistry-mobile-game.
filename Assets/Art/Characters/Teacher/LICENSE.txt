@@ -1,0 +1,16 @@
+CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
+
+To the extent possible under law, Grab3D has waived all copyright and related or neighboring rights to the
+sprites, sprite sheets, atlases and images in this package. This work is published from: Germany.
+
+https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+Origin / AI disclosure
+----------------------
+Method: AI-assisted (contains AI-generated content)
+The sprites were rendered in Blender from rigged Grab3D 3D models. The base meshes and textures of these models
+were generated with an AI image-to-3D tool (Meshy), then cleaned up, scaled, textured and checked in Blender.
+Skeleton, skinning and the walk and run clips were added automatically with Meshy Auto-Rig.
+The rendering scripts were written with the help of an AI coding assistant.
+If your platform requires disclosure of AI-generated content (for example Steam), these sprites count as
+AI-assisted.

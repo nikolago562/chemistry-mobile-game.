@@ -1,0 +1,5111 @@
+fileFormatVersion: 2
+guid: adb6856c1add52c49b905fff5b572d61
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1396403016296437686
+    second: PunyCharacterBase_0
+  - first:
+      213: -7345749702881066569
+    second: PunyCharacterBase_1
+  - first:
+      213: 4879180160664955106
+    second: PunyCharacterBase_2
+  - first:
+      213: 4882859384887072287
+    second: PunyCharacterBase_3
+  - first:
+      213: 8588717164115746058
+    second: PunyCharacterBase_4
+  - first:
+      213: 7704724674698399920
+    second: PunyCharacterBase_5
+  - first:
+      213: -3079920894780436420
+    second: PunyCharacterBase_6
+  - first:
+      213: 4579903297937444344
+    second: PunyCharacterBase_7
+  - first:
+      213: 2600595583972084420
+    second: PunyCharacterBase_8
+  - first:
+      213: 1750737530237324934
+    second: PunyCharacterBase_9
+  - first:
+      213: 5702197272504364229
+    second: PunyCharacterBase_10
+  - first:
+      213: 7783319239029280284
+    second: PunyCharacterBase_11
+  - first:
+      213: -9221093451759671121
+    second: PunyCharacterBase_12
+  - first:
+      213: -1939767399493207811
+    second: PunyCharacterBase_13
+  - first:
+      213: 709259835200915730
+    second: PunyCharacterBase_14
+  - first:
+      213: 5154914258816602987
+    second: PunyCharacterBase_15
+  - first:
+      213: 2605565925803645161
+    second: PunyCharacterBase_16
+  - first:
+      213: 3532625281612082404
+    second: PunyCharacterBase_17
+  - first:
+      213: -48413431003447248
+    second: PunyCharacterBase_18
+  - first:
+      213: 5433881626255263897
+    second: PunyCharacterBase_19
+  - first:
+      213: -8561179772259262183
+    second: PunyCharacterBase_20
+  - first:
+      213: -5148955558320650677
+    second: PunyCharacterBase_21
+  - first:
+      213: -142849408266758152
+    second: PunyCharacterBase_22
+  - first:
+      213: -7809361781656208626
+    second: PunyCharacterBase_23
+  - first:
+      213: 2068485722192050047
+    second: PunyCharacterBase_24
+  - first:
+      213: 4802536019201646368
+    second: PunyCharacterBase_25
+  - first:
+      213: 3504026038062421793
+    second: PunyCharacterBase_26
+  - first:
+      213: 2596996770052003444
+    second: PunyCharacterBase_27
+  - first:
+      213: -2380277118844277186
+    second: PunyCharacterBase_28
+  - first:
+      213: -3744701679372275658
+    second: PunyCharacterBase_29
+  - first:
+      213: -7473225560314606096
+    second: PunyCharacterBase_30
+  - first:
+      213: -9091762828600777673
+    second: PunyCharacterBase_31
+  - first:
+      213: -1410688513184998310
+    second: PunyCharacterBase_32
+  - first:
+      213: 5286445502442061758
+    second: PunyCharacterBase_33
+  - first:
+      213: -401106618042232344
+    second: PunyCharacterBase_34
+  - first:
+      213: -4386993909754610873
+    second: PunyCharacterBase_35
+  - first:
+      213: -2479558167778331192
+    second: PunyCharacterBase_36
+  - first:
+      213: -555590734266021319
+    second: PunyCharacterBase_37
+  - first:
+      213: 1309468423884122190
+    second: PunyCharacterBase_38
+  - first:
+      213: -4365987092377807530
+    second: PunyCharacterBase_39
+  - first:
+      213: -5957048573606964007
+    second: PunyCharacterBase_40
+  - first:
+      213: -2248737604693354235
+    second: PunyCharacterBase_41
+  - first:
+      213: 2556225698703991026
+    second: PunyCharacterBase_42
+  - first:
+      213: -7412093582484741014
+    second: PunyCharacterBase_43
+  - first:
+      213: -4901773452813419554
+    second: PunyCharacterBase_44
+  - first:
+      213: 6949717374594988466
+    second: PunyCharacterBase_45
+  - first:
+      213: -8373946199555416596
+    second: PunyCharacterBase_46
+  - first:
+      213: -6102293836125756159
+    second: PunyCharacterBase_47
+  - first:
+      213: 8080973603545602741
+    second: PunyCharacterBase_48
+  - first:
+      213: -8522507306354014055
+    second: PunyCharacterBase_49
+  - first:
+      213: -2885319559423412484
+    second: PunyCharacterBase_50
+  - first:
+      213: -7508488028221007042
+    second: PunyCharacterBase_51
+  - first:
+      213: -2162261279721880171
+    second: PunyCharacterBase_52
+  - first:
+      213: -203387598499284066
+    second: PunyCharacterBase_53
+  - first:
+      213: 3975083502491683095
+    second: PunyCharacterBase_54
+  - first:
+      213: -4967793018330855475
+    second: PunyCharacterBase_55
+  - first:
+      213: -7662835261163273876
+    second: PunyCharacterBase_56
+  - first:
+      213: 6838670705488485076
+    second: PunyCharacterBase_57
+  - first:
+      213: -5571235778113362241
+    second: PunyCharacterBase_58
+  - first:
+      213: 6928101078205739918
+    second: PunyCharacterBase_59
+  - first:
+      213: -4806079409839036029
+    second: PunyCharacterBase_60
+  - first:
+      213: -5450848207836412569
+    second: PunyCharacterBase_61
+  - first:
+      213: 5119627001177231356
+    second: PunyCharacterBase_62
+  - first:
+      213: -1356858641641893483
+    second: PunyCharacterBase_63
+  - first:
+      213: 5081614914340796300
+    second: PunyCharacterBase_64
+  - first:
+      213: 8676660128306223337
+    second: PunyCharacterBase_65
+  - first:
+      213: 544826706452193395
+    second: PunyCharacterBase_66
+  - first:
+      213: -507827631527247385
+    second: PunyCharacterBase_67
+  - first:
+      213: 7908913601856123714
+    second: PunyCharacterBase_68
+  - first:
+      213: -6648729322417027409
+    second: PunyCharacterBase_69
+  - first:
+      213: 4419441080047705718
+    second: PunyCharacterBase_70
+  - first:
+      213: 176618392543101500
+    second: PunyCharacterBase_71
+  - first:
+      213: -4859195994795759777
+    second: PunyCharacterBase_72
+  - first:
+      213: -7647589039154622492
+    second: PunyCharacterBase_73
+  - first:
+      213: -8130464693494655489
+    second: PunyCharacterBase_74
+  - first:
+      213: 7989062521915904529
+    second: PunyCharacterBase_75
+  - first:
+      213: 7898981407112676076
+    second: PunyCharacterBase_76
+  - first:
+      213: -3110669341240720148
+    second: PunyCharacterBase_77
+  - first:
+      213: -7684883988113533191
+    second: PunyCharacterBase_78
+  - first:
+      213: 3808536850902941052
+    second: PunyCharacterBase_79
+  - first:
+      213: -2975750310179236827
+    second: PunyCharacterBase_80
+  - first:
+      213: -5593273904555593753
+    second: PunyCharacterBase_81
+  - first:
+      213: 8317048684422688054
+    second: PunyCharacterBase_82
+  - first:
+      213: 4422655961352881021
+    second: PunyCharacterBase_83
+  - first:
+      213: 4670373221668663184
+    second: PunyCharacterBase_84
+  - first:
+      213: -1629531130528718294
+    second: PunyCharacterBase_85
+  - first:
+      213: -335379918993954716
+    second: PunyCharacterBase_86
+  - first:
+      213: 3228586820370869953
+    second: PunyCharacterBase_87
+  - first:
+      213: 8636198538444569816
+    second: PunyCharacterBase_88
+  - first:
+      213: -660334734785567297
+    second: PunyCharacterBase_89
+  - first:
+      213: 7319898864842598461
+    second: PunyCharacterBase_90
+  - first:
+      213: 6045980948653906466
+    second: PunyCharacterBase_91
+  - first:
+      213: 861629516156367828
+    second: PunyCharacterBase_92
+  - first:
+      213: -6614624482209297842
+    second: PunyCharacterBase_93
+  - first:
+      213: -5297122411856685556
+    second: PunyCharacterBase_94
+  - first:
+      213: -3259154944560461957
+    second: PunyCharacterBase_95
+  - first:
+      213: 5425226299052126270
+    second: PunyCharacterBase_96
+  - first:
+      213: -7424081231645914458
+    second: PunyCharacterBase_97
+  - first:
+      213: -2778815206568370250
+    second: PunyCharacterBase_98
+  - first:
+      213: 3493974916971876030
+    second: PunyCharacterBase_99
+  - first:
+      213: -2344602657237729443
+    second: PunyCharacterBase_100
+  - first:
+      213: 7780472206240811137
+    second: PunyCharacterBase_101
+  - first:
+      213: -7102164512069041698
+    second: PunyCharacterBase_102
+  - first:
+      213: -2961591473442185221
+    second: PunyCharacterBase_103
+  - first:
+      213: -5526621773171483503
+    second: PunyCharacterBase_104
+  - first:
+      213: -5958540830606839317
+    second: PunyCharacterBase_105
+  - first:
+      213: 7962417358864274826
+    second: PunyCharacterBase_106
+  - first:
+      213: -1217357631398482961
+    second: PunyCharacterBase_107
+  - first:
+      213: -7109269145578378711
+    second: PunyCharacterBase_108
+  - first:
+      213: 7153653541963114020
+    second: PunyCharacterBase_109
+  - first:
+      213: 6137728178122886406
+    second: PunyCharacterBase_110
+  - first:
+      213: -1292729778625841747
+    second: PunyCharacterBase_111
+  - first:
+      213: 62553778188804822
+    second: PunyCharacterBase_112
+  - first:
+      213: -7240432071909727082
+    second: PunyCharacterBase_113
+  - first:
+      213: -4282069600766615009
+    second: PunyCharacterBase_114
+  - first:
+      213: -8541414417311492151
+    second: PunyCharacterBase_115
+  - first:
+      213: 88458315273603010
+    second: PunyCharacterBase_116
+  - first:
+      213: -1664459196925762430
+    second: PunyCharacterBase_117
+  - first:
+      213: 1261551298586073805
+    second: PunyCharacterBase_118
+  - first:
+      213: 140774969564728617
+    second: PunyCharacterBase_119
+  - first:
+      213: 3757975443276063668
+    second: PunyCharacterBase_120
+  - first:
+      213: 3419566211374572382
+    second: PunyCharacterBase_121
+  - first:
+      213: -1220400078651561126
+    second: PunyCharacterBase_122
+  - first:
+      213: 2881244541375038620
+    second: PunyCharacterBase_123
+  - first:
+      213: 457726216124093643
+    second: PunyCharacterBase_124
+  - first:
+      213: 6255679544123866348
+    second: PunyCharacterBase_125
+  - first:
+      213: 3495208786454741708
+    second: PunyCharacterBase_126
+  - first:
+      213: -7714850971368996541
+    second: PunyCharacterBase_127
+  - first:
+      213: -9104935108058750181
+    second: PunyCharacterBase_128
+  - first:
+      213: -8737895102914144724
+    second: PunyCharacterBase_129
+  - first:
+      213: -4271436745842909902
+    second: PunyCharacterBase_130
+  - first:
+      213: 4860778110591326151
+    second: PunyCharacterBase_131
+  - first:
+      213: 1626349111548500757
+    second: PunyCharacterBase_132
+  - first:
+      213: -4369262448860640278
+    second: PunyCharacterBase_133
+  - first:
+      213: -6542920241577339061
+    second: PunyCharacterBase_134
+  - first:
+      213: -5728131417717129980
+    second: PunyCharacterBase_135
+  - first:
+      213: 5758867085606287062
+    second: PunyCharacterBase_136
+  - first:
+      213: 2014394649104486514
+    second: PunyCharacterBase_137
+  - first:
+      213: 6027027767335069395
+    second: PunyCharacterBase_138
+  - first:
+      213: 3983970442066606814
+    second: PunyCharacterBase_139
+  - first:
+      213: -8250962773404504650
+    second: PunyCharacterBase_140
+  - first:
+      213: -7301507221738074491
+    second: PunyCharacterBase_141
+  - first:
+      213: 5653698289216500243
+    second: PunyCharacterBase_142
+  - first:
+      213: -2737925468378271132
+    second: PunyCharacterBase_143
+  - first:
+      213: 8443893132431416576
+    second: PunyCharacterBase_144
+  - first:
+      213: -2521331979227371463
+    second: PunyCharacterBase_145
+  - first:
+      213: -5095845253149397002
+    second: PunyCharacterBase_146
+  - first:
+      213: -3010155075828532649
+    second: PunyCharacterBase_147
+  - first:
+      213: -6970211732415784649
+    second: PunyCharacterBase_148
+  - first:
+      213: -3156324584873026199
+    second: PunyCharacterBase_149
+  - first:
+      213: -7916529261800999234
+    second: PunyCharacterBase_150
+  - first:
+      213: 4135738641521947744
+    second: PunyCharacterBase_151
+  - first:
+      213: 4121872785970249667
+    second: PunyCharacterBase_152
+  - first:
+      213: 7428298530785497070
+    second: PunyCharacterBase_153
+  - first:
+      213: 4034272119708359690
+    second: PunyCharacterBase_154
+  - first:
+      213: -6350391384260920904
+    second: PunyCharacterBase_155
+  - first:
+      213: -1695824017906701922
+    second: PunyCharacterBase_156
+  - first:
+      213: 6389082537022182838
+    second: PunyCharacterBase_157
+  - first:
+      213: -5018699167741850951
+    second: PunyCharacterBase_158
+  - first:
+      213: -7373825745229287015
+    second: PunyCharacterBase_159
+  - first:
+      213: 8128746384143092864
+    second: PunyCharacterBase_160
+  - first:
+      213: 5493271830108223349
+    second: PunyCharacterBase_161
+  - first:
+      213: 6918473297862101350
+    second: PunyCharacterBase_162
+  - first:
+      213: -4575750563421866112
+    second: PunyCharacterBase_163
+  - first:
+      213: 4222077374825496605
+    second: PunyCharacterBase_164
+  - first:
+      213: -6231047550585662883
+    second: PunyCharacterBase_165
+  - first:
+      213: -1111861701988854945
+    second: PunyCharacterBase_166
+  - first:
+      213: -4989613121932339953
+    second: PunyCharacterBase_167
+  - first:
+      213: 480854780073148739
+    second: PunyCharacterBase_168
+  - first:
+      213: 2451909549729878632
+    second: PunyCharacterBase_169
+  - first:
+      213: 4743452834979285076
+    second: PunyCharacterBase_170
+  - first:
+      213: -5816035380736368449
+    second: PunyCharacterBase_171
+  - first:
+      213: -6526942865296577245
+    second: PunyCharacterBase_172
+  - first:
+      213: 716335374451718509
+    second: PunyCharacterBase_173
+  - first:
+      213: 6279208066376155911
+    second: PunyCharacterBase_174
+  - first:
+      213: 6749035507868792048
+    second: PunyCharacterBase_175
+  - first:
+      213: 8263839245983910105
+    second: PunyCharacterBase_176
+  - first:
+      213: -2413730485700252833
+    second: PunyCharacterBase_177
+  - first:
+      213: 167489167617003261
+    second: PunyCharacterBase_178
+  - first:
+      213: 7988027430758672209
+    second: PunyCharacterBase_179
+  - first:
+      213: 7227437770218784885
+    second: PunyCharacterBase_180
+  - first:
+      213: 3596517052963269108
+    second: PunyCharacterBase_181
+  - first:
+      213: -5775483083081318257
+    second: PunyCharacterBase_182
+  - first:
+      213: -5258628952140693654
+    second: PunyCharacterBase_183
+  - first:
+      213: -454432653490193972
+    second: PunyCharacterBase_184
+  - first:
+      213: -6378190760075262119
+    second: PunyCharacterBase_185
+  - first:
+      213: -5095217215177102846
+    second: PunyCharacterBase_186
+  - first:
+      213: -7756974671158858191
+    second: PunyCharacterBase_187
+  - first:
+      213: 2121159911751079073
+    second: PunyCharacterBase_188
+  - first:
+      213: 3398565537995080130
+    second: PunyCharacterBase_189
+  - first:
+      213: 3808788511467350335
+    second: PunyCharacterBase_190
+  - first:
+      213: 7262405036281795315
+    second: PunyCharacterBase_191
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 8
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: PunyCharacterBase_0
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 232
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b712a51525016310800000000000000
+      internalID: 1396403016296437686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_1
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 232
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b1c7de8097ae0a90800000000000000
+      internalID: -7345749702881066569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_2
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 231
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e8619f418456b340800000000000000
+      internalID: 4879180160664955106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_3
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 231
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1650647db663c340800000000000000
+      internalID: 4882859384887072287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_4
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 232
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0d5b6b71c0413770800000000000000
+      internalID: 8588717164115746058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_5
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 232
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b0d59f254eacea60800000000000000
+      internalID: 7704724674698399920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_6
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 231
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c301f4aa34ce145d0800000000000000
+      internalID: -3079920894780436420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_7
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 232
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8fd833bb8c51f8f30800000000000000
+      internalID: 4579903297937444344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_8
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 231
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ca0b13b7eb271420800000000000000
+      internalID: 2600595583972084420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_9
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 231
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68e8db8028edb4810800000000000000
+      internalID: 1750737530237324934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_10
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 231
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5cce2d23536422f40800000000000000
+      internalID: 5702197272504364229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_11
+      rect:
+        serializedVersion: 2
+        x: 361
+        y: 232
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1ecdcf2c97e30c60800000000000000
+      internalID: 7783319239029280284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_12
+      rect:
+        serializedVersion: 2
+        x: 391
+        y: 232
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa82f2f6c58180080800000000000000
+      internalID: -9221093451759671121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_13
+      rect:
+        serializedVersion: 2
+        x: 423
+        y: 232
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df8f256d3df8415e0800000000000000
+      internalID: -1939767399493207811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_14
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 228
+        width: 15
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2194a92ff0cc7d900800000000000000
+      internalID: 709259835200915730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_15
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 232
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b631c5cd43fe98740800000000000000
+      internalID: 5154914258816602987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_16
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 232
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e853669764d82420800000000000000
+      internalID: 2605565925803645161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_17
+      rect:
+        serializedVersion: 2
+        x: 554
+        y: 232
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ec6d0b1af7660130800000000000000
+      internalID: 3532625281612082404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_18
+      rect:
+        serializedVersion: 2
+        x: 584
+        y: 232
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0308ea2bd30045ff0800000000000000
+      internalID: -48413431003447248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_19
+      rect:
+        serializedVersion: 2
+        x: 615
+        y: 233
+        width: 18
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99887749c86096b40800000000000000
+      internalID: 5433881626255263897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_20
+      rect:
+        serializedVersion: 2
+        x: 647
+        y: 232
+        width: 18
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9112a303b54903980800000000000000
+      internalID: -8561179772259262183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_21
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 232
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b464606333c3b88b0800000000000000
+      internalID: -5148955558320650677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_22
+      rect:
+        serializedVersion: 2
+        x: 712
+        y: 232
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f792e3583f740ef0800000000000000
+      internalID: -142849408266758152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_23
+      rect:
+        serializedVersion: 2
+        x: 744
+        y: 232
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0bbed9d5d29f9390800000000000000
+      internalID: -7809361781656208626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_24
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 200
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7779361eccb4bc10800000000000000
+      internalID: 2068485722192050047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_25
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 200
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02f5885801906a240800000000000000
+      internalID: 4802536019201646368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_26
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 199
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1271e62dd1dc0a030800000000000000
+      internalID: 3504026038062421793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_27
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 199
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47659c98dc26a0420800000000000000
+      internalID: 2596996770052003444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_28
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 200
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3eeb48529e87fed0800000000000000
+      internalID: -2380277118844277186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_29
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 200
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 630f433b9a5280cc0800000000000000
+      internalID: -3744701679372275658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_30
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 200
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0fd041f92f4c94890800000000000000
+      internalID: -7473225560314606096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_31
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 200
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 734662ba0e193d180800000000000000
+      internalID: -9091762828600777673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_32
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 200
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5c52ea754a3c6ce0800000000000000
+      internalID: -1410688513184998310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_33
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 199
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebf3589fc2a3d5940800000000000000
+      internalID: 5286445502442061758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_34
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 199
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e1d882f7abfe6af0800000000000000
+      internalID: -401106618042232344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_35
+      rect:
+        serializedVersion: 2
+        x: 362
+        y: 200
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74b364948444e13c0800000000000000
+      internalID: -4386993909754610873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_36
+      rect:
+        serializedVersion: 2
+        x: 391
+        y: 200
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c577a1dbf6d69dd0800000000000000
+      internalID: -2479558167778331192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_37
+      rect:
+        serializedVersion: 2
+        x: 423
+        y: 200
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93a439bbb252a48f0800000000000000
+      internalID: -555590734266021319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_38
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 200
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e48243af79a2c2210800000000000000
+      internalID: 1309468423884122190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_39
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 200
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65551e81fd5e863c0800000000000000
+      internalID: -4365987092377807530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_40
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 200
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d4d86452ef445da0800000000000000
+      internalID: -5957048573606964007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_41
+      rect:
+        serializedVersion: 2
+        x: 554
+        y: 200
+        width: 12
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50990371011eac0e0800000000000000
+      internalID: -2248737604693354235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_42
+      rect:
+        serializedVersion: 2
+        x: 584
+        y: 200
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f0e9f0cab9897320800000000000000
+      internalID: 2556225698703991026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_43
+      rect:
+        serializedVersion: 2
+        x: 615
+        y: 201
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a646b0e5824f22990800000000000000
+      internalID: -7412093582484741014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_44
+      rect:
+        serializedVersion: 2
+        x: 648
+        y: 200
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: edbbd9fe30769fbb0800000000000000
+      internalID: -4901773452813419554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_45
+      rect:
+        serializedVersion: 2
+        x: 681
+        y: 200
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b9381a812b527060800000000000000
+      internalID: 6949717374594988466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_46
+      rect:
+        serializedVersion: 2
+        x: 712
+        y: 200
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ced544f6c44c9cb80800000000000000
+      internalID: -8373946199555416596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_47
+      rect:
+        serializedVersion: 2
+        x: 744
+        y: 200
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1052bae561c405ba0800000000000000
+      internalID: -6102293836125756159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_48
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 168
+        width: 12
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5bad4a67da2652070800000000000000
+      internalID: 8080973603545602741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_49
+      rect:
+        serializedVersion: 2
+        x: 42
+        y: 168
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 998091152c8f9b980800000000000000
+      internalID: -8522507306354014055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_50
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 167
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf6b415d52945f7d0800000000000000
+      internalID: -2885319559423412484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_51
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 167
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3b1d958bed7cc790800000000000000
+      internalID: -7508488028221007042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_52
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 168
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 595889e72da1ef1e0800000000000000
+      internalID: -2162261279721880171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_53
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 168
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9bfab78e0c6d2df0800000000000000
+      internalID: -203387598499284066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_54
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 168
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 719488672655a2730800000000000000
+      internalID: 3975083502491683095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_55
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 168
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc749b0029ade0bb0800000000000000
+      internalID: -4967793018330855475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_56
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 168
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c61860eede328a590800000000000000
+      internalID: -7662835261163273876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_57
+      rect:
+        serializedVersion: 2
+        x: 298
+        y: 168
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dad28816c6d7ee50800000000000000
+      internalID: 6838670705488485076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_58
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 168
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb62b95d39efea2b0800000000000000
+      internalID: -5571235778113362241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_59
+      rect:
+        serializedVersion: 2
+        x: 362
+        y: 168
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e833476593f852060800000000000000
+      internalID: 6928101078205739918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_60
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 168
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 389a93e8d306d4db0800000000000000
+      internalID: -4806079409839036029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_61
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 168
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 765065f4f62ba54b0800000000000000
+      internalID: -5450848207836412569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_62
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 168
+        width: 17
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cffcaa3f1a19c0740800000000000000
+      internalID: 5119627001177231356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_63
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 168
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 591148e11487b2de0800000000000000
+      internalID: -1356858641641893483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_64
+      rect:
+        serializedVersion: 2
+        x: 522
+        y: 168
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c873c9e47d5858640800000000000000
+      internalID: 5081614914340796300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_65
+      rect:
+        serializedVersion: 2
+        x: 554
+        y: 168
+        width: 12
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e8dc707a60b96870800000000000000
+      internalID: 8676660128306223337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_66
+      rect:
+        serializedVersion: 2
+        x: 586
+        y: 168
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 370aa3eb00d9f8700800000000000000
+      internalID: 544826706452193395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_67
+      rect:
+        serializedVersion: 2
+        x: 616
+        y: 168
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e1c0bfa575d3f8f0800000000000000
+      internalID: -507827631527247385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_68
+      rect:
+        serializedVersion: 2
+        x: 650
+        y: 168
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 243b3e5840b12cd60800000000000000
+      internalID: 7908913601856123714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_69
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 168
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa60c9168e7fab3a0800000000000000
+      internalID: -6648729322417027409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_70
+      rect:
+        serializedVersion: 2
+        x: 712
+        y: 168
+        width: 17
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67e13024f32055d30800000000000000
+      internalID: 4419441080047705718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_71
+      rect:
+        serializedVersion: 2
+        x: 744
+        y: 169
+        width: 17
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3205540e79737200800000000000000
+      internalID: 176618392543101500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_72
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 136
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f57a234ecfaa09cb0800000000000000
+      internalID: -4859195994795759777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_73
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 136
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ef840d994e4ed590800000000000000
+      internalID: -7647589039154622492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_74
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 135
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff555653079ca2f80800000000000000
+      internalID: -8130464693494655489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_75
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 135
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1121f2b290adede60800000000000000
+      internalID: 7989062521915904529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_76
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 136
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce2cd5a3db1de9d60800000000000000
+      internalID: 7898981407112676076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_77
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 136
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce406a517bea4d4d0800000000000000
+      internalID: -3110669341240720148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_78
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 136
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f6d764aabec95590800000000000000
+      internalID: -7684883988113533191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_79
+      rect:
+        serializedVersion: 2
+        x: 233
+        y: 136
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7dfd006614aad430800000000000000
+      internalID: 3808536850902941052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_80
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 136
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 524128debd204b6d0800000000000000
+      internalID: -2975750310179236827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_81
+      rect:
+        serializedVersion: 2
+        x: 298
+        y: 136
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ef608ba403b062b0800000000000000
+      internalID: -5593273904555593753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_82
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 136
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63de4ae76b71c6370800000000000000
+      internalID: 8317048684422688054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_83
+      rect:
+        serializedVersion: 2
+        x: 362
+        y: 136
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d73c3342a2e606d30800000000000000
+      internalID: 4422655961352881021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_84
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 136
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09fae0e43bf70d040800000000000000
+      internalID: 4670373221668663184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_85
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 136
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a222566021eb269e0800000000000000
+      internalID: -1629531130528718294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_86
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 136
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 468e0979dbd785bf0800000000000000
+      internalID: -335379918993954716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_87
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 136
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1cea6ba7b9e3ecc20800000000000000
+      internalID: 3228586820370869953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_88
+      rect:
+        serializedVersion: 2
+        x: 522
+        y: 136
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8dc7cbd60d0f9d770800000000000000
+      internalID: 8636198538444569816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_89
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 136
+        width: 13
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb5214cae0506d6f0800000000000000
+      internalID: -660334734785567297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_90
+      rect:
+        serializedVersion: 2
+        x: 585
+        y: 136
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d386abe2c31859560800000000000000
+      internalID: 7319898864842598461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_91
+      rect:
+        serializedVersion: 2
+        x: 616
+        y: 135
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22a9b4bc3a3a7e350800000000000000
+      internalID: 6045980948653906466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_92
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 136
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d3fd76da7f15fb00800000000000000
+      internalID: 861629516156367828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_93
+      rect:
+        serializedVersion: 2
+        x: 681
+        y: 136
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4a005744122434a0800000000000000
+      internalID: -6614624482209297842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_94
+      rect:
+        serializedVersion: 2
+        x: 712
+        y: 136
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0695855b37dc76b0800000000000000
+      internalID: -5297122411856685556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_95
+      rect:
+        serializedVersion: 2
+        x: 744
+        y: 137
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b77048d78d725c2d0800000000000000
+      internalID: -3259154944560461957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_96
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 104
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e30fb1d23964a4b40800000000000000
+      internalID: 5425226299052126270
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_97
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 104
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6aac91c447d58f890800000000000000
+      internalID: -7424081231645914458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_98
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 103
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bfd90cda4aaf69d0800000000000000
+      internalID: -2778815206568370250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_99
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 103
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebecb34dca71d7030800000000000000
+      internalID: 3493974916971876030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_100
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 104
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5f78e33e4c467fd0800000000000000
+      internalID: -2344602657237729443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_101
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 104
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18888c5bf3ac9fb60800000000000000
+      internalID: 7780472206240811137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_102
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 104
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed14db1510b007d90800000000000000
+      internalID: -7102164512069041698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_103
+      rect:
+        serializedVersion: 2
+        x: 233
+        y: 104
+        width: 13
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bff17affe3056e6d0800000000000000
+      internalID: -2961591473442185221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_104
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 104
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19c9c2257ce7d43b0800000000000000
+      internalID: -5526621773171483503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_105
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 104
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be1b40c2fa20f4da0800000000000000
+      internalID: -5958540830606839317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_106
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 104
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a855284b660308e60800000000000000
+      internalID: 7962417358864274826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_107
+      rect:
+        serializedVersion: 2
+        x: 361
+        y: 104
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: febe1ef1fa31b1fe0800000000000000
+      internalID: -1217357631398482961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_108
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 104
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92ae72de06dc65d90800000000000000
+      internalID: -7109269145578378711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_109
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 104
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4262de6aef1e64360800000000000000
+      internalID: 7153653541963114020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_110
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 104
+        width: 13
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60d8be842479d2550800000000000000
+      internalID: 6137728178122886406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_111
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 104
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da5ff629d1d4f0ee0800000000000000
+      internalID: -1292729778625841747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_112
+      rect:
+        serializedVersion: 2
+        x: 522
+        y: 104
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d26d40745c3ed000800000000000000
+      internalID: 62553778188804822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_113
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 104
+        width: 13
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 694a97d5461d48b90800000000000000
+      internalID: -7240432071909727082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_114
+      rect:
+        serializedVersion: 2
+        x: 584
+        y: 104
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f12aecea2680394c0800000000000000
+      internalID: -4282069600766615009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_115
+      rect:
+        serializedVersion: 2
+        x: 615
+        y: 103
+        width: 18
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c79fb087dcc67980800000000000000
+      internalID: -8541414417311492151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_116
+      rect:
+        serializedVersion: 2
+        x: 647
+        y: 104
+        width: 18
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c7005b7e544a3100800000000000000
+      internalID: 88458315273603010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_117
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 104
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 284ab18dd27a6e8e0800000000000000
+      internalID: -1664459196925762430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_118
+      rect:
+        serializedVersion: 2
+        x: 712
+        y: 103
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcad72ad83ee18110800000000000000
+      internalID: 1261551298586073805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_119
+      rect:
+        serializedVersion: 2
+        x: 744
+        y: 104
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92d0c26c61224f100800000000000000
+      internalID: 140774969564728617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_120
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 72
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b36c1b41c2072430800000000000000
+      internalID: 3757975443276063668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_121
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 72
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e53e8e20a5db47f20800000000000000
+      internalID: 3419566211374572382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_122
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 71
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5b6d1c2894401fe0800000000000000
+      internalID: -1220400078651561126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_123
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 71
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9441b715ac3cf720800000000000000
+      internalID: 2881244541375038620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_124
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 72
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc4d574819b2a5600800000000000000
+      internalID: 457726216124093643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_125
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 72
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cec3e20c663a0d650800000000000000
+      internalID: 6255679544123866348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_126
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 72
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc285747fd9718030800000000000000
+      internalID: 3495208786454741708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_127
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 72
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3414974aae75fe490800000000000000
+      internalID: -7714850971368996541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_128
+      rect:
+        serializedVersion: 2
+        x: 263
+        y: 72
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b13ec2d52c5c4a180800000000000000
+      internalID: -9104935108058750181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_129
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 72
+        width: 17
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c265d2203b2ccb680800000000000000
+      internalID: -8737895102914144724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_130
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 72
+        width: 17
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23d9b7329eec8b4c0800000000000000
+      internalID: -4271436745842909902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_131
+      rect:
+        serializedVersion: 2
+        x: 359
+        y: 72
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c75ac520f3f47340800000000000000
+      internalID: 4860778110591326151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_132
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 72
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51bde9276e3f19610800000000000000
+      internalID: 1626349111548500757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_133
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 72
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aeb453db3f24d53c0800000000000000
+      internalID: -4369262448860640278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_134
+      rect:
+        serializedVersion: 2
+        x: 453
+        y: 72
+        width: 17
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b47d117c4b0e235a0800000000000000
+      internalID: -6542920241577339061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_135
+      rect:
+        serializedVersion: 2
+        x: 489
+        y: 72
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40d373413d69180b0800000000000000
+      internalID: -5728131417717129980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_136
+      rect:
+        serializedVersion: 2
+        x: 521
+        y: 72
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d670424a1b9bef40800000000000000
+      internalID: 5758867085606287062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_137
+      rect:
+        serializedVersion: 2
+        x: 554
+        y: 72
+        width: 12
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2701259b24194fb10800000000000000
+      internalID: 2014394649104486514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_138
+      rect:
+        serializedVersion: 2
+        x: 585
+        y: 72
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d62c6362dd44a350800000000000000
+      internalID: 6027027767335069395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_139
+      rect:
+        serializedVersion: 2
+        x: 618
+        y: 71
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eda39035208e94730800000000000000
+      internalID: 3983970442066606814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_140
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 72
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bda044b211be7d80800000000000000
+      internalID: -8250962773404504650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_141
+      rect:
+        serializedVersion: 2
+        x: 681
+        y: 72
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58e4a5bedd5dbaa90800000000000000
+      internalID: -7301507221738074491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_142
+      rect:
+        serializedVersion: 2
+        x: 713
+        y: 70
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 312bbf3b3a8f57e40800000000000000
+      internalID: 5653698289216500243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_143
+      rect:
+        serializedVersion: 2
+        x: 745
+        y: 71
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46271dbea4fe00ad0800000000000000
+      internalID: -2737925468378271132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_144
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 40
+        width: 12
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00d5fe7f01cbe2570800000000000000
+      internalID: 8443893132431416576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_145
+      rect:
+        serializedVersion: 2
+        x: 42
+        y: 40
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 938e1596ced620dd0800000000000000
+      internalID: -2521331979227371463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_146
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 39
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ff6bafbdbbe749b0800000000000000
+      internalID: -5095845253149397002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_147
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 39
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75ab66238e7c936d0800000000000000
+      internalID: -3010155075828532649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_148
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 40
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 739d810fb55d44f90800000000000000
+      internalID: -6970211732415784649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_149
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 40
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96d9fc2538b7234d0800000000000000
+      internalID: -3156324584873026199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_150
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 40
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb6bd587496d22290800000000000000
+      internalID: -7916529261800999234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_151
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 40
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 064b5c3e168156930800000000000000
+      internalID: 4135738641521947744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_152
+      rect:
+        serializedVersion: 2
+        x: 262
+        y: 40
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cf3b11d575d33930800000000000000
+      internalID: 4121872785970249667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_153
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 40
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eef860d282e961760800000000000000
+      internalID: 7428298530785497070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_154
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 40
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0c9a7e4e1d9cf730800000000000000
+      internalID: 4034272119708359690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_155
+      rect:
+        serializedVersion: 2
+        x: 359
+        y: 40
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b93d6c8ea0eed7a0800000000000000
+      internalID: -6350391384260920904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_156
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 40
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9968136a093778e0800000000000000
+      internalID: -1695824017906701922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_157
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 40
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b5dbd377b49aa850800000000000000
+      internalID: 6389082537022182838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_158
+      rect:
+        serializedVersion: 2
+        x: 453
+        y: 40
+        width: 17
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bac23872bff95ab0800000000000000
+      internalID: -5018699167741850951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_159
+      rect:
+        serializedVersion: 2
+        x: 489
+        y: 40
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9917afb8d88eaa990800000000000000
+      internalID: -7373825745229287015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_160
+      rect:
+        serializedVersion: 2
+        x: 521
+        y: 40
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08c0718b4cb1fc070800000000000000
+      internalID: 8128746384143092864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_161
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 40
+        width: 13
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 577b248ff950c3c40800000000000000
+      internalID: 5493271830108223349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_162
+      rect:
+        serializedVersion: 2
+        x: 586
+        y: 40
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 669881b0fca530060800000000000000
+      internalID: 6918473297862101350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_163
+      rect:
+        serializedVersion: 2
+        x: 619
+        y: 40
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 087327e1b1baf70c0800000000000000
+      internalID: -4575750563421866112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_164
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 40
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1000bcb005d79a30800000000000000
+      internalID: 4222077374825496605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_165
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 40
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5216c8244fd689a0800000000000000
+      internalID: -6231047550585662883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_166
+      rect:
+        serializedVersion: 2
+        x: 711
+        y: 40
+        width: 17
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f53d7954cafd190f0800000000000000
+      internalID: -1111861701988854945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_167
+      rect:
+        serializedVersion: 2
+        x: 743
+        y: 41
+        width: 17
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f05589c3d4551cab0800000000000000
+      internalID: -4989613121932339953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_168
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 8
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3410fc2ffd65ca600800000000000000
+      internalID: 480854780073148739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_169
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 8
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8629905aebee60220800000000000000
+      internalID: 2451909549729878632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_170
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 7
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45882c5b83124d140800000000000000
+      internalID: 4743452834979285076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_171
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 7
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb0ea1ac2aa494fa0800000000000000
+      internalID: -5816035380736368449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_172
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 8
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32d2ab49b04ab65a0800000000000000
+      internalID: -6526942865296577245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_173
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 8
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d69bd3e4a3fe0f900800000000000000
+      internalID: 716335374451718509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_174
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 8
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7034e1bb77a342750800000000000000
+      internalID: 6279208066376155911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_175
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 8
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f47407590469ad50800000000000000
+      internalID: 6749035507868792048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_176
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 8
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d88dc1b20e0fa270800000000000000
+      internalID: 8263839245983910105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_177
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 7
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5b2e4869e4b08ed0800000000000000
+      internalID: -2413730485700252833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_178
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 7
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dfe8983b28a035200800000000000000
+      internalID: 167489167617003261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_179
+      rect:
+        serializedVersion: 2
+        x: 359
+        y: 7
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 157627a30ac2bde60800000000000000
+      internalID: 7988027430758672209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_180
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 8
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 578c1220c540d4460800000000000000
+      internalID: 7227437770218784885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_181
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 8
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f9a28a543569e130800000000000000
+      internalID: 3596517052963269108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_182
+      rect:
+        serializedVersion: 2
+        x: 454
+        y: 7
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8009aa5cbc59dfa0800000000000000
+      internalID: -5775483083081318257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_183
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 8
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6fb11654d89507b0800000000000000
+      internalID: -5258628952140693654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_184
+      rect:
+        serializedVersion: 2
+        x: 522
+        y: 8
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc9f06ac8e781b9f0800000000000000
+      internalID: -454432653490193972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_185
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 8
+        width: 13
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 957090cfb4d1c77a0800000000000000
+      internalID: -6378190760075262119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_186
+      rect:
+        serializedVersion: 2
+        x: 585
+        y: 8
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20ae9eb30f62a49b0800000000000000
+      internalID: -5095217215177102846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_187
+      rect:
+        serializedVersion: 2
+        x: 618
+        y: 9
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13eafd182a0b95490800000000000000
+      internalID: -7756974671158858191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_188
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 8
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a4d8bb83bfdf6d10800000000000000
+      internalID: 2121159911751079073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_189
+      rect:
+        serializedVersion: 2
+        x: 681
+        y: 8
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c1c416b9512a2f20800000000000000
+      internalID: 3398565537995080130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_190
+      rect:
+        serializedVersion: 2
+        x: 713
+        y: 8
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f39a99aa8f88bd430800000000000000
+      internalID: 3808788511467350335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PunyCharacterBase_191
+      rect:
+        serializedVersion: 2
+        x: 745
+        y: 8
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f2959217ee39c460800000000000000
+      internalID: 7262405036281795315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      PunyCharacterBase_0: 1396403016296437686
+      PunyCharacterBase_1: -7345749702881066569
+      PunyCharacterBase_10: 5702197272504364229
+      PunyCharacterBase_100: -2344602657237729443
+      PunyCharacterBase_101: 7780472206240811137
+      PunyCharacterBase_102: -7102164512069041698
+      PunyCharacterBase_103: -2961591473442185221
+      PunyCharacterBase_104: -5526621773171483503
+      PunyCharacterBase_105: -5958540830606839317
+      PunyCharacterBase_106: 7962417358864274826
+      PunyCharacterBase_107: -1217357631398482961
+      PunyCharacterBase_108: -7109269145578378711
+      PunyCharacterBase_109: 7153653541963114020
+      PunyCharacterBase_11: 7783319239029280284
+      PunyCharacterBase_110: 6137728178122886406
+      PunyCharacterBase_111: -1292729778625841747
+      PunyCharacterBase_112: 62553778188804822
+      PunyCharacterBase_113: -7240432071909727082
+      PunyCharacterBase_114: -4282069600766615009
+      PunyCharacterBase_115: -8541414417311492151
+      PunyCharacterBase_116: 88458315273603010
+      PunyCharacterBase_117: -1664459196925762430
+      PunyCharacterBase_118: 1261551298586073805
+      PunyCharacterBase_119: 140774969564728617
+      PunyCharacterBase_12: -9221093451759671121
+      PunyCharacterBase_120: 3757975443276063668
+      PunyCharacterBase_121: 3419566211374572382
+      PunyCharacterBase_122: -1220400078651561126
+      PunyCharacterBase_123: 2881244541375038620
+      PunyCharacterBase_124: 457726216124093643
+      PunyCharacterBase_125: 6255679544123866348
+      PunyCharacterBase_126: 3495208786454741708
+      PunyCharacterBase_127: -7714850971368996541
+      PunyCharacterBase_128: -9104935108058750181
+      PunyCharacterBase_129: -8737895102914144724
+      PunyCharacterBase_13: -1939767399493207811
+      PunyCharacterBase_130: -4271436745842909902
+      PunyCharacterBase_131: 4860778110591326151
+      PunyCharacterBase_132: 1626349111548500757
+      PunyCharacterBase_133: -4369262448860640278
+      PunyCharacterBase_134: -6542920241577339061
+      PunyCharacterBase_135: -5728131417717129980
+      PunyCharacterBase_136: 5758867085606287062
+      PunyCharacterBase_137: 2014394649104486514
+      PunyCharacterBase_138: 6027027767335069395
+      PunyCharacterBase_139: 3983970442066606814
+      PunyCharacterBase_14: 709259835200915730
+      PunyCharacterBase_140: -8250962773404504650
+      PunyCharacterBase_141: -7301507221738074491
+      PunyCharacterBase_142: 5653698289216500243
+      PunyCharacterBase_143: -2737925468378271132
+      PunyCharacterBase_144: 8443893132431416576
+      PunyCharacterBase_145: -2521331979227371463
+      PunyCharacterBase_146: -5095845253149397002
+      PunyCharacterBase_147: -3010155075828532649
+      PunyCharacterBase_148: -6970211732415784649
+      PunyCharacterBase_149: -3156324584873026199
+      PunyCharacterBase_15: 5154914258816602987
+      PunyCharacterBase_150: -7916529261800999234
+      PunyCharacterBase_151: 4135738641521947744
+      PunyCharacterBase_152: 4121872785970249667
+      PunyCharacterBase_153: 7428298530785497070
+      PunyCharacterBase_154: 4034272119708359690
+      PunyCharacterBase_155: -6350391384260920904
+      PunyCharacterBase_156: -1695824017906701922
+      PunyCharacterBase_157: 6389082537022182838
+      PunyCharacterBase_158: -5018699167741850951
+      PunyCharacterBase_159: -7373825745229287015
+      PunyCharacterBase_16: 2605565925803645161
+      PunyCharacterBase_160: 8128746384143092864
+      PunyCharacterBase_161: 5493271830108223349
+      PunyCharacterBase_162: 6918473297862101350
+      PunyCharacterBase_163: -4575750563421866112
+      PunyCharacterBase_164: 4222077374825496605
+      PunyCharacterBase_165: -6231047550585662883
+      PunyCharacterBase_166: -1111861701988854945
+      PunyCharacterBase_167: -4989613121932339953
+      PunyCharacterBase_168: 480854780073148739
+      PunyCharacterBase_169: 2451909549729878632
+      PunyCharacterBase_17: 3532625281612082404
+      PunyCharacterBase_170: 4743452834979285076
+      PunyCharacterBase_171: -5816035380736368449
+      PunyCharacterBase_172: -6526942865296577245
+      PunyCharacterBase_173: 716335374451718509
+      PunyCharacterBase_174: 6279208066376155911
+      PunyCharacterBase_175: 6749035507868792048
+      PunyCharacterBase_176: 8263839245983910105
+      PunyCharacterBase_177: -2413730485700252833
+      PunyCharacterBase_178: 167489167617003261
+      PunyCharacterBase_179: 7988027430758672209
+      PunyCharacterBase_18: -48413431003447248
+      PunyCharacterBase_180: 7227437770218784885
+      PunyCharacterBase_181: 3596517052963269108
+      PunyCharacterBase_182: -5775483083081318257
+      PunyCharacterBase_183: -5258628952140693654
+      PunyCharacterBase_184: -454432653490193972
+      PunyCharacterBase_185: -6378190760075262119
+      PunyCharacterBase_186: -5095217215177102846
+      PunyCharacterBase_187: -7756974671158858191
+      PunyCharacterBase_188: 2121159911751079073
+      PunyCharacterBase_189: 3398565537995080130
+      PunyCharacterBase_19: 5433881626255263897
+      PunyCharacterBase_190: 3808788511467350335
+      PunyCharacterBase_191: 7262405036281795315
+      PunyCharacterBase_2: 4879180160664955106
+      PunyCharacterBase_20: -8561179772259262183
+      PunyCharacterBase_21: -5148955558320650677
+      PunyCharacterBase_22: -142849408266758152
+      PunyCharacterBase_23: -7809361781656208626
+      PunyCharacterBase_24: 2068485722192050047
+      PunyCharacterBase_25: 4802536019201646368
+      PunyCharacterBase_26: 3504026038062421793
+      PunyCharacterBase_27: 2596996770052003444
+      PunyCharacterBase_28: -2380277118844277186
+      PunyCharacterBase_29: -3744701679372275658
+      PunyCharacterBase_3: 4882859384887072287
+      PunyCharacterBase_30: -7473225560314606096
+      PunyCharacterBase_31: -9091762828600777673
+      PunyCharacterBase_32: -1410688513184998310
+      PunyCharacterBase_33: 5286445502442061758
+      PunyCharacterBase_34: -401106618042232344
+      PunyCharacterBase_35: -4386993909754610873
+      PunyCharacterBase_36: -2479558167778331192
+      PunyCharacterBase_37: -555590734266021319
+      PunyCharacterBase_38: 1309468423884122190
+      PunyCharacterBase_39: -4365987092377807530
+      PunyCharacterBase_4: 8588717164115746058
+      PunyCharacterBase_40: -5957048573606964007
+      PunyCharacterBase_41: -2248737604693354235
+      PunyCharacterBase_42: 2556225698703991026
+      PunyCharacterBase_43: -7412093582484741014
+      PunyCharacterBase_44: -4901773452813419554
+      PunyCharacterBase_45: 6949717374594988466
+      PunyCharacterBase_46: -8373946199555416596
+      PunyCharacterBase_47: -6102293836125756159
+      PunyCharacterBase_48: 8080973603545602741
+      PunyCharacterBase_49: -8522507306354014055
+      PunyCharacterBase_5: 7704724674698399920
+      PunyCharacterBase_50: -2885319559423412484
+      PunyCharacterBase_51: -7508488028221007042
+      PunyCharacterBase_52: -2162261279721880171
+      PunyCharacterBase_53: -203387598499284066
+      PunyCharacterBase_54: 3975083502491683095
+      PunyCharacterBase_55: -4967793018330855475
+      PunyCharacterBase_56: -7662835261163273876
+      PunyCharacterBase_57: 6838670705488485076
+      PunyCharacterBase_58: -5571235778113362241
+      PunyCharacterBase_59: 6928101078205739918
+      PunyCharacterBase_6: -3079920894780436420
+      PunyCharacterBase_60: -4806079409839036029
+      PunyCharacterBase_61: -5450848207836412569
+      PunyCharacterBase_62: 5119627001177231356
+      PunyCharacterBase_63: -1356858641641893483
+      PunyCharacterBase_64: 5081614914340796300
+      PunyCharacterBase_65: 8676660128306223337
+      PunyCharacterBase_66: 544826706452193395
+      PunyCharacterBase_67: -507827631527247385
+      PunyCharacterBase_68: 7908913601856123714
+      PunyCharacterBase_69: -6648729322417027409
+      PunyCharacterBase_7: 4579903297937444344
+      PunyCharacterBase_70: 4419441080047705718
+      PunyCharacterBase_71: 176618392543101500
+      PunyCharacterBase_72: -4859195994795759777
+      PunyCharacterBase_73: -7647589039154622492
+      PunyCharacterBase_74: -8130464693494655489
+      PunyCharacterBase_75: 7989062521915904529
+      PunyCharacterBase_76: 7898981407112676076
+      PunyCharacterBase_77: -3110669341240720148
+      PunyCharacterBase_78: -7684883988113533191
+      PunyCharacterBase_79: 3808536850902941052
+      PunyCharacterBase_8: 2600595583972084420
+      PunyCharacterBase_80: -2975750310179236827
+      PunyCharacterBase_81: -5593273904555593753
+      PunyCharacterBase_82: 8317048684422688054
+      PunyCharacterBase_83: 4422655961352881021
+      PunyCharacterBase_84: 4670373221668663184
+      PunyCharacterBase_85: -1629531130528718294
+      PunyCharacterBase_86: -335379918993954716
+      PunyCharacterBase_87: 3228586820370869953
+      PunyCharacterBase_88: 8636198538444569816
+      PunyCharacterBase_89: -660334734785567297
+      PunyCharacterBase_9: 1750737530237324934
+      PunyCharacterBase_90: 7319898864842598461
+      PunyCharacterBase_91: 6045980948653906466
+      PunyCharacterBase_92: 861629516156367828
+      PunyCharacterBase_93: -6614624482209297842
+      PunyCharacterBase_94: -5297122411856685556
+      PunyCharacterBase_95: -3259154944560461957
+      PunyCharacterBase_96: 5425226299052126270
+      PunyCharacterBase_97: -7424081231645914458
+      PunyCharacterBase_98: -2778815206568370250
+      PunyCharacterBase_99: 3493974916971876030
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

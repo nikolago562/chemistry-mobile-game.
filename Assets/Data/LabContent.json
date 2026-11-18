@@ -1,0 +1,1453 @@
+{
+  "questions": [
+    {
+      "questionID": "reaction_01",
+      "equationPrompt": "2H2 + O2 -> ?",
+      "correctAnswer": "2H2O",
+      "hintText": "მარჯვნივ წყალბადის (H) და ჟანგბადის (O) ატომების რაოდენობა მარცხენას უნდა უტოლდებოდეს.",
+      "reactionCategory": 0,
+      "difficultyTier": 1,
+      "coinReward": 10,
+      "involvedElements": [
+        "H",
+        "O"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_02",
+      "equationPrompt": "2SO2 + O2 -> ?",
+      "correctAnswer": "2SO3",
+      "hintText": "გოგირდის ატომების რაოდენობა (2) არ იცვლება, დაამატეთ საკმარისი ჟანგბადი.",
+      "reactionCategory": 0,
+      "difficultyTier": 1,
+      "coinReward": 10,
+      "involvedElements": [
+        "S",
+        "O"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_03",
+      "equationPrompt": "N2 + 3H2 -> ?",
+      "correctAnswer": "2NH3",
+      "hintText": "მარცხნივ 2 აზოტი და 6 წყალბადია, ასე გაანაწილეთ ისინი პროდუქტში.",
+      "reactionCategory": 0,
+      "difficultyTier": 1,
+      "coinReward": 10,
+      "involvedElements": [
+        "N",
+        "H"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_04",
+      "equationPrompt": "C + O2 -> ?",
+      "correctAnswer": "CO2",
+      "hintText": "ეს უმარტივესი წვის რეაქციაა - ერთი ნახშირბადი, ორი ჟანგბადი.",
+      "reactionCategory": 3,
+      "difficultyTier": 1,
+      "coinReward": 10,
+      "involvedElements": [
+        "C",
+        "O"
+      ],
+      "isVisualExperiment": true
+    },
+    {
+      "questionID": "reaction_05",
+      "equationPrompt": "2Na + Cl2 -> ?",
+      "correctAnswer": "2NaCl",
+      "hintText": "ქლორის მოლეკულაში 2 ატომია, ამიტომ საჭიროა 2 ნატრიუმი.",
+      "reactionCategory": 0,
+      "difficultyTier": 1,
+      "coinReward": 10,
+      "involvedElements": [
+        "Na",
+        "Cl"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_06",
+      "equationPrompt": "CH4 + 2O2 -> CO2 + ?",
+      "correctAnswer": "2H2O",
+      "hintText": "მეთანში 4 წყალბადია - ისინი 2 წყლის მოლეკულად უნდა გადანაწილდეს.",
+      "reactionCategory": 3,
+      "difficultyTier": 1,
+      "coinReward": 10,
+      "involvedElements": [
+        "C",
+        "H",
+        "O"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_07",
+      "equationPrompt": "2Mg + O2 -> ?",
+      "correctAnswer": "2MgO",
+      "hintText": "ჟანგბადის მოლეკულა შეიცავს 2 ატომს, ამიტომ საჭიროა 2 მაგნიუმი.",
+      "reactionCategory": 0,
+      "difficultyTier": 1,
+      "coinReward": 10,
+      "involvedElements": [
+        "Mg",
+        "O"
+      ],
+      "isVisualExperiment": true
+    },
+    {
+      "questionID": "reaction_08",
+      "equationPrompt": "2KClO3 -> 2KCl + ?",
+      "correctAnswer": "3O2",
+      "hintText": "მარცხნივ სულ 6 ჟანგბადის ატომია დაშლამდე.",
+      "reactionCategory": 1,
+      "difficultyTier": 2,
+      "coinReward": 15,
+      "involvedElements": [
+        "K",
+        "Cl",
+        "O"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_09",
+      "equationPrompt": "Zn + 2HCl -> ZnCl2 + ?",
+      "correctAnswer": "H2",
+      "hintText": "მჟავაში 2 წყალბადია, ისინი წყალბადის აირად გამოიყოფა.",
+      "reactionCategory": 2,
+      "difficultyTier": 2,
+      "coinReward": 15,
+      "involvedElements": [
+        "Zn",
+        "H",
+        "Cl"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_10",
+      "equationPrompt": "2Al + 3Cl2 -> ?",
+      "correctAnswer": "2AlCl3",
+      "hintText": "ალუმინის ქლორიდში სამი ქლორია, დათვალეთ სულ რამდენი ქლორის ატომია საწყისში.",
+      "reactionCategory": 0,
+      "difficultyTier": 2,
+      "coinReward": 15,
+      "involvedElements": [
+        "Al",
+        "Cl"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_11",
+      "equationPrompt": "Fe + S -> ?",
+      "correctAnswer": "FeS",
+      "hintText": "ეს პირდაპირი შეერთების რეაქციაა, კოეფიციენტები არ სჭირდება.",
+      "reactionCategory": 0,
+      "difficultyTier": 2,
+      "coinReward": 15,
+      "involvedElements": [
+        "Fe",
+        "S"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_12",
+      "equationPrompt": "2H2O2 -> 2H2O + ?",
+      "correctAnswer": "O2",
+      "hintText": "წყალბადის ზეჟანგი იშლება წყლად და ჟანგბადად.",
+      "reactionCategory": 1,
+      "difficultyTier": 2,
+      "coinReward": 15,
+      "involvedElements": [
+        "H",
+        "O"
+      ],
+      "isVisualExperiment": true
+    },
+    {
+      "questionID": "reaction_13",
+      "equationPrompt": "CaCO3 -> CaO + ?",
+      "correctAnswer": "CO2",
+      "hintText": "კარბონატის დაშლისას წარმოიქმნება ოქსიდი და ნახშირორჟანგი.",
+      "reactionCategory": 1,
+      "difficultyTier": 2,
+      "coinReward": 15,
+      "involvedElements": [
+        "Ca",
+        "C",
+        "O"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_14",
+      "equationPrompt": "2C2H6 + 7O2 -> 4CO2 + ?",
+      "correctAnswer": "6H2O",
+      "hintText": "2 ეთანის მოლეკულაში სულ 12 წყალბადია - ისინი 6 წყლის მოლეკულად იქცევა.",
+      "reactionCategory": 3,
+      "difficultyTier": 2,
+      "coinReward": 15,
+      "involvedElements": [
+        "C",
+        "H",
+        "O"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_15",
+      "equationPrompt": "Mg + 2HCl -> MgCl2 + ?",
+      "correctAnswer": "H2",
+      "hintText": "მაგნიუმი ცვლის წყალბადს მჟავაში, რომელიც აირად გამოიყოფა.",
+      "reactionCategory": 2,
+      "difficultyTier": 2,
+      "coinReward": 15,
+      "involvedElements": [
+        "Mg",
+        "H",
+        "Cl"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_16",
+      "equationPrompt": "2Ag2O -> 4Ag + ?",
+      "correctAnswer": "O2",
+      "hintText": "ვერცხლის ოქსიდის დაშლისას მიიღება ლითონი და ჟანგბადი.",
+      "reactionCategory": 1,
+      "difficultyTier": 2,
+      "coinReward": 15,
+      "involvedElements": [
+        "Ag",
+        "O"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_17",
+      "equationPrompt": "N2 + O2 -> ?",
+      "correctAnswer": "2NO",
+      "hintText": "თითოეულ მხარეს თანაბრად უნდა იყოს 2 აზოტი და 2 ჟანგბადი.",
+      "reactionCategory": 0,
+      "difficultyTier": 2,
+      "coinReward": 15,
+      "involvedElements": [
+        "N",
+        "O"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_18",
+      "equationPrompt": "4Fe + 3O2 -> ?",
+      "correctAnswer": "2Fe2O3",
+      "hintText": "რკინის ჟანგვისას ითვალეთ რკინისა და ჟანგბადის საერთო ატომები.",
+      "reactionCategory": 0,
+      "difficultyTier": 2,
+      "coinReward": 15,
+      "involvedElements": [
+        "Fe",
+        "O"
+      ],
+      "isVisualExperiment": true
+    },
+    {
+      "questionID": "reaction_19",
+      "equationPrompt": "2Cu + O2 -> ?",
+      "correctAnswer": "2CuO",
+      "hintText": "ჟანგბადის ორი ატომი ორ სპილენძის ატომს სჭირდება.",
+      "reactionCategory": 0,
+      "difficultyTier": 2,
+      "coinReward": 15,
+      "involvedElements": [
+        "Cu",
+        "O"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_20",
+      "equationPrompt": "CaO + H2O -> ?",
+      "correctAnswer": "Ca(OH)2",
+      "hintText": "კირი წყალთან რეაგირებს და წარმოქმნის კალციუმის ჰიდროქსიდს.",
+      "reactionCategory": 4,
+      "difficultyTier": 3,
+      "coinReward": 20,
+      "involvedElements": [
+        "Ca",
+        "O",
+        "H"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_21",
+      "equationPrompt": "AgNO3 + NaCl -> AgCl + ?",
+      "correctAnswer": "NaNO3",
+      "hintText": "ეს ორმაგი ჩანაცვლების რეაქციაა - იონები უბრალოდ ცვლიან პარტნიორებს.",
+      "reactionCategory": 2,
+      "difficultyTier": 3,
+      "coinReward": 20,
+      "involvedElements": [
+        "Ag",
+        "N",
+        "O",
+        "Na",
+        "Cl"
+      ],
+      "isVisualExperiment": true
+    },
+    {
+      "questionID": "reaction_22",
+      "equationPrompt": "BaCl2 + Na2SO4 -> BaSO4 + ?",
+      "correctAnswer": "2NaCl",
+      "hintText": "ნატრიუმის 2 ატომი 2 ქლორთან წარმოქმნის ნატრიუმის ქლორიდს.",
+      "reactionCategory": 2,
+      "difficultyTier": 3,
+      "coinReward": 20,
+      "involvedElements": [
+        "Ba",
+        "Cl",
+        "Na",
+        "S",
+        "O"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_23",
+      "equationPrompt": "2KOH + H2SO4 -> K2SO4 + ?",
+      "correctAnswer": "2H2O",
+      "hintText": "ნეიტრალიზაციის რეაქციაში მჟავა და ტუტე წყალს წარმოქმნის.",
+      "reactionCategory": 4,
+      "difficultyTier": 3,
+      "coinReward": 20,
+      "involvedElements": [
+        "K",
+        "O",
+        "H",
+        "S"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_24",
+      "equationPrompt": "C3H8 + 5O2 -> 3CO2 + ?",
+      "correctAnswer": "4H2O",
+      "hintText": "პროპანში 8 წყალბადია - ისინი 4 წყლის მოლეკულად გადადის.",
+      "reactionCategory": 3,
+      "difficultyTier": 3,
+      "coinReward": 20,
+      "involvedElements": [
+        "C",
+        "H",
+        "O"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_25",
+      "equationPrompt": "2NaHCO3 -> Na2CO3 + H2O + ?",
+      "correctAnswer": "CO2",
+      "hintText": "საცხობი სოდას გახურებისას გამოიყოფა წყალი და ნახშირორჟანგი.",
+      "reactionCategory": 1,
+      "difficultyTier": 3,
+      "coinReward": 20,
+      "involvedElements": [
+        "Na",
+        "H",
+        "C",
+        "O"
+      ],
+      "isVisualExperiment": false
+    },
+    {
+      "questionID": "reaction_26",
+      "equationPrompt": "Pb(NO3)2 + 2KI -> PbI2 + ?",
+      "correctAnswer": "2KNO3",
+      "hintText": "კალიუმი და ნიტრატის ჯგუფი ერთად რჩება პროდუქტში.",
+      "reactionCategory": 2,
+      "difficultyTier": 3,
+      "coinReward": 20,
+      "involvedElements": [
+        "Pb",
+        "N",
+        "O",
+        "K",
+        "I"
+      ],
+      "isVisualExperiment": false
+    }
+  ],
+  "elements": [
+    {
+      "atomicNumber": 1,
+      "symbol": "H",
+      "georgianName": "წყალბადი",
+      "fact": "წყლის თითოეული მოლეკულა წყალბადის ორ ატომს შეიცავს. წყალბადი მზის მთავარი შემადგენელი ელემენტია.",
+      "column": 0,
+      "row": 0,
+      "group": "Nonmetal"
+    },
+    {
+      "atomicNumber": 2,
+      "symbol": "He",
+      "georgianName": "ჰელიუმი",
+      "fact": "ჰელიუმს ძალიან დაბალ ტემპერატურაზე სამეცნიერო მოწყობილობების გასაციებლად იყენებენ.",
+      "column": 17,
+      "row": 0,
+      "group": "Noble gas"
+    },
+    {
+      "atomicNumber": 3,
+      "symbol": "Li",
+      "georgianName": "ლითიუმი",
+      "fact": "ლითიუმის ნაერთები დატენვადი ბატარეების წარმოებაში გამოიყენება.",
+      "column": 0,
+      "row": 1,
+      "group": "Alkali metal"
+    },
+    {
+      "atomicNumber": 4,
+      "symbol": "Be",
+      "georgianName": "ბერილიუმი",
+      "fact": "ბერილიუმი მსუბუქი და მტკიცე შენადნობების კომპონენტია.",
+      "column": 1,
+      "row": 1,
+      "group": "Alkaline earth metal"
+    },
+    {
+      "atomicNumber": 5,
+      "symbol": "B",
+      "georgianName": "ბორი",
+      "fact": "ბორის ნაერთები თბომედეგი მინის წარმოებას ეხმარება.",
+      "column": 12,
+      "row": 1,
+      "group": "Metalloid"
+    },
+    {
+      "atomicNumber": 6,
+      "symbol": "C",
+      "georgianName": "ნახშირბადი",
+      "fact": "ალმასი და გრაფიტი ნახშირბადის განსხვავებული სტრუქტურული ფორმებია.",
+      "column": 13,
+      "row": 1,
+      "group": "Nonmetal"
+    },
+    {
+      "atomicNumber": 7,
+      "symbol": "N",
+      "georgianName": "აზოტი",
+      "fact": "დედამიწის ჰაერის უდიდეს ნაწილს აზოტი შეადგენს.",
+      "column": 14,
+      "row": 1,
+      "group": "Nonmetal"
+    },
+    {
+      "atomicNumber": 8,
+      "symbol": "O",
+      "georgianName": "ჟანგბადი",
+      "fact": "ჟანგბადი სუნთქვისთვის აუცილებელია და წვის ბევრ რეაქციაში მონაწილეობს.",
+      "column": 15,
+      "row": 1,
+      "group": "Nonmetal"
+    },
+    {
+      "atomicNumber": 9,
+      "symbol": "F",
+      "georgianName": "ფთორი",
+      "fact": "ფთორიდები კბილის ემალს გამაგრებაში ეხმარება.",
+      "column": 16,
+      "row": 1,
+      "group": "Halogen"
+    },
+    {
+      "atomicNumber": 10,
+      "symbol": "Ne",
+      "georgianName": "ნეონი",
+      "fact": "ნეონის აირი ელექტრულ განმუხტვაში წითელ-ნარინჯისფერ შუქს გამოსცემს.",
+      "column": 17,
+      "row": 1,
+      "group": "Noble gas"
+    },
+    {
+      "atomicNumber": 11,
+      "symbol": "Na",
+      "georgianName": "ნატრიუმი",
+      "fact": "ნატრიუმი ქლორთან ერთად სუფრის მარილს — NaCl-ს — წარმოქმნის.",
+      "column": 0,
+      "row": 2,
+      "group": "Alkali metal"
+    },
+    {
+      "atomicNumber": 12,
+      "symbol": "Mg",
+      "georgianName": "მაგნიუმი",
+      "fact": "მაგნიუმი ქლოროფილის შემადგენლობაში შედის და მცენარეებისთვის მნიშვნელოვანია.",
+      "column": 1,
+      "row": 2,
+      "group": "Alkaline earth metal"
+    },
+    {
+      "atomicNumber": 13,
+      "symbol": "Al",
+      "georgianName": "ალუმინი",
+      "fact": "ალუმინი მსუბუქი ლითონია, რომელსაც ქილების და თვითმფრინავების ნაწილებისთვის იყენებენ.",
+      "column": 12,
+      "row": 2,
+      "group": "Post-transition metal"
+    },
+    {
+      "atomicNumber": 14,
+      "symbol": "Si",
+      "georgianName": "სილიციუმი",
+      "fact": "სილიციუმი კომპიუტერული ჩიპებისა და მზის ელემენტების მნიშვნელოვანი მასალაა.",
+      "column": 13,
+      "row": 2,
+      "group": "Metalloid"
+    },
+    {
+      "atomicNumber": 15,
+      "symbol": "P",
+      "georgianName": "ფოსფორი",
+      "fact": "ფოსფორი დნმ-ისა და ორგანიზმში ენერგიის გადამტანი მოლეკულების შემადგენლობაშია.",
+      "column": 14,
+      "row": 2,
+      "group": "Nonmetal"
+    },
+    {
+      "atomicNumber": 16,
+      "symbol": "S",
+      "georgianName": "გოგირდი",
+      "fact": "გოგირდის ნაერთები ზოგიერთ ამინომჟავასა და ცილაში გვხვდება.",
+      "column": 15,
+      "row": 2,
+      "group": "Nonmetal"
+    },
+    {
+      "atomicNumber": 17,
+      "symbol": "Cl",
+      "georgianName": "ქლორი",
+      "fact": "ქლორიდის იონები ზღვის წყალსა და სუფრის მარილში გვხვდება.",
+      "column": 16,
+      "row": 2,
+      "group": "Halogen"
+    },
+    {
+      "atomicNumber": 18,
+      "symbol": "Ar",
+      "georgianName": "არგონი",
+      "fact": "არგონი შედუღებისას დამცავი აირის როლს ასრულებს.",
+      "column": 17,
+      "row": 2,
+      "group": "Noble gas"
+    },
+    {
+      "atomicNumber": 19,
+      "symbol": "K",
+      "georgianName": "კალიუმი",
+      "fact": "კალიუმის იონები ნერვული იმპულსების გადაცემაში მონაწილეობს.",
+      "column": 0,
+      "row": 3,
+      "group": "Alkali metal"
+    },
+    {
+      "atomicNumber": 20,
+      "symbol": "Ca",
+      "georgianName": "კალციუმი",
+      "fact": "კალციუმის ნაერთები ძვლებისა და კბილების სიმტკიცეს განაპირობებს.",
+      "column": 1,
+      "row": 3,
+      "group": "Alkaline earth metal"
+    },
+    {
+      "atomicNumber": 21,
+      "symbol": "Sc",
+      "georgianName": "სკანდიუმი",
+      "fact": "ელემენტი 1879 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 21 პროტონია.",
+      "column": 2,
+      "row": 3,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 22,
+      "symbol": "Ti",
+      "georgianName": "ტიტანი",
+      "fact": "ტიტანი მტკიცე და მსუბუქია. მას მედიცინასა და ავიაციაში იყენებენ.",
+      "column": 3,
+      "row": 3,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 23,
+      "symbol": "V",
+      "georgianName": "ვანადიუმი",
+      "fact": "ელემენტი 1801 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 23 პროტონია.",
+      "column": 4,
+      "row": 3,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 24,
+      "symbol": "Cr",
+      "georgianName": "ქრომი",
+      "fact": "ქრომი უჟანგავი ფოლადის კოროზიისადმი მდგრადობას ზრდის.",
+      "column": 5,
+      "row": 3,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 25,
+      "symbol": "Mn",
+      "georgianName": "მანგანუმი",
+      "fact": "მანგანუმი ფოლადის წარმოებაში გამოიყენება.",
+      "column": 6,
+      "row": 3,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 26,
+      "symbol": "Fe",
+      "georgianName": "რკინა",
+      "fact": "რკინა ჰემოგლობინის შემადგენლობაში შედის და ჟანგბადის გადატანაში მონაწილეობს.",
+      "column": 7,
+      "row": 3,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 27,
+      "symbol": "Co",
+      "georgianName": "კობალტი",
+      "fact": "კობალტი ვიტამინ B12-ის შემადგენელი ელემენტია.",
+      "column": 8,
+      "row": 3,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 28,
+      "symbol": "Ni",
+      "georgianName": "ნიკელი",
+      "fact": "ნიკელი შენადნობებსა და ბატარეებში გამოიყენება.",
+      "column": 9,
+      "row": 3,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 29,
+      "symbol": "Cu",
+      "georgianName": "სპილენძი",
+      "fact": "სპილენძი ელექტრობას კარგად ატარებს და სადენების გავრცელებული მასალაა.",
+      "column": 10,
+      "row": 3,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 30,
+      "symbol": "Zn",
+      "georgianName": "თუთია",
+      "fact": "თუთიის საფარი ფოლადს კოროზიისგან იცავს.",
+      "column": 11,
+      "row": 3,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 31,
+      "symbol": "Ga",
+      "georgianName": "გალიუმი",
+      "fact": "გალიუმი ხელის ტემპერატურასთან ახლოს დნება.",
+      "column": 12,
+      "row": 3,
+      "group": "Post-transition metal"
+    },
+    {
+      "atomicNumber": 32,
+      "symbol": "Ge",
+      "georgianName": "გერმანიუმი",
+      "fact": "გერმანიუმი ნახევარგამტარია და ოპტიკურ მოწყობილობებში გამოიყენება.",
+      "column": 13,
+      "row": 3,
+      "group": "Metalloid"
+    },
+    {
+      "atomicNumber": 33,
+      "symbol": "As",
+      "georgianName": "დარიშხანი",
+      "fact": "დარიშხანის ნაერთები ნახევარგამტარული მასალების წარმოებაშიც გვხვდება.",
+      "column": 14,
+      "row": 3,
+      "group": "Metalloid"
+    },
+    {
+      "atomicNumber": 34,
+      "symbol": "Se",
+      "georgianName": "სელენი",
+      "fact": "სელენი მცირე რაოდენობით ზოგიერთი ფერმენტის მუშაობისთვის აუცილებელია.",
+      "column": 15,
+      "row": 3,
+      "group": "Nonmetal"
+    },
+    {
+      "atomicNumber": 35,
+      "symbol": "Br",
+      "georgianName": "ბრომი",
+      "fact": "ბრომი ოთახის ტემპერატურაზე თხევადი არალითონია.",
+      "column": 16,
+      "row": 3,
+      "group": "Halogen"
+    },
+    {
+      "atomicNumber": 36,
+      "symbol": "Kr",
+      "georgianName": "კრიპტონი",
+      "fact": "კრიპტონს სპეციალურ სანათებსა და ლაზერებში იყენებენ.",
+      "column": 17,
+      "row": 3,
+      "group": "Noble gas"
+    },
+    {
+      "atomicNumber": 37,
+      "symbol": "Rb",
+      "georgianName": "რუბიდიუმი",
+      "fact": "ელემენტი 1861 წელს აღმოაჩინეს. იგი ტუტე ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 37 პროტონია.",
+      "column": 0,
+      "row": 4,
+      "group": "Alkali metal"
+    },
+    {
+      "atomicNumber": 38,
+      "symbol": "Sr",
+      "georgianName": "სტრონციუმი",
+      "fact": "ელემენტი 1790 წელს აღმოაჩინეს. იგი ტუტემიწა ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 38 პროტონია.",
+      "column": 1,
+      "row": 4,
+      "group": "Alkaline earth metal"
+    },
+    {
+      "atomicNumber": 39,
+      "symbol": "Y",
+      "georgianName": "იტრიუმი",
+      "fact": "ელემენტი 1794 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 39 პროტონია.",
+      "column": 2,
+      "row": 4,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 40,
+      "symbol": "Zr",
+      "georgianName": "ცირკონიუმი",
+      "fact": "ელემენტი 1789 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 40 პროტონია.",
+      "column": 3,
+      "row": 4,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 41,
+      "symbol": "Nb",
+      "georgianName": "ნიობიუმი",
+      "fact": "ელემენტი 1801 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 41 პროტონია.",
+      "column": 4,
+      "row": 4,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 42,
+      "symbol": "Mo",
+      "georgianName": "მოლიბდენი",
+      "fact": "ელემენტი 1778 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 42 პროტონია.",
+      "column": 5,
+      "row": 4,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 43,
+      "symbol": "Tc",
+      "georgianName": "ტექნეციუმი",
+      "fact": "ელემენტი 1937 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 43 პროტონია.",
+      "column": 6,
+      "row": 4,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 44,
+      "symbol": "Ru",
+      "georgianName": "რუთენიუმი",
+      "fact": "ელემენტი 1827 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 44 პროტონია.",
+      "column": 7,
+      "row": 4,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 45,
+      "symbol": "Rh",
+      "georgianName": "როდიუმი",
+      "fact": "ელემენტი 1803 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 45 პროტონია.",
+      "column": 8,
+      "row": 4,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 46,
+      "symbol": "Pd",
+      "georgianName": "პალადიუმი",
+      "fact": "ელემენტი 1803 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 46 პროტონია.",
+      "column": 9,
+      "row": 4,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 47,
+      "symbol": "Ag",
+      "georgianName": "ვერცხლი",
+      "fact": "ვერცხლი ელექტრობის განსაკუთრებით კარგი გამტარია.",
+      "column": 10,
+      "row": 4,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 48,
+      "symbol": "Cd",
+      "georgianName": "კადმიუმი",
+      "fact": "ელემენტი 1817 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 48 პროტონია.",
+      "column": 11,
+      "row": 4,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 49,
+      "symbol": "In",
+      "georgianName": "ინდიუმი",
+      "fact": "ელემენტი 1863 წელს აღმოაჩინეს. იგი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 49 პროტონია.",
+      "column": 12,
+      "row": 4,
+      "group": "Post-transition metal"
+    },
+    {
+      "atomicNumber": 50,
+      "symbol": "Sn",
+      "georgianName": "კალა",
+      "fact": "კალა კონსერვის ფოლადის საფარისა და შენადნობების შემადგენელია.",
+      "column": 13,
+      "row": 4,
+      "group": "Post-transition metal"
+    },
+    {
+      "atomicNumber": 51,
+      "symbol": "Sb",
+      "georgianName": "სტიბიუმი",
+      "fact": "ელემენტი უძველესი დროიდანაა ცნობილი. იგი მეტალოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 51 პროტონია.",
+      "column": 14,
+      "row": 4,
+      "group": "Metalloid"
+    },
+    {
+      "atomicNumber": 52,
+      "symbol": "Te",
+      "georgianName": "ტელური",
+      "fact": "ელემენტი 1782 წელს აღმოაჩინეს. იგი მეტალოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 52 პროტონია.",
+      "column": 15,
+      "row": 4,
+      "group": "Metalloid"
+    },
+    {
+      "atomicNumber": 53,
+      "symbol": "I",
+      "georgianName": "იოდი",
+      "fact": "იოდი ფარისებრი ჯირკვლის ჰორმონების წარმოქმნისთვის აუცილებელია.",
+      "column": 16,
+      "row": 4,
+      "group": "Halogen"
+    },
+    {
+      "atomicNumber": 54,
+      "symbol": "Xe",
+      "georgianName": "ქსენონი",
+      "fact": "ელემენტი 1898 წელს აღმოაჩინეს. იგი კეთილშობილი აირების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 54 პროტონია.",
+      "column": 17,
+      "row": 4,
+      "group": "Noble gas"
+    },
+    {
+      "atomicNumber": 55,
+      "symbol": "Cs",
+      "georgianName": "ცეზიუმი",
+      "fact": "ელემენტი 1860 წელს აღმოაჩინეს. იგი ტუტე ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 55 პროტონია.",
+      "column": 0,
+      "row": 5,
+      "group": "Alkali metal"
+    },
+    {
+      "atomicNumber": 56,
+      "symbol": "Ba",
+      "georgianName": "ბარიუმი",
+      "fact": "ბარიუმის სულფატს სამედიცინო გამოსახულების ზოგიერთ კვლევაში იყენებენ.",
+      "column": 1,
+      "row": 5,
+      "group": "Alkaline earth metal"
+    },
+    {
+      "atomicNumber": 57,
+      "symbol": "La",
+      "georgianName": "ლანთანი",
+      "fact": "ელემენტი 1839 წელს აღმოაჩინეს. იგი ლანთანოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 57 პროტონია.",
+      "column": 2,
+      "row": 5,
+      "group": "Lanthanide"
+    },
+    {
+      "atomicNumber": 58,
+      "symbol": "Ce",
+      "georgianName": "ცერიუმი",
+      "fact": "ელემენტი 1803 წელს აღმოაჩინეს. იგი ლანთანოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 58 პროტონია.",
+      "column": 3,
+      "row": 7,
+      "group": "Lanthanide"
+    },
+    {
+      "atomicNumber": 59,
+      "symbol": "Pr",
+      "georgianName": "პრაზეოდიმიუმი",
+      "fact": "ელემენტი 1885 წელს აღმოაჩინეს. იგი ლანთანოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 59 პროტონია.",
+      "column": 4,
+      "row": 7,
+      "group": "Lanthanide"
+    },
+    {
+      "atomicNumber": 60,
+      "symbol": "Nd",
+      "georgianName": "ნეოდიმიუმი",
+      "fact": "ელემენტი 1885 წელს აღმოაჩინეს. იგი ლანთანოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 60 პროტონია.",
+      "column": 5,
+      "row": 7,
+      "group": "Lanthanide"
+    },
+    {
+      "atomicNumber": 61,
+      "symbol": "Pm",
+      "georgianName": "პრომეთიუმი",
+      "fact": "ელემენტი 1945 წელს აღმოაჩინეს. იგი ლანთანოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 61 პროტონია.",
+      "column": 6,
+      "row": 7,
+      "group": "Lanthanide"
+    },
+    {
+      "atomicNumber": 62,
+      "symbol": "Sm",
+      "georgianName": "სამარიუმი",
+      "fact": "ელემენტი 1879 წელს აღმოაჩინეს. იგი ლანთანოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 62 პროტონია.",
+      "column": 7,
+      "row": 7,
+      "group": "Lanthanide"
+    },
+    {
+      "atomicNumber": 63,
+      "symbol": "Eu",
+      "georgianName": "ევროპიუმი",
+      "fact": "ელემენტი 1901 წელს აღმოაჩინეს. იგი ლანთანოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 63 პროტონია.",
+      "column": 8,
+      "row": 7,
+      "group": "Lanthanide"
+    },
+    {
+      "atomicNumber": 64,
+      "symbol": "Gd",
+      "georgianName": "გადოლინიუმი",
+      "fact": "ელემენტი 1880 წელს აღმოაჩინეს. იგი ლანთანოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 64 პროტონია.",
+      "column": 9,
+      "row": 7,
+      "group": "Lanthanide"
+    },
+    {
+      "atomicNumber": 65,
+      "symbol": "Tb",
+      "georgianName": "ტერბიუმი",
+      "fact": "ელემენტი 1843 წელს აღმოაჩინეს. იგი ლანთანოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 65 პროტონია.",
+      "column": 10,
+      "row": 7,
+      "group": "Lanthanide"
+    },
+    {
+      "atomicNumber": 66,
+      "symbol": "Dy",
+      "georgianName": "დისპროზიუმი",
+      "fact": "ელემენტი 1886 წელს აღმოაჩინეს. იგი ლანთანოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 66 პროტონია.",
+      "column": 11,
+      "row": 7,
+      "group": "Lanthanide"
+    },
+    {
+      "atomicNumber": 67,
+      "symbol": "Ho",
+      "georgianName": "ჰოლმიუმი",
+      "fact": "ელემენტი 1878 წელს აღმოაჩინეს. იგი ლანთანოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 67 პროტონია.",
+      "column": 12,
+      "row": 7,
+      "group": "Lanthanide"
+    },
+    {
+      "atomicNumber": 68,
+      "symbol": "Er",
+      "georgianName": "ერბიუმი",
+      "fact": "ელემენტი 1843 წელს აღმოაჩინეს. იგი ლანთანოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 68 პროტონია.",
+      "column": 13,
+      "row": 7,
+      "group": "Lanthanide"
+    },
+    {
+      "atomicNumber": 69,
+      "symbol": "Tm",
+      "georgianName": "თულიუმი",
+      "fact": "ელემენტი 1879 წელს აღმოაჩინეს. იგი ლანთანოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 69 პროტონია.",
+      "column": 14,
+      "row": 7,
+      "group": "Lanthanide"
+    },
+    {
+      "atomicNumber": 70,
+      "symbol": "Yb",
+      "georgianName": "იტერბიუმი",
+      "fact": "ელემენტი 1878 წელს აღმოაჩინეს. იგი ლანთანოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 70 პროტონია.",
+      "column": 15,
+      "row": 7,
+      "group": "Lanthanide"
+    },
+    {
+      "atomicNumber": 71,
+      "symbol": "Lu",
+      "georgianName": "ლუტეციუმი",
+      "fact": "ელემენტი 1907 წელს აღმოაჩინეს. იგი ლანთანოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 71 პროტონია.",
+      "column": 16,
+      "row": 7,
+      "group": "Lanthanide"
+    },
+    {
+      "atomicNumber": 72,
+      "symbol": "Hf",
+      "georgianName": "ჰაფნიუმი",
+      "fact": "ელემენტი 1923 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 72 პროტონია.",
+      "column": 3,
+      "row": 5,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 73,
+      "symbol": "Ta",
+      "georgianName": "ტანტალი",
+      "fact": "ელემენტი 1802 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 73 პროტონია.",
+      "column": 4,
+      "row": 5,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 74,
+      "symbol": "W",
+      "georgianName": "ვოლფრამი",
+      "fact": "ვოლფრამი ძალიან მაღალ ტემპერატურაზე დნება და გამძლე მასალებში გამოიყენება.",
+      "column": 5,
+      "row": 5,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 75,
+      "symbol": "Re",
+      "georgianName": "რენიუმი",
+      "fact": "ელემენტი 1925 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 75 პროტონია.",
+      "column": 6,
+      "row": 5,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 76,
+      "symbol": "Os",
+      "georgianName": "ოსმიუმი",
+      "fact": "ელემენტი 1803 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 76 პროტონია.",
+      "column": 7,
+      "row": 5,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 77,
+      "symbol": "Ir",
+      "georgianName": "ირიდიუმი",
+      "fact": "ელემენტი 1803 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 77 პროტონია.",
+      "column": 8,
+      "row": 5,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 78,
+      "symbol": "Pt",
+      "georgianName": "პლატინა",
+      "fact": "ელემენტი 1735 წელს აღმოაჩინეს. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 78 პროტონია.",
+      "column": 9,
+      "row": 5,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 79,
+      "symbol": "Au",
+      "georgianName": "ოქრო",
+      "fact": "ოქრო კოროზიისადმი მდგრადია და ელექტრონულ კონტაქტებშიც გამოიყენება.",
+      "column": 10,
+      "row": 5,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 80,
+      "symbol": "Hg",
+      "georgianName": "ვერცხლისწყალი",
+      "fact": "ვერცხლისწყალი ოთახის ტემპერატურაზე თხევადი ლითონია.",
+      "column": 11,
+      "row": 5,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 81,
+      "symbol": "Tl",
+      "georgianName": "თალიუმი",
+      "fact": "ელემენტი 1861 წელს აღმოაჩინეს. იგი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 81 პროტონია.",
+      "column": 12,
+      "row": 5,
+      "group": "Post-transition metal"
+    },
+    {
+      "atomicNumber": 82,
+      "symbol": "Pb",
+      "georgianName": "ტყვია",
+      "fact": "ტყვია მაღალი სიმკვრივის გამო გამოსხივებისგან დამცავ მასალებში გვხვდება.",
+      "column": 13,
+      "row": 5,
+      "group": "Post-transition metal"
+    },
+    {
+      "atomicNumber": 83,
+      "symbol": "Bi",
+      "georgianName": "ბისმუთი",
+      "fact": "ელემენტი 1753 წელს აღმოაჩინეს. იგი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 83 პროტონია.",
+      "column": 14,
+      "row": 5,
+      "group": "Post-transition metal"
+    },
+    {
+      "atomicNumber": 84,
+      "symbol": "Po",
+      "georgianName": "პოლონიუმი",
+      "fact": "ელემენტი 1898 წელს აღმოაჩინეს. იგი მეტალოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 84 პროტონია.",
+      "column": 15,
+      "row": 5,
+      "group": "Metalloid"
+    },
+    {
+      "atomicNumber": 85,
+      "symbol": "At",
+      "georgianName": "ასტატი",
+      "fact": "ელემენტი 1940 წელს აღმოაჩინეს. იგი ჰალოგენების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 85 პროტონია.",
+      "column": 16,
+      "row": 5,
+      "group": "Halogen"
+    },
+    {
+      "atomicNumber": 86,
+      "symbol": "Rn",
+      "georgianName": "რადონი",
+      "fact": "ელემენტი 1900 წელს აღმოაჩინეს. იგი კეთილშობილი აირების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 86 პროტონია.",
+      "column": 17,
+      "row": 5,
+      "group": "Noble gas"
+    },
+    {
+      "atomicNumber": 87,
+      "symbol": "Fr",
+      "georgianName": "ფრანციუმი",
+      "fact": "ელემენტი 1939 წელს აღმოაჩინეს. იგი ტუტე ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 87 პროტონია.",
+      "column": 0,
+      "row": 6,
+      "group": "Alkali metal"
+    },
+    {
+      "atomicNumber": 88,
+      "symbol": "Ra",
+      "georgianName": "რადიუმი",
+      "fact": "ელემენტი 1898 წელს აღმოაჩინეს. იგი ტუტემიწა ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 88 პროტონია.",
+      "column": 1,
+      "row": 6,
+      "group": "Alkaline earth metal"
+    },
+    {
+      "atomicNumber": 89,
+      "symbol": "Ac",
+      "georgianName": "აქტინიუმი",
+      "fact": "ელემენტი 1899 წელს აღმოაჩინეს. იგი აქტინოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 89 პროტონია.",
+      "column": 2,
+      "row": 6,
+      "group": "Actinide"
+    },
+    {
+      "atomicNumber": 90,
+      "symbol": "Th",
+      "georgianName": "თორიუმი",
+      "fact": "ელემენტი 1828 წელს აღმოაჩინეს. იგი აქტინოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 90 პროტონია.",
+      "column": 3,
+      "row": 8,
+      "group": "Actinide"
+    },
+    {
+      "atomicNumber": 91,
+      "symbol": "Pa",
+      "georgianName": "პროტაქტინიუმი",
+      "fact": "ელემენტი 1913 წელს აღმოაჩინეს. იგი აქტინოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 91 პროტონია.",
+      "column": 4,
+      "row": 8,
+      "group": "Actinide"
+    },
+    {
+      "atomicNumber": 92,
+      "symbol": "U",
+      "georgianName": "ურანი",
+      "fact": "ურანის ზოგიერთი იზოტოპი ბირთვული ენერგიის მისაღებად გამოიყენება.",
+      "column": 5,
+      "row": 8,
+      "group": "Actinide"
+    },
+    {
+      "atomicNumber": 93,
+      "symbol": "Np",
+      "georgianName": "ნეპტუნიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი აქტინოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 93 პროტონია.",
+      "column": 6,
+      "row": 8,
+      "group": "Actinide"
+    },
+    {
+      "atomicNumber": 94,
+      "symbol": "Pu",
+      "georgianName": "პლუტონიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი აქტინოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 94 პროტონია.",
+      "column": 7,
+      "row": 8,
+      "group": "Actinide"
+    },
+    {
+      "atomicNumber": 95,
+      "symbol": "Am",
+      "georgianName": "ამერიციუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი აქტინოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 95 პროტონია.",
+      "column": 8,
+      "row": 8,
+      "group": "Actinide"
+    },
+    {
+      "atomicNumber": 96,
+      "symbol": "Cm",
+      "georgianName": "კიურიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი აქტინოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 96 პროტონია.",
+      "column": 9,
+      "row": 8,
+      "group": "Actinide"
+    },
+    {
+      "atomicNumber": 97,
+      "symbol": "Bk",
+      "georgianName": "ბერკელიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი აქტინოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 97 პროტონია.",
+      "column": 10,
+      "row": 8,
+      "group": "Actinide"
+    },
+    {
+      "atomicNumber": 98,
+      "symbol": "Cf",
+      "georgianName": "კალიფორნიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი აქტინოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 98 პროტონია.",
+      "column": 11,
+      "row": 8,
+      "group": "Actinide"
+    },
+    {
+      "atomicNumber": 99,
+      "symbol": "Es",
+      "georgianName": "აინშტაინიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი აქტინოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 99 პროტონია.",
+      "column": 12,
+      "row": 8,
+      "group": "Actinide"
+    },
+    {
+      "atomicNumber": 100,
+      "symbol": "Fm",
+      "georgianName": "ფერმიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი აქტინოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 100 პროტონია.",
+      "column": 13,
+      "row": 8,
+      "group": "Actinide"
+    },
+    {
+      "atomicNumber": 101,
+      "symbol": "Md",
+      "georgianName": "მენდელევიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი აქტინოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 101 პროტონია.",
+      "column": 14,
+      "row": 8,
+      "group": "Actinide"
+    },
+    {
+      "atomicNumber": 102,
+      "symbol": "No",
+      "georgianName": "ნობელიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი აქტინოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 102 პროტონია.",
+      "column": 15,
+      "row": 8,
+      "group": "Actinide"
+    },
+    {
+      "atomicNumber": 103,
+      "symbol": "Lr",
+      "georgianName": "ლოურენსიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი აქტინოიდების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 103 პროტონია.",
+      "column": 16,
+      "row": 8,
+      "group": "Actinide"
+    },
+    {
+      "atomicNumber": 104,
+      "symbol": "Rf",
+      "georgianName": "რეზერფორდიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 104 პროტონია.",
+      "column": 3,
+      "row": 6,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 105,
+      "symbol": "Db",
+      "georgianName": "დუბნიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 105 პროტონია.",
+      "column": 4,
+      "row": 6,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 106,
+      "symbol": "Sg",
+      "georgianName": "სიბორგიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 106 პროტონია.",
+      "column": 5,
+      "row": 6,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 107,
+      "symbol": "Bh",
+      "georgianName": "ბორიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 107 პროტონია.",
+      "column": 6,
+      "row": 6,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 108,
+      "symbol": "Hs",
+      "georgianName": "ჰასიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 108 პროტონია.",
+      "column": 7,
+      "row": 6,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 109,
+      "symbol": "Mt",
+      "georgianName": "მაიტნერიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 109 პროტონია.",
+      "column": 8,
+      "row": 6,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 110,
+      "symbol": "Ds",
+      "georgianName": "დარმშტადტიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 110 პროტონია.",
+      "column": 9,
+      "row": 6,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 111,
+      "symbol": "Rg",
+      "georgianName": "რენტგენიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 111 პროტონია.",
+      "column": 10,
+      "row": 6,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 112,
+      "symbol": "Cn",
+      "georgianName": "კოპერნიციუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი გარდამავალი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 112 პროტონია.",
+      "column": 11,
+      "row": 6,
+      "group": "Transition metal"
+    },
+    {
+      "atomicNumber": 113,
+      "symbol": "Nh",
+      "georgianName": "ნიჰონიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 113 პროტონია.",
+      "column": 12,
+      "row": 6,
+      "group": "Post-transition metal"
+    },
+    {
+      "atomicNumber": 114,
+      "symbol": "Fl",
+      "georgianName": "ფლეროვიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 114 პროტონია.",
+      "column": 13,
+      "row": 6,
+      "group": "Post-transition metal"
+    },
+    {
+      "atomicNumber": 115,
+      "symbol": "Mc",
+      "georgianName": "მოსკოვიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 115 პროტონია.",
+      "column": 14,
+      "row": 6,
+      "group": "Post-transition metal"
+    },
+    {
+      "atomicNumber": 116,
+      "symbol": "Lv",
+      "georgianName": "ლივერმორიუმი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი ლითონების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 116 პროტონია.",
+      "column": 15,
+      "row": 6,
+      "group": "Post-transition metal"
+    },
+    {
+      "atomicNumber": 117,
+      "symbol": "Ts",
+      "georgianName": "ტენესინი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი ჰალოგენების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 117 პროტონია.",
+      "column": 16,
+      "row": 6,
+      "group": "Halogen"
+    },
+    {
+      "atomicNumber": 118,
+      "symbol": "Og",
+      "georgianName": "ოგანესონი",
+      "fact": "ამ რადიოაქტიურ ელემენტს ძირითადად სამეცნიერო კვლევებში სწავლობენ. იგი კეთილშობილი აირების ოჯახს მიეკუთვნება. მისი ატომის ბირთვში 118 პროტონია.",
+      "column": 17,
+      "row": 6,
+      "group": "Noble gas"
+    }
+  ]
+}

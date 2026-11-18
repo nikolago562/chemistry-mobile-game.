@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c464bcf44fcb664282b6257bb523ea8, type: 3}
+  m_Name: reaction_24
+  m_EditorClassIdentifier: Assembly-CSharp::ChemistryGame.ChemistryQuestionSO
+  questionID: reaction_24
+  equationPrompt: C3H8 + 5O2 -> 3CO2 + ?
+  correctAnswer: 4H2O
+  hintText: "\u10DE\u10E0\u10DD\u10DE\u10D0\u10DC\u10E8\u10D8 8 \u10EC\u10E7\u10D0\u10DA\u10D1\u10D0\u10D3\u10D8\u10D0 - \u10D8\u10E1\u10D8\u10DC\u10D8 4 \u10EC\u10E7\u10DA\u10D8\u10E1 \u10DB\u10DD\u10DA\u10D4\u10D9\u10E3\u10DA\u10D0\u10D3 \u10D2\u10D0\u10D3\u10D0\u10D3\u10D8\u10E1."
+  reactionCategory: 3
+  difficultyTier: 3
+  coinReward: 20
+  involvedElements:
+  - C
+  - H
+  - O
+  isVisualExperiment: 0
