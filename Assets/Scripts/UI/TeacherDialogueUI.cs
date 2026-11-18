@@ -39,7 +39,7 @@ namespace ChemistryGame
         {
             new Topic("რა არის ატომი?",
                 "ატომი ნივთიერების უმცირესი ნაწილაკია, რომელიც ელემენტის თვისებებს ინარჩუნებს.",
-                "ცენტრში ბირთვია. მასში პროტონები და ნეიტრონები ზის. ბირთვის გარშემო კი პაწაწინა ელექტრონები მოძრაობს.",
+                "ატომის ცენტრში ბირთვია, ბირთვში კი პროტონები და ნეიტრონებია. ბირთვის გარშემო პაწაწინა ელექტრონები მოძრაობს.",
                 "პროტონების რაოდენობა ატომურ ნომერს გვიჩვენებს. წყალბადს ერთი პროტონი აქვს, ნახშირბადს ექვსი, ჟანგბადს რვა."),
             new Topic("მოლეკულა და ფორმულა",
                 "მოლეკულა ერთმანეთთან დაკავშირებული ატომების ჯგუფია.",
@@ -63,8 +63,8 @@ namespace ChemistryGame
                 "მაგალითად, ლითიუმი, ნატრიუმი და კალიუმი ერთ ჯგუფშია. სამივე წყალთან ძალიან აქტიურად რეაგირებს."),
             new Topic("ლაბორატორიის უსაფრთხოება",
                 "ლაბორატორიაში ყოველთვის ატარე ხალათი და დამცავი სათვალე.",
-                "ნივთიერებას არასდროს გასინჯავ და პირდაპირ არ დაყნოსავ. სუნი ხელის მოძრაობით მიიზიდე შენკენ.",
-                "და დაიმახსოვრე: მჟავას ზავებისას მჟავა წყალს დაუმატე, და არა პირიქით!"),
+                "ნივთიერება არასდროს გასინჯო და პირდაპირ არ დაყნოსო. სუნი ხელის მოძრაობით მიიზიდე შენკენ.",
+                "და დაიმახსოვრე: მჟავის განზავებისას მჟავა წყალს დაუმატე და არა პირიქით."),
         };
 
         private const float LetterDelay = 0.05f;
@@ -91,6 +91,57 @@ namespace ChemistryGame
         private bool questNotified;
 
         public bool IsOpen => window != null;
+        public TeacherNPC Teacher => teacher;
+        private Action<int> pageHook, pendingHook;
+        private Transform cameraMarker;
+        private Camera snapCamera;
+        private GameObject snapFrame;
+        private TMP_Text snapCaption;
+        private RawImage snapPicture;
+
+        /// <summary>Types a sequence of lines and calls <paramref name="hook"/> as each line begins.</summary>
+        public void Tour(Action then, string[] lines, Action<int> hook)
+        {
+            pendingHook = hook;
+            Say(then, lines);
+        }
+
+        /// <summary>Pans the camera to a world point while talking; null returns it to the speaker.</summary>
+        public void PointAt(Vector3? world, float zoom = 4.6f)
+        {
+            var camera = Camera.main != null ? Camera.main.GetComponent<ClassroomCamera>() : null;
+            if (camera == null || speaker == null) return;
+            if (world == null) { camera.Focus(speaker.transform, new Vector2(0, -0.5f), FocusZoom); return; }
+            if (cameraMarker == null) cameraMarker = new GameObject("კამერის მიზანი").transform;
+            cameraMarker.position = world.Value;
+            camera.Focus(cameraMarker, new Vector2(0, -1.4f), zoom);
+        }
+
+        /// <summary>Shows a small live snapshot of a far-away place above the dialogue box.</summary>
+        public void Snap(Vector3? world, string caption)
+        {
+            if (snapFrame == null) return;
+            snapFrame.SetActive(world != null);
+            if (snapCamera == null)
+            {
+                var go = new GameObject("სურათის კამერა", typeof(Camera));
+                snapCamera = go.GetComponent<Camera>();
+                var main = Camera.main;
+                snapCamera.orthographic = true; snapCamera.orthographicSize = 3.4f;
+                snapCamera.cullingMask = main.cullingMask;
+                snapCamera.clearFlags = CameraClearFlags.SolidColor;
+                snapCamera.backgroundColor = new Color(0.16f, 0.18f, 0.17f);
+                snapCamera.depth = main.depth - 5;
+                snapCamera.targetTexture = new RenderTexture(512, 288, 16) { filterMode = FilterMode.Point };
+            }
+            snapPicture.texture = snapCamera.targetTexture;
+            snapCamera.enabled = world != null;
+            if (world != null)
+            {
+                snapCamera.transform.position = new Vector3(world.Value.x, world.Value.y, -10);
+                snapCaption.text = caption;
+            }
+        }
 
         public void Initialize(LabGame lab, TeacherNPC npc)
         {
@@ -129,32 +180,32 @@ namespace ChemistryGame
             string name = string.IsNullOrWhiteSpace(data.playerName) ? "ჩემო მოსწავლე" : data.playerName;
             if (!data.tutorialCompleted)
             {
-                Say(MainMenu, "ოჰ, გამარჯობა, " + name + "! მე შენი ქიმიის მასწავლებელი ვარ.",
+                Say(MainMenu, "გამარჯობა, " + name + "! მე შენი ქიმიის მასწავლებელი ვარ.",
                     game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat
-                        ? "სანამ რამეს შევეხებით, მბზინავი კარადიდან დამცავი ხალათი აიღე. უსაფრთხოება პირველ ადგილზეა!"
-                        : "ხალათი გიხდება! ახლა ჩემს მაგიდასთან მიდი და [E] დააჭირე. ერთად წყალს მივიღებთ.");
+                        ? "სანამ რამეს შევეხებით, მბზინავი კარადიდან დამცავი ხალათი აიღე. უსაფრთხოება პირველ ადგილზეა."
+                        : "ხალათი გიხდება. ახლა ჩემს მაგიდასთან მიდი და [E] დააჭირე. ერთად წყალს მივიღებთ.");
                 return;
             }
             if (!data.teacherMet)
             {
                 data.teacherMet = true;
                 GameSaveManager.Instance.Commit();
-                Say(MainMenu, "აჰა, " + name + "! შენი პირველი ცდა მართლაც კარგად გამოგივიდა.",
+                Say(MainMenu, name + ", პირველი ცდა კარგად გამოგივიდა.",
                     "ჩემთან ყოველთვის შეგიძლია მოხვიდე. დავალებას მოგცემ, ან რაც არ გესმის, აგიხსნი.");
                 return;
             }
             var quest = TeacherQuests.Active;
             if (TeacherQuests.Done(quest))
             {
-                Say(MainMenu, "ვაა, " + name + "! ვხედავ, დავალება \"" + quest.Title + "\" შეასრულე!");
+                Say(MainMenu, "კარგია, " + name + "! დავალება \"" + quest.Title + "\" შესრულებულია.");
                 return;
             }
             string[] greetings =
             {
-                "ისევ შენ, " + name + "! რა გაინტერესებს დღეს?",
+                "გამარჯობა, " + name + "! რა გაინტერესებს დღეს?",
                 "ჰმმ... ჩემი კოლბები ისევ ბუყბუყებს. მითხარი, რით დაგეხმარო?",
                 "ლაბორატორიაში ყოველთვის რაღაც ახალი ხდება. რა გნებავს, " + name + "?",
-                "ქიმია ყველგანაა, " + name + ". თუნდაც შენს ჭიქა ჩაიში! რით დაგეხმარო?",
+                "ქიმია ყველგანაა, " + name + ", ჩაის ჭიქაშიც კი. რით დაგეხმარო?",
             };
             Say(MainMenu, greetings[UnityEngine.Random.Range(0, greetings.Length)]);
         }
@@ -187,6 +238,8 @@ namespace ChemistryGame
         {
             var quest = TeacherQuests.Active;
             var list = new List<Choice>();
+            var lesson = TeacherGuide.Next;
+            if (lesson != null) list.Add(new Choice("გაკვეთილი: " + lesson.Title, () => TeacherGuide.Play(game, lesson, MainMenu)));
             var research = ResearchProjects.Submittable;
             if (research != null) list.Add(new Choice("კვლევის ჩაბარება", () => SubmitResearch(research)));
             if (SchoolCalendar.IsInspectionDay && !LabProgress.Data.claimedEvents.Contains("inspection:" + SchoolCalendar.Week))
@@ -194,6 +247,7 @@ namespace ChemistryGame
             if (TeacherQuests.Done(quest)) list.Add(new Choice("დავალების ჩაბარება!", TurnIn));
             list.Add(new Choice(quest == null ? "დავალება მინდა" : "ჩემი დავალება", Quests));
             list.Add(new Choice("ამიხსენით რამე", () => ExplainMenu("რა აგიხსნა? აირჩიე თემა:")));
+            if (GameSaveManager.Instance.Data.guideLessons.Count > 0) list.Add(new Choice("გაკვეთილის გამეორება", ReplayMenu));
             list.Add(new Choice("ნახვამდის", Goodbye));
             Ask("აბა, რას ვაკეთებთ?", list.ToArray());
         }
@@ -242,7 +296,7 @@ namespace ChemistryGame
                     TeacherQuests.Accept(quest);
                     AudioManager.Instance?.Milestone();
                     game.HUD?.Notify("ახალი დავალება: " + quest.Title + " — " + quest.Goal + ".");
-                    Say(MainMenu, "შესანიშნავია! როცა დაასრულებ, ჩემთან დაბრუნდი და ჯილდოს მიიღებ.");
+                    Say(MainMenu, "კარგი. როცა დაასრულებ, ჩემთან მოდი და ჯილდოს მიიღებ.");
                 }),
                 new Choice("სხვა მაჩვენეთ", Offers));
         }
@@ -253,7 +307,7 @@ namespace ChemistryGame
             int reward = TeacherQuests.TurnIn();
             if (reward <= 0) { MainMenu(); return; }
             game.HUD?.Notify("დავალება \"" + quest.Title + "\" ჩაბარებულია! +" + reward + " ქიმქოინი.");
-            Say(MainMenu, "შესანიშნავი ნამუშევარია! აი, შენი ჯილდო: " + reward + " ქიმქოინი.",
+            Say(MainMenu, "კარგი ნამუშევარია. აი, შენი ჯილდო: " + reward + " ქიმქოინი.",
                 "ასე თუ გააგრძელებ, მალე ნამდვილი ქიმიკოსი გახდები.");
         }
 
@@ -264,16 +318,24 @@ namespace ChemistryGame
             Ask(question, list.ToArray());
         }
 
+        private void ReplayMenu()
+        {
+            var done = TeacherGuide.Lessons.Where(l => TeacherGuide.Done(l.ID)).ToList();
+            var list = done.Select(l => new Choice(l.Title, () => TeacherGuide.Play(game, l, MainMenu))).ToList();
+            list.Add(new Choice("უკან", MainMenu));
+            Ask("რომელი გაკვეთილი გავიმეოროთ?", list.ToArray());
+        }
+
         private void SubmitResearch(ProjectProgress state)
         {
             var project = ResearchProjects.Get(state.id);
             string reward = ResearchProjects.Submit(state);
             if (reward == null) { MainMenu(); return; }
             game.HUD?.Notify("პროექტი \"" + project.Title + "\" ჩაბარებულია! " + reward);
-            Say(MainMenu, "ვაა! \"" + project.Title + "\" ნამდვილად შთამბეჭდავია.",
-                state.mistakes == 0 ? "და ერთი შეცდომაც არ დაგიშვია! ჯილდო: " + reward
-                    : "შეცდომები სწავლის ნაწილია. " + state.mistakes + " ცდიდან ბევრი რამ ისწავლე. ჯილდო: " + reward,
-                "ეს ნამუშევარი სამეცნიერო ბაზრობაზეც შეგიძლია წარადგინო. გამოფენის დარბაზი დერეფნიდან შედის.");
+            Say(MainMenu, "\"" + project.Title + "\" კარგად შესრულებული ნაშრომია.",
+                state.mistakes == 0 ? "ერთი შეცდომაც არ დაგიშვია. ჯილდო: " + reward
+                    : "შეცდომები სწავლის ნაწილია და მათგან ბევრი რამ ისწავლე. ჯილდო: " + reward,
+                "ეს ნაშრომი სამეცნიერო ბაზრობაზეც შეგიძლია წარადგინო. გამოფენის დარბაზში დერეფნიდან შეხვალ.");
         }
 
         private void Inspection()
@@ -287,14 +349,14 @@ namespace ChemistryGame
                 LabProgress.AddReputation(12);
                 LabProgress.Collect("badge:tidy");
                 GameSaveManager.Instance.Commit();
-                Say(MainMenu, "ინსპექციის დროა! ჰმმ... ყველაფერი სუფთაა, აღჭურვილობა თავის ადგილზეა.", "შესანიშნავია! +12 რეპუტაცია.");
+                Say(MainMenu, "ინსპექციის დროა. ყველაფერი სუფთაა და აღჭურვილობა თავის ადგილზეა.", "ძალიან კარგია. +12 რეპუტაცია.");
             }
             else
             {
                 LabProgress.AddReputation(3);
                 GameSaveManager.Instance.Commit();
                 Say(MainMenu, "ინსპექციის დროა! " + (tidy ? "სუფთაა, მაგრამ აღჭურვილობა ცოტაა. დადგი მინიმუმ ორი ნივთი." : "სადღაც დაღვრილი სითხე დაგრჩა. ავარიები [E]-ით დაასუფთავე."),
-                    "არაფერია, შემდეგ კვირას უკეთესად იქნება. +3 რეპუტაცია მცდელობისთვის.");
+                    "არაუშავს, შემდეგ კვირას უკეთ გამოგივა. +3 რეპუტაცია მცდელობისთვის.");
             }
         }
 
@@ -303,7 +365,7 @@ namespace ChemistryGame
             string[] lines =
             {
                 "ნახვამდის! და არ დაგავიწყდეს: უსაფრთხოება პირველ ადგილზეა!",
-                "წარმატებები! ცდებს ფრთხილად ჩაატარე.",
+                "წარმატებები! ცდები ფრთხილად ჩაატარე.",
                 "კარგი, წადი, აღმოაჩინე რამე საინტერესო!",
             };
             Say(() => window?.Close(), lines[UnityEngine.Random.Range(0, lines.Length)]);
@@ -364,6 +426,7 @@ namespace ChemistryGame
         private void Say(Action then, params string[] lines)
         {
             if (!IsOpen) return;
+            pageHook = pendingHook; pendingHook = null;
             ClearChoices();
             choices = null;
             finished = then;
@@ -397,6 +460,7 @@ namespace ChemistryGame
             nextLetter = Time.unscaledTime + 0.12f;
             hint.text = "";
             Resize(0);
+            pageHook?.Invoke(page);
         }
 
         private bool Typing => shown < total;
@@ -522,6 +586,27 @@ namespace ChemistryGame
             layout.constraintCount = 3;
             LabUI.Size(grid, 0);
 
+            // Snapshot frame floating above the top-right corner of the dialogue box.
+            var frame = LabUI.Panel(window.Card, "სურათი", LabUI.Navy);
+            frame.gameObject.AddComponent<LayoutElement>().ignoreLayout = true;
+            var rect = frame.rectTransform;
+            rect.anchorMin = rect.anchorMax = new Vector2(1, 1); rect.pivot = new Vector2(1, 0);
+            rect.anchoredPosition = new Vector2(-10, 12); rect.sizeDelta = new Vector2(420, 262);
+            LabUI.Shadow(frame);
+            var picture = LabUI.Object(frame.transform, "ხედი", typeof(RawImage)).GetComponent<RawImage>();
+            picture.raycastTarget = false;
+            snapPicture = picture;
+            var pictureRect = picture.rectTransform;
+            pictureRect.anchorMin = Vector2.zero; pictureRect.anchorMax = Vector2.one;
+            pictureRect.offsetMin = new Vector2(8, 34); pictureRect.offsetMax = new Vector2(-8, -8);
+            snapCaption = LabUI.Text(frame.transform, "", 16, LabUI.Paper);
+            snapCaption.alignment = TextAlignmentOptions.Center;
+            var captionRect = snapCaption.rectTransform;
+            captionRect.anchorMin = Vector2.zero; captionRect.anchorMax = new Vector2(1, 0); captionRect.pivot = new Vector2(0.5f, 0);
+            captionRect.anchoredPosition = new Vector2(0, 4); captionRect.sizeDelta = new Vector2(-16, 28);
+            snapFrame = frame.gameObject;
+            snapFrame.SetActive(false);
+
             hint = LabUI.Text(window.Body, "", 15, LabUI.Muted);
             hint.alignment = TextAlignmentOptions.Right;
             LabUI.Size(hint.gameObject, 20);
@@ -571,6 +656,9 @@ namespace ChemistryGame
             window = null;
             choiceButtons.Clear();
             pendingChain = false;
+            pageHook = pendingHook = null;
+            if (snapCamera != null) snapCamera.enabled = false;
+            game.HUD?.Highlight("");
             if (speaker != null) speaker.Talking = false;
             speaker = null;
             SetPlayerLabel(true);

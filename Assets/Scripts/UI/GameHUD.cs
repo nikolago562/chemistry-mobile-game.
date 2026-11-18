@@ -23,7 +23,7 @@ namespace ChemistryGame
             game = lab;
             worldCamera = Camera.main;
             var identity = LabUI.Panel(LabUI.Root, "მკვლევრის ბარათი", LabUI.Navy);
-            Anchor(identity.rectTransform, new Vector2(0, 1), new Vector2(24, -24), new Vector2(300, 76));
+            Anchor(identity.rectTransform, new Vector2(0, 1), new Vector2(16, -14), new Vector2(300, 76));
             LabUI.Shadow(identity);
             var badge = LabUI.Panel(identity.transform, "პროფილი", LabUI.Green);
             Anchor(badge.rectTransform, new Vector2(0, 0.5f), new Vector2(12, 0), new Vector2(54, 54));
@@ -44,14 +44,14 @@ namespace ChemistryGame
             title.fontSizeMax = 14;
 
             var stats = LabUI.Row(LabUI.Root, "რესურსები", 10);
-            Anchor((RectTransform)stats.transform, new Vector2(1, 1), new Vector2(-24, -24), new Vector2(570, 68));
+            Anchor((RectTransform)stats.transform, new Vector2(1, 1), new Vector2(-16, -14), new Vector2(570, 68));
             stats.childForceExpandWidth = true;
             coins = Stat(stats.transform, LabIcon.Coin, LabUI.Gold, "ქიმქოინები");
             streak = Stat(stats.transform, LabIcon.Flame, LabUI.Coral, "დღიური სერია");
             combo = Stat(stats.transform, LabIcon.Flask, LabUI.Mint, "სწორი პასუხების სერია");
 
             var tracker = LabUI.Card(LabUI.Root, "აქტიური მიზანი", LabUI.Paper, 18);
-            Anchor(tracker.rectTransform, new Vector2(0, 1), new Vector2(24, -116), new Vector2(300, 174));
+            Anchor(tracker.rectTransform, new Vector2(0, 1), new Vector2(16, -82), new Vector2(300, 174));
             LabUI.Shadow(tracker);
             taskTitle = LabUI.Text(tracker.transform, "", 15, LabUI.Green);
             taskTitle.fontStyle = FontStyles.Bold;
@@ -70,7 +70,7 @@ namespace ChemistryGame
             LabUI.Size(clue.gameObject, 18);
 
             var dock = LabUI.Panel(LabUI.Root, "მენიუს პანელი", LabUI.Navy);
-            Anchor(dock.rectTransform, new Vector2(0.5f, 0), new Vector2(0, 12), new Vector2(1250, 66));
+            Anchor(dock.rectTransform, new Vector2(0.5f, 0), new Vector2(0, 8), new Vector2(1250, 66));
             LabUI.Shadow(dock);
             var row = LabUI.Row(dock.transform, "ნავიგაცია", 8);
             LabUI.Fill((RectTransform)row.transform, 10);
@@ -103,6 +103,11 @@ namespace ChemistryGame
             waypoint.alignment = TextAlignmentOptions.Center;
             LabUI.Fill(waypoint.rectTransform, 7);
             waypointCard.raycastTarget = false;
+            panels["identity"] = Compact(identity.rectTransform);
+            panels["stats"] = Compact((RectTransform)stats.transform);
+            panels["tracker"] = Compact(tracker.rectTransform);
+            panels["dock"] = Compact(dock.rectTransform);
+            toastCard.rectTransform.localScale = Vector3.one * 0.85f;
             GameSaveManager.Instance.Changed += Refresh;
             game.Tutorial.Changed += Refresh;
             displayedCoins = GameSaveManager.Instance.Data.chemCoins;
@@ -166,13 +171,56 @@ namespace ChemistryGame
             string arrow = point.x > 1 ? " →" : point.x < 0 ? " ←" : point.y > 1 ? " ↑" : " ↓";
             waypoint.text = (game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat ? "დამცავი ხალათი" : "პირველი ცდა") + arrow;
         }
+        private readonly System.Collections.Generic.Dictionary<string, RectTransform> panels = new System.Collections.Generic.Dictionary<string, RectTransform>();
+        private Image highlight;
+        private RectTransform highlighted;
+        public const float Scale = 0.78f;
+
+        /// <summary>Shrinks a HUD panel toward its corner and lets it fade when the player walks behind it.</summary>
+        private RectTransform Compact(RectTransform rect)
+        {
+            rect.localScale = Vector3.one * Scale;
+            rect.gameObject.AddComponent<HudFade>().Initialize(game);
+            return rect;
+        }
+
+        /// <summary>Pulses a frame around a HUD panel ("stats", "tracker", "dock", "status"); "" clears it.</summary>
+        public void Highlight(string id)
+        {
+            highlighted = id != null && panels.TryGetValue(id, out var rect) ? rect : null;
+            if (highlight == null)
+            {
+                highlight = LabUI.Panel(LabUI.Root, "ჩვენება", LabUI.Gold);
+                highlight.raycastTarget = false;
+                highlight.gameObject.AddComponent<Canvas>().overrideSorting = true;
+                highlight.GetComponent<Canvas>().sortingOrder = 60;
+            }
+            highlight.gameObject.SetActive(highlighted != null);
+        }
+
+        private void LateUpdate()
+        {
+            if (highlight == null || highlighted == null) return;
+            var corners = new Vector3[4];
+            highlighted.GetWorldCorners(corners);
+            var root = (RectTransform)LabUI.Root;
+            Vector2 min = root.InverseTransformPoint(corners[0]), max = root.InverseTransformPoint(corners[2]);
+            var rect = highlight.rectTransform;
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.sizeDelta = max - min + Vector2.one * 14;
+            rect.anchoredPosition = (min + max) / 2;
+            highlight.color = new Color(LabUI.Gold.r, LabUI.Gold.g, LabUI.Gold.b, 0.25f + 0.25f * Mathf.Sin(Time.unscaledTime * 6));
+            highlight.transform.SetAsLastSibling();
+        }
+
         private TMP_Text lifeSim;
         private float lifeSimRefresh;
         /// <summary>Small status line: time of day, weather, place, reputation and the calm of the lab.</summary>
         public void AddLifeSimPanel()
         {
             var card = LabUI.Panel(LabUI.Root, "დღის მდგომარეობა", LabUI.Navy);
-            Anchor(card.rectTransform, new Vector2(1, 1), new Vector2(-24, -104), new Vector2(560, 32));
+            Anchor(card.rectTransform, new Vector2(1, 1), new Vector2(-16, -74), new Vector2(560, 32));
+            panels["status"] = Compact(card.rectTransform);
             lifeSim = LabUI.Text(card.transform, "", 14, LabUI.Paper);
             lifeSim.alignment = TextAlignmentOptions.Center;
             lifeSim.enableAutoSizing = true; lifeSim.fontSizeMin = 10; lifeSim.fontSizeMax = 14;
@@ -221,6 +269,34 @@ namespace ChemistryGame
         {
             if (GameSaveManager.Instance != null) GameSaveManager.Instance.Changed -= Refresh;
             if (game != null && game.Tutorial != null) game.Tutorial.Changed -= Refresh;
+        }
+    }
+
+    /// <summary>Makes a HUD panel see-through while the player (or what the camera is showing) is behind it.</summary>
+    public sealed class HudFade : MonoBehaviour
+    {
+        private LabGame game;
+        private CanvasGroup group;
+        private RectTransform rect;
+        private readonly Vector3[] corners = new Vector3[4];
+        public void Initialize(LabGame lab)
+        {
+            game = lab;
+            rect = (RectTransform)transform;
+            group = GetComponent<CanvasGroup>();
+            if (group == null) group = gameObject.AddComponent<CanvasGroup>();
+        }
+        private void LateUpdate()
+        {
+            var camera = Camera.main;
+            if (camera == null || game.player == null) return;
+            rect.GetWorldCorners(corners);
+            var panel = Rect.MinMaxRect(corners[0].x, corners[0].y, corners[2].x, corners[2].y);
+            Vector3 feet = game.player.transform.position;
+            Vector2 a = camera.WorldToScreenPoint(feet + new Vector3(-0.7f, -0.2f)), b = camera.WorldToScreenPoint(feet + new Vector3(0.7f, 2.9f));
+            var body = Rect.MinMaxRect(a.x, a.y, b.x, b.y);
+            float target = panel.Overlaps(body) ? 0.22f : 1f;
+            group.alpha = Mathf.MoveTowards(group.alpha, target, Time.unscaledDeltaTime * 4);
         }
     }
 }

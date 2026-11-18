@@ -58,7 +58,9 @@ namespace ChemistryGame
             AddSafetyLight(room, new Vector2(49.0f, 14.6f));
             AddFan(room, new Vector2(40.2f, 14.6f));
             LaboratoryArt.Draw(room, "ვენტილაცია", new Vector2(40.2f, 14.6f), DecorArt.VentGrille(), 4);
-            AddDust(room, new Vector2(40, 6), new Vector2(30, 10));
+            // Dust only floats in the window light, so it never drifts over the benches.
+            AddDust(room, new Vector2(27, 11.2f), new Vector2(4, 2.2f));
+            AddDust(room, new Vector2(52, 11.2f), new Vector2(3, 2.2f));
             foreach (var point in new[] { new Vector2(35.3f, 11.4f), new Vector2(36.8f, -3.8f), new Vector2(51.0f, 4.2f), new Vector2(53.3f, -11.8f) })
                 AddBubbles(room, point, 8);
             // A harmless background experiment on the teacher's desk: a flask that slowly changes colour.
@@ -196,7 +198,7 @@ namespace ChemistryGame
             foreach (var fan in fans) fan.localRotation = Quaternion.Euler(0, 0, -t * 400);
             foreach (var glow in glows)
             {
-                float strength = glow.EveningOnly ? Evening : 0.35f + Evening * 0.65f;
+                float strength = glow.EveningOnly ? Evening : 0.12f + Evening * 0.88f;
                 if (glow.EveningOnly && glow.Art.transform.parent != null && !glow.Art.transform.parent.gameObject.activeInHierarchy) strength = 0;
                 var c = glow.Art.color;
                 c.a = glow.Base * strength * (0.9f + Mathf.Sin(t * 2 + glow.Phase) * 0.1f);
@@ -205,7 +207,7 @@ namespace ChemistryGame
             bool daylight = SchoolCalendar.Part != DayPart.Evening && !SchoolCalendar.Raining;
             foreach (var mote in motes)
             {
-                float a = daylight ? 0.35f : 0.12f;
+                float a = daylight ? 0.22f : 0.08f;
                 mote.T.localPosition = mote.Origin + new Vector2(Mathf.Sin(t * 0.21f + mote.Phase) * 0.9f, Mathf.Sin(t * 0.13f + mote.Phase * 2) * 0.6f);
                 mote.Art.color = new Color(1, 0.95f, 0.8f, a * (0.5f + 0.5f * Mathf.Sin(t * 0.7f + mote.Phase)));
             }

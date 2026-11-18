@@ -593,7 +593,7 @@ namespace ChemistryGame
         private void EndCompare()
         {
             if (window == null || finished) return;
-            if (pendingCorrect >= 2) Succeed("შესანიშნავი დაკვირვება! " + pendingCorrect + " / " + comparePool + " სწორი პროგნოზი.", "რეაქციის სიჩქარეს ტემპერატურა, კონცენტრაცია, ზედაპირის ფართობი და კატალიზატორი ცვლის.");
+            if (pendingCorrect >= 2) Succeed("კარგი დაკვირვებაა! " + pendingCorrect + " / " + comparePool + " სწორი პროგნოზი.", "რეაქციის სიჩქარეს ტემპერატურა, კონცენტრაცია, ზედაპირის ფართობი და კატალიზატორი ცვლის.");
             else Fail(FxKind.Smoke, "მხოლოდ " + pendingCorrect + " სწორი პროგნოზი. ცოტა ბოლი, ბევრი სწავლა!", "გაიხსენე: მეტი სითბო, მეტი კონცენტრაცია, მეტი ზედაპირი და კატალიზატორი რეაქციას აჩქარებს.");
         }
     }

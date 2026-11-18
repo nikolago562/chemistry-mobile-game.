@@ -41,6 +41,7 @@ namespace ChemistryGame
         public JournalUI Journal { get; private set; }
         public ExperimentGamesUI Games { get; private set; }
         public SafeMishaps Mishaps { get; private set; }
+        public TeacherGuide Guide { get; private set; }
         public readonly System.Collections.Generic.List<SchoolNPC> Classmates = new System.Collections.Generic.List<SchoolNPC>();
 
         private void Awake()
@@ -53,6 +54,8 @@ namespace ChemistryGame
             LabUI.Initialize(interfaceFont, visualTheme);
             Profile = gameObject.AddComponent<CharacterCreationUI>();
             Profile.Initialize(this);
+            Guide = gameObject.AddComponent<TeacherGuide>();
+            Guide.Initialize(this);
             Tutorial = gameObject.AddComponent<TutorialManager>();
             Tutorial.Initialize(this);
             Notebook = gameObject.AddComponent<FormulaNotebookUI>();

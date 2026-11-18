@@ -33,6 +33,9 @@ namespace ChemistryGame
         {
             if (Step == TutorialStep.Completed || welcomeShown) return;
             welcomeShown = true;
+            game.Guide.Queue("welcome");
+            return;
+#pragma warning disable CS0162
             Dialogue("კეთილი იყოს შენი მობრძანება ლაბორატორიაში!\n\nგამოიყენე WASD ან ისრები. " +
                 (Step == TutorialStep.CollectCoat
                     ? "მიდი მბზინავ კარადასთან და აიღე დამცავი ხალათი. ლაბორატორიაში უსაფრთხოება პირველ ადგილზეა."
@@ -56,6 +59,8 @@ namespace ChemistryGame
             Step = TutorialStep.FirstReaction;
             Changed?.Invoke();
             AudioManager.Instance?.Milestone();
+            game.Guide.Queue("coat");
+            return;
             Dialogue("ხალათი მოირგე!\n\nახლა მიდი მასწავლებლის მაგიდასთან და დააჭირე [E]. " +
                 "ჩვენი პირველი დავალებაა წყალბადისა და ჟანგბადისგან წყლის მიღება.");
         }
@@ -69,7 +74,9 @@ namespace ChemistryGame
             Changed?.Invoke();
             AudioManager.Instance?.Milestone();
             game.HUD.Notify("პირველი ცდა დასრულებულია! მიღებულია 10 ქიმქოინი. ლაბორატორია გახსნილია.");
+            game.Guide.Queue("tour");
         }
+#pragma warning restore CS0162
         public void Dialogue(string message)
         {
             var window = LabUI.Window("პირველი დღე ლაბორატორიაში", 980, 570);

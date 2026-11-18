@@ -47,7 +47,7 @@ namespace ChemistryGame
             if (marker == null) return;
             var data = GameSaveManager.Instance.Data;
             var quest = TeacherQuests.Active;
-            string symbol = !data.tutorialCompleted ? "" : quest == null ? "!" : TeacherQuests.Done(quest) ? "?" : "";
+            string symbol = !data.tutorialCompleted ? "" : TeacherGuide.Next != null || quest == null ? "!" : TeacherQuests.Done(quest) ? "?" : "";
             if (marker.text != symbol) marker.text = symbol;
             marker.color = symbol == "?" ? LabUI.Mint : LabUI.Gold;
             marker.alpha = 1 - talkBlend;

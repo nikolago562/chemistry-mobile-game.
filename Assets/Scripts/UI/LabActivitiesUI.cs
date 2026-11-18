@@ -162,7 +162,7 @@ namespace ChemistryGame
                 { Ball(symbols[element], new Vector2(-150 + index % 6 * 60, 70 - index / 6 * 60), 44, colors[element]); index++; }
                 if (total == 0) Label("დაამატე პირველი ატომი", Vector2.zero);
             }
-            readout.text = correct ? "შესანიშნავია! ფორმულის ქვედა ინდექსი მოლეკულაში ამ ელემენტის ატომების რაოდენობას გვიჩვენებს." :
+            readout.text = correct ? "სწორია! ფორმულის ქვედა ინდექსი მოლეკულაში ამ ელემენტის ატომების რაოდენობას გვიჩვენებს." :
                 "შენი ატომები: H = " + h + "   O = " + o + "   C = " + c + "   N = " + n + "\nშეცვალე რაოდენობები სამიზნე ფორმულის შესაბამისად.";
         }
         private void Solution()

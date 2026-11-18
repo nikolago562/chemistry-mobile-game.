@@ -68,6 +68,7 @@ namespace ChemistryGame
         public string readingDay = "";
         public int pendingSpills;
         public string lastVisitDay = "";
+        public List<string> guideLessons = new List<string>();
     }
 
     [Serializable] public sealed class KeyValue { public string key = ""; public int value; }
@@ -151,6 +152,7 @@ namespace ChemistryGame
             Data.collection ??= new List<string>();
             Data.fairEntries ??= new List<FairEntry>();
             Data.claimedEvents ??= new List<string>();
+            Data.guideLessons ??= new List<string>();
             foreach (var project in Data.projects) project.notes ??= new List<string>();
             // Older saves only knew a single one-time expansion.
             if (Data.labExpanded && Data.labExpansionLevel < 1) Data.labExpansionLevel = 1;

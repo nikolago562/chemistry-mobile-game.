@@ -281,7 +281,7 @@ namespace ChemistryGame
                 }
                 LabProgress.Give("wire", 1);
                 GameSaveManager.Instance.Commit();
-                game.HUD.Notify("ყუთში სადენის ხვია იპოვე! +1 სადენი");
+                game.HUD.Notify("ყუთში სადენის ხვია იპოვე. +1 სადენი");
             });
         }
 
@@ -306,7 +306,7 @@ namespace ChemistryGame
             if (data.readingDay == LabProgress.Today) { game.Collection.Open(CollectionKind.Fact); return; }
             data.readingDay = LabProgress.Today;
             var unread = LabProgress.Items(CollectionKind.Fact).Where(f => !LabProgress.Owns(f.ID)).ToList();
-            if (unread.Count == 0) { LabProgress.AddReputation(1); GameSaveManager.Instance.Commit(); game.HUD.Notify("ყველა წიგნი უკვე წაკითხული გაქვს! ძველი ფავორიტი ხელახლა გადაიკითხე. +1 რეპუტაცია"); return; }
+            if (unread.Count == 0) { LabProgress.AddReputation(1); GameSaveManager.Instance.Commit(); game.HUD.Notify("ყველა წიგნი უკვე წაკითხული გაქვს. საყვარელი წიგნი ხელახლა გადაიკითხე. +1 რეპუტაცია"); return; }
             var fact = unread[new System.Random(LabProgress.Today.GetHashCode()).Next(unread.Count)];
             LabProgress.Collect(fact.ID);
             LabProgress.CountStat("read");
@@ -329,7 +329,7 @@ namespace ChemistryGame
             }
             WorldInteractable.Create(room, new Vector2(0, -1.4f), new Vector2(16, 1.6f), 3.2f, () =>
                 LabProgress.Data.greenhouseWateredDay != LabProgress.Today ? "[E] მცენარეების მორწყვა"
-                : LabProgress.Data.greenhouseHarvestDay != LabProgress.Today ? "[E] მოსავლის აღება" : "მცენარეები ხვალამდე ისვენებენ",
+                : LabProgress.Data.greenhouseHarvestDay != LabProgress.Today ? "[E] მოსავლის აღება" : "მცენარეები ხვალამდე ისვენებს",
                 WaterOrHarvest);
             Prop(room, "წვიმის კასრი", new Vector2(7.6f, 3.6f), DecorArt.RainBarrel(), new Vector2(1f, 0.6f));
             WorldInteractable.Create(room, new Vector2(7.6f, 2.5f), new Vector2(1.8f, 1.4f), 2.4f,

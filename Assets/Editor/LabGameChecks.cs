@@ -87,7 +87,27 @@ public static class LabGameChecks
         ResetSave();
         game.Tutorial.Initialize(game);
         game.HUD.Refresh();
+        Ensure(game.Dialogue.IsOpen, "The teacher gives the first lesson");
+        Schedule(TutorialPan, 0.1);
+    }
+    private static void TutorialPan()
+    {
+        var dialogueType = typeof(TeacherDialogueUI);
+        var pages = (string[])dialogueType.GetField("pages", Hidden).GetValue(game.Dialogue);
+        Ensure(pages.Length >= 5, "Welcome lesson covers the basics");
+        dialogueType.GetField("page", Hidden).SetValue(game.Dialogue, 3);
+        dialogueType.GetMethod("BeginPage", Hidden).Invoke(game.Dialogue, null);
+        Schedule(TutorialPanView, 1.6);
+    }
+    private static void TutorialPanView()
+    {
+        var closet = UnityEngine.Object.FindObjectsByType<InteractableStation>(FindObjectsSortMode.None).Single(s => s.supplyCloset);
+        Ensure(Vector2.Distance(Camera.main.transform.position, closet.transform.position) < 3, "Camera pans to the locker while the teacher talks about it");
         Snapshot("01-tutorial");
+        Schedule(TutorialContinue, 0.1);
+    }
+    private static void TutorialContinue()
+    {
         LabUI.CloseTop();
         originalPosition = game.player.GetComponent<Rigidbody2D>().position;
         CheckReachability();
@@ -298,7 +318,10 @@ public static class LabGameChecks
     }
     private static void AfterTutorial()
     {
-        Ensure(!game.Quiz.IsOpen && !LabUI.AnyOpen, "Quiz success auto-close");
+        Ensure(!game.Quiz.IsOpen, "Quiz success auto-close");
+        Ensure(game.Dialogue.IsOpen, "After the first reaction the teacher starts the classroom tour");
+        LabUI.CloseTop();
+        Ensure(!LabUI.AnyOpen && TeacherGuide.Next != null && TeacherGuide.Next.ID == "tour", "A skipped lesson stays available at the teacher");
         game.OpenMenu(0);
         Ensure(LabUI.AnyOpen, "Periodic table menu shortcut opens");
         game.OpenMenu(0);
@@ -735,6 +758,17 @@ public static class LabGameChecks
         SchoolCalendar.Override = Day(0, 20);
         game.Atmosphere.Apply(true);
         Ensure(LabAtmosphere.Evening == 1, "Evening atmosphere");
+        game.Dialogue.Talk();
+        TeacherGuide.Play(game, TeacherGuide.Get("school"), null);
+        var dt = typeof(TeacherDialogueUI);
+        dt.GetField("page", Hidden).SetValue(game.Dialogue, 2);
+        dt.GetMethod("BeginPage", Hidden).Invoke(game.Dialogue, null);
+        Schedule(LessonSnap, 1.5);
+    }
+    private static void LessonSnap()
+    {
+        Snapshot("53-lesson-snapshot");
+        LabUI.CloseTop();
         game.Research.Open("crystals");
         Schedule(ResearchView, 0.5);
     }

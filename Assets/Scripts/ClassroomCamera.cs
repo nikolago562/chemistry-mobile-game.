@@ -67,7 +67,11 @@ namespace ChemistryGame
             }
 
             position = next;
-            transform.position = new Vector3(position.x, position.y, transform.position.z);
+            // Rendering from whole screen pixels keeps pixel art stable: without this, sub-pixel camera
+            // motion makes rows of texels on benches and floors flicker in colour while walking.
+            float pixel = 2 * halfHeight / Mathf.Max(1, view.pixelHeight);
+            var snapped = new Vector2(Mathf.Round(position.x / pixel) * pixel, Mathf.Round(position.y / pixel) * pixel);
+            transform.position = new Vector3(snapped.x, snapped.y, transform.position.z);
         }
 
         private static float Fit(float value, float min, float max, float halfView) =>
