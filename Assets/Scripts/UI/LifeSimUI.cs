@@ -379,6 +379,7 @@ namespace ChemistryGame
 
         public void OpenFair()
         {
+            if (!Curriculum.TierOpen(4)) { game.HUD.Notify(Curriculum.LockedText + " სამეცნიერო ბაზრობა რთული გამოწვევების მე-4 საფეხურზე იხსნება."); return; }
             if (window != null) window.Close();
             window = LabUI.Window("სამეცნიერო ბაზრობა • კვირა " + SchoolCalendar.Week, 980, 620);
             window.Closed = () => window = null;

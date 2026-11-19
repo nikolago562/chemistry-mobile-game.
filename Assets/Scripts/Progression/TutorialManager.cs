@@ -6,7 +6,7 @@ namespace ChemistryGame
 {
     public sealed class TutorialManager : MonoBehaviour
     {
-        public enum TutorialStep { CollectCoat, FirstReaction, Completed }
+        public enum TutorialStep { CollectCoat, ReadNotebook, Completed }
         public TutorialStep Step { get; private set; }
         public event Action Changed;
         private LabGame game;
@@ -14,15 +14,15 @@ namespace ChemistryGame
         public Vector3 Target => game.classroom.TransformPoint(Step == TutorialStep.CollectCoat
             ? (Vector3)(game.lockerPosition + new Vector2(0, -1f)) : (Vector3)game.teacherDeskPosition);
         public string Objective => Step == TutorialStep.CollectCoat ? "მიაკითხე მბზინავ კარადას და აიღე ხალათი."
-            : Step == TutorialStep.FirstReaction ? "მიდი მასწავლებლის მაგიდასთან და დააჭირე [E]."
-            : "გამოიკვლიე ლაბორატორია და შეასრულე დღის დავალებები.";
+            : Step == TutorialStep.ReadNotebook ? "მიდი მასწავლებლის მაგიდასთან, დააჭირე [E] და გაეცანი რვეულს."
+            : Curriculum.NextAction;
 
         public void Initialize(LabGame lab)
         {
             game = lab;
             var data = GameSaveManager.Instance.Data;
             Step = data.tutorialCompleted ? TutorialStep.Completed
-                : data.starterCoatCollected ? TutorialStep.FirstReaction : TutorialStep.CollectCoat;
+                : data.starterCoatCollected ? TutorialStep.ReadNotebook : TutorialStep.CollectCoat;
         }
 
         private void Start()
@@ -56,7 +56,7 @@ namespace ChemistryGame
             save.UnlockCosmetic("coat_white");
             save.Data.equippedLabCoatID = "coat_white";
             save.Commit();
-            Step = TutorialStep.FirstReaction;
+            Step = TutorialStep.ReadNotebook;
             Changed?.Invoke();
             AudioManager.Instance?.Milestone();
             game.Guide.Queue("coat");
@@ -64,16 +64,17 @@ namespace ChemistryGame
             Dialogue("ხალათი მოირგე!\n\nახლა მიდი მასწავლებლის მაგიდასთან და დააჭირე [E]. " +
                 "ჩვენი პირველი დავალებაა წყალბადისა და ჟანგბადისგან წყლის მიღება.");
         }
-        public void CompleteFirstReaction()
+        /// <summary>Finishes the opening tutorial once the player has seen the notebook and the interface.</summary>
+        public void CompleteIntro()
         {
-            if (Step != TutorialStep.FirstReaction) return;
+            if (Step != TutorialStep.ReadNotebook) return;
             var save = GameSaveManager.Instance;
             save.Data.tutorialCompleted = true;
-            save.Commit();
+            save.RecordLesson(10);
             Step = TutorialStep.Completed;
             Changed?.Invoke();
             AudioManager.Instance?.Milestone();
-            game.HUD.Notify("პირველი ცდა დასრულებულია! მიღებულია 10 ქიმქოინი. ლაბორატორია გახსნილია.");
+            game.HUD.Notify("რვეული და მიზნების ბარათი გაიცანი! მიღებულია 10 ქიმქოინი. მალე ქიმიის პირველი გაკვეთილი დაიწყება.");
             game.Guide.Queue("tour");
         }
 #pragma warning restore CS0162
@@ -106,7 +107,7 @@ namespace ChemistryGame
             LabUI.Size(content.gameObject, 350, -1, 1);
             var steps = LabUI.Row(content.transform, "პროგრესის ნაბიჯები");
             LabUI.Pill(steps.transform, "ხალათი", Step == TutorialStep.CollectCoat ? LabUI.Mint : LabUI.Green);
-            LabUI.Pill(steps.transform, "პირველი ცდა", Step == TutorialStep.FirstReaction ? LabUI.Mint : LabUI.Muted);
+            LabUI.Pill(steps.transform, "რვეული", Step == TutorialStep.ReadNotebook ? LabUI.Mint : LabUI.Muted);
             LabUI.Pill(steps.transform, "ჯილდო", LabUI.Muted);
             var heading = LabUI.Text(content.transform, Step == TutorialStep.CollectCoat
                 ? "მზად ხარ აღმოსაჩენად?" : "ახლა შენი პირველი რეაქცია!", 30);

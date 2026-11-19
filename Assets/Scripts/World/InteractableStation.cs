@@ -3,7 +3,11 @@ using UnityEngine;
 
 namespace ChemistryGame
 {
-    public enum StationType { TutorialStation, QuizDesk, VisualExperimentDesk, CosmeticShopStation, LeaderboardBoard, TeacherNPC, Classmate }
+    public enum StationType
+    {
+        TutorialStation, QuizDesk, VisualExperimentDesk, CosmeticShopStation, LeaderboardBoard, TeacherNPC, Classmate,
+        AtomTable, ElementStation, MoleculeTable, ReactionTable, SolutionStation, AcidBaseStation, ScienceFairDesk
+    }
     [RequireComponent(typeof(BoxCollider2D))]
     public sealed class InteractableStation : MonoBehaviour
     {
@@ -12,8 +16,11 @@ namespace ChemistryGame
         public bool supplyCloset;
         /// <summary>Prompt height above the station; negative keeps the default.</summary>
         public float promptHeight = -1;
+        /// <summary>Optional live prompt, e.g. to show that a station is still locked.</summary>
+        public System.Func<string> promptText;
         public bool inRange { get; private set; }
         private CanvasGroup prompt;
+        private TMP_Text label;
         private LabGame game;
 
         public void Initialize(LabGame lab)
@@ -29,7 +36,7 @@ namespace ChemistryGame
             canvas.sortingOrder = 15;
             prompt = root.GetComponent<CanvasGroup>();
             prompt.alpha = 0;
-            var label = LabUI.Text(root.transform, stationPrompt, 22, Color.white);
+            label = LabUI.Text(root.transform, stationPrompt, 22, Color.white);
             label.alignment = TextAlignmentOptions.Center;
             LabUI.WorldLabel(label);
             LabUI.Fill(label.rectTransform);
@@ -40,6 +47,7 @@ namespace ChemistryGame
             if (game == null) return;
             bool allowed = game.Tutorial.Allows(this);
             prompt.alpha = Mathf.MoveTowards(prompt.alpha, inRange && allowed && !LabUI.AnyOpen ? 1 : 0, Time.deltaTime * 8);
+            if (promptText != null && inRange) label.text = promptText();
             if (supplyCloset && game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat && inRange && allowed && !LabUI.AnyOpen)
             {
                 game.Tutorial.CollectCoat();

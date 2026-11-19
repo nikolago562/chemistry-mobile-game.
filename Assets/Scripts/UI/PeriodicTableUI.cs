@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -64,7 +65,8 @@ namespace ChemistryGame
             detail = LabUI.Text(LabUI.Scroll(sidebar.transform), "", 17, LabUI.Muted);
             discover = LabUI.Button(sidebar.transform, "აღმოჩენა", Discover);
             Select(game.elements.elements[0]);
-            var note = LabUI.Text(window.Body, "აირჩიე უჯრა — გახსენი ახალი ელემენტი ან გაიგე მისი საინტერესო ამბავი.", 16, LabUI.Muted);
+            var note = LabUI.Text(window.Body, Curriculum.Done("c3_groups") ? "აირჩიე უჯრა — გახსენი ახალი ელემენტი ან გაიგე მისი ჯგუფი, პერიოდი და ამბავი."
+                : "ცხრილი თანდათან იხსნება: ელემენტების თავში ისწავლი სიმბოლოებს, ლითონებს, ჯგუფებსა და პერიოდებს.", 16, LabUI.Muted);
             LabUI.Size(note.gameObject, 24);
         }
         private void Select(ElementCollectionSO.Element element)
@@ -74,13 +76,28 @@ namespace ChemistryGame
             symbolCard.color = unlocked ? element.color : LabUI.Navy;
             symbol.text = unlocked ? element.symbol : "?";
             elementName.text = unlocked ? element.georgianName : "უცნობი ელემენტი";
-            detail.text = "ატომური ნომერი " + element.atomicNumber + "\n\n" + (unlocked ? element.fact
-                : "შეასრულე აღმოჩენის დავალება. ეს უჯრა შენს კოლექციაში ფერადად აინთება.");
-            discover.gameObject.SetActive(!unlocked);
+            detail.text = "ატომური ნომერი " + element.atomicNumber + Placement(element) + "\n\n" + (unlocked ? element.fact
+                : Curriculum.Done("c3_symbols") ? "შეასრულე აღმოჩენის დავალება. ეს უჯრა შენს კოლექციაში ფერადად აინთება."
+                : "ახალი ელემენტების აღმოჩენა გაიხსნება გაკვეთილის „" + Curriculum.Get("c3_symbols").Title + "“ შემდეგ.");
+            discover.gameObject.SetActive(!unlocked && Curriculum.Done("c3_symbols"));
+        }
+        private static readonly string[] Nonmetals = { "H", "He", "C", "N", "O", "F", "Ne", "P", "S", "Cl", "Ar", "Se", "Br", "Kr", "I", "Xe", "Rn", "Ts", "Og" };
+        private static readonly string[] Metalloids = { "B", "Si", "Ge", "As", "Sb", "Te", "At" };
+        /// <summary>Group, period and metal type appear only after the lessons that teach them.</summary>
+        private static string Placement(ElementCollectionSO.Element e)
+        {
+            string text = "";
+            if (Curriculum.Done("c3_groups"))
+                text += e.row >= 7 ? "\n" + (e.row == 7 ? "ლანთანოიდი" : "აქტინოიდი") + " • პერიოდი " + (e.row == 7 ? 6 : 7)
+                    : "\nჯგუფი " + (e.column + 1) + " • პერიოდი " + (e.row + 1);
+            if (Curriculum.Done("c3_metals"))
+                text += "\n" + (Array.IndexOf(Nonmetals, e.symbol) >= 0 ? "არალითონი" : Array.IndexOf(Metalloids, e.symbol) >= 0 ? "ნახევრადლითონი" : "ლითონი");
+            return text;
         }
         private void Discover()
         {
             if (selected == null) return;
+            if (!Curriculum.Done("c3_symbols")) { game.HUD.Notify(Curriculum.LockedText); return; }
             if (game.Quiz.IsOpen)
             {
                 game.HUD.Notify("ჯერ დაასრულე ან დახურე მიმდინარე ცდა.");

@@ -29,7 +29,7 @@ namespace ChemistryGame
             return all.OrderByDescending(e => e.Score).ThenBy(e => e.IsPlayer ? 1 : 0).ToArray();
         }
         public int Rank => Array.FindIndex(Entries(), e => e.IsPlayer) + 1;
-        public string Title => GameSaveManager.Instance.Data.weeklyQuizzesSolved > TopRivalScore ? "კვირის ალქიმიკოსი"
+        public string Title => !Curriculum.Complete ? Curriculum.Title : GameSaveManager.Instance.Data.weeklyQuizzesSolved > TopRivalScore ? "კვირის ალქიმიკოსი"
             : GameSaveManager.Instance.Data.totalQuizzesSolved >= 100 ? "ლაბორატორიის ლეგენდა"
             : GameSaveManager.Instance.Data.weeklyQuizzesSolved >= 25 ? "სტექიომეტრიის ოსტატი" : "დამწყები ქიმიკოსი";
         public void SubmitScore() => ScoreSubmitted?.Invoke(GameSaveManager.Instance.Data.weeklyQuizzesSolved);

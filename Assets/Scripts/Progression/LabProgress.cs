@@ -182,12 +182,14 @@ namespace ChemistryGame
             B("gardener", "მებაღე", "მორწყე მცენარეები 7 სხვადასხვა დღეს.");
             B("cleaner", "დამლაგებელი", "გაწმინდე 10 უვნებელი ავარია.");
             B("collector", "კოლექციონერი", "შეაგროვე ყველა მინერალი.");
+            foreach (var chapter in Curriculum.Chapters) B(chapter.ID, chapter.Badge, "დაასრულე თავი „" + chapter.Title + "“.");
             void A(string id, string name, string text) => list.Add(new CollectionItem(CollectionKind.Award, "award:" + id, name, text, LabUI.Coral));
             A("gold", "ოქროს მედალი", "სამეცნიერო ბაზრობის პირველი ადგილი.");
             A("silver", "ვერცხლის მედალი", "სამეცნიერო ბაზრობის მეორე ადგილი.");
             A("bronze", "ბრინჯაოს მედალი", "სამეცნიერო ბაზრობის მესამე ადგილი.");
             A("ribbon", "გამოფენის ლენტი", "პროექტი გამოფენის დღეს წარადგინე.");
             A("competition", "კლასის ჩემპიონი", "გაიმარჯვე კლასის შეჯიბრში.");
+            A("exam", "ექსპერტის თასი", "რთულ გამოცდაზე მიიღე 10-დან 8 ან მეტი ქულა.");
             void Z(string id, string name, string text) => list.Add(new CollectionItem(CollectionKind.Seasonal, "seasonal:" + id, name, text, LabUI.Paper));
             Z("winter", "ფიფქის კრისტალი", "ზამთრის სუვენირი: თითოეულ ფიფქს ექვსი სხივი აქვს.");
             Z("spring", "გაზაფხულის ყვავილი", "გაზაფხულის სუვენირი: ყვავილის ფერს pH-იც ცვლის.");

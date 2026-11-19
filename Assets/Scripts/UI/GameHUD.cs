@@ -74,6 +74,7 @@ namespace ChemistryGame
             LabUI.Shadow(dock);
             var row = LabUI.Row(dock.transform, "ნავიგაცია", 8);
             LabUI.Fill((RectTransform)row.transform, 10);
+            DockButton(row.transform, LabIcon.Check, "გაკვეთილები", "M", 9, LabUI.Gold);
             DockButton(row.transform, LabIcon.Atom, "ელემენტები", "Tab", 0, LabUI.Mint);
             DockButton(row.transform, LabIcon.Book, "რვეული", "N", 1, LabUI.Paper);
             DockButton(row.transform, LabIcon.Coat, "მაღაზია", "B", 2, LabUI.Coral);
@@ -143,6 +144,9 @@ namespace ChemistryGame
             var text = button.GetComponentInChildren<TMP_Text>();
             text.text = label + (key.Length > 0 ? "\n<size=11><color=#BBD3B4>[" + key + "]</color></size>" : "");
             text.fontSize = text.fontSizeMax = 15;
+            // Ten buttons share the dock: shrink a label rather than break a word.
+            text.textWrappingMode = TextWrappingModes.NoWrap;
+            text.fontSizeMin = 9;
             text.rectTransform.offsetMin = new Vector2(39, 5);
             text.rectTransform.offsetMax = new Vector2(-7, -5);
         }
@@ -169,7 +173,7 @@ namespace ChemistryGame
                 Mathf.Clamp(point.y, 0.20f, 0.80f) * size.y - size.y / 2);
             waypointCard.rectTransform.anchoredPosition = position + Vector2.up * Mathf.Sin(Time.unscaledTime * 3) * 4;
             string arrow = point.x > 1 ? " →" : point.x < 0 ? " ←" : point.y > 1 ? " ↑" : " ↓";
-            waypoint.text = (game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat ? "დამცავი ხალათი" : "პირველი ცდა") + arrow;
+            waypoint.text = (game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat ? "დამცავი ხალათი" : "რვეული") + arrow;
         }
         private readonly System.Collections.Generic.Dictionary<string, RectTransform> panels = new System.Collections.Generic.Dictionary<string, RectTransform>();
         private Image highlight;
@@ -242,15 +246,16 @@ namespace ChemistryGame
             combo.text = save.Combo >= 3 ? "×" + save.ComboMultiplier.ToString("0.0", CultureInfo.InvariantCulture) : save.Combo.ToString();
             title.text = game.Rankings.Title;
             bool tutorial = game.Tutorial.Step != TutorialManager.TutorialStep.Completed;
-            taskTitle.text = tutorial ? "პირველი დღე ლაბორატორიაში" : "დღის მიზანი";
-            objective.text = tutorial ? game.Tutorial.Objective : "ამოხსენი 3 დავალება და მიიღე 10 ქიმქოინი.";
+            bool learning = !tutorial && !Curriculum.Complete;
+            taskTitle.text = tutorial ? "პირველი დღე ლაბორატორიაში" : learning ? "სწავლის გზა • " + Curriculum.Percent + "%" : "დღის მიზანი";
+            objective.text = tutorial ? game.Tutorial.Objective : learning ? Curriculum.NextAction : "ამოხსენი 3 დავალება და მიიღე 10 ქიმქოინი.";
             if (game.Personal != null && game.Personal.Inside)
             {
                 taskTitle.text = "შენი ლაბორატორია";
                 objective.text = "[L] მაღაზია და მოწყობა\n[E] ცდის დაწყება\nზედა კარი — კლასში დაბრუნება";
             }
-            float amount = tutorial ? (game.Tutorial.Step == TutorialManager.TutorialStep.FirstReaction ? 0.5f : 0.1f)
-                : Mathf.Clamp01(save.Data.dailyQuizzesSolved / 3f);
+            float amount = tutorial ? (game.Tutorial.Step == TutorialManager.TutorialStep.ReadNotebook ? 0.5f : 0.1f)
+                : learning ? Curriculum.Percent / 100f : Mathf.Clamp01(save.Data.dailyQuizzesSolved / 3f);
             progress.rectTransform.anchorMax = new Vector2(amount, 1);
         }
         private static void Anchor(RectTransform rect, Vector2 anchor, Vector2 position, Vector2 size)

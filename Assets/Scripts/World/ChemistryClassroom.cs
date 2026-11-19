@@ -18,6 +18,9 @@ namespace ChemistryGame
             foreach (float y in new[] { 2f, -6f, -14f })
             foreach (float x in new[] { 37.5f, 52f })
                 MakeBench(furniture.transform, new Vector2(x, y), false);
+            // The advanced challenge desk sits apart, near the front, as a later goal.
+            MakeBench(furniture.transform, new Vector2(37.5f, -21f), false);
+            LaboratoryArt.Draw(furniture.transform, "გამოწვევების თასი", new Vector2(36.4f, -19.45f), LaboratoryArt.Device, 7);
 
             Glassware(furniture.transform, new Vector2(35, 10.65f), true);
             Glassware(furniture.transform, new Vector2(36.6f, -4.55f), false);

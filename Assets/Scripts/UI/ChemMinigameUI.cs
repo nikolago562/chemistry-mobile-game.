@@ -135,7 +135,7 @@ namespace ChemistryGame
             int reward = GameSaveManager.Instance.RecordCorrect(Current, DateTime.UtcNow.Date);
             if (GameSaveManager.Instance.Data.currentDailyStreak > oldStreak && oldStreak > 0)
                 AudioManager.Instance?.Milestone();
-            if (tutorial) game.Tutorial.CompleteFirstReaction();
+            if (tutorial) game.Tutorial.CompleteIntro();
             game.Rankings.SubmitScore();
             Result.text = "სწორია!  +" + reward + " ქიმქოინი";
             Result.color = new Color32(20, 151, 113, 255);

@@ -183,15 +183,15 @@ namespace ChemistryGame
                 Say(MainMenu, "გამარჯობა, " + name + "! მე შენი ქიმიის მასწავლებელი ვარ.",
                     game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat
                         ? "სანამ რამეს შევეხებით, მბზინავი კარადიდან დამცავი ხალათი აიღე. უსაფრთხოება პირველ ადგილზეა."
-                        : "ხალათი გიხდება. ახლა ჩემს მაგიდასთან მიდი და [E] დააჭირე. ერთად წყალს მივიღებთ.");
+                        : "ხალათი გიხდება. ახლა ჩემს მაგიდასთან მიდი და [E] დააჭირე. რვეულს გაჩვენებ.");
                 return;
             }
             if (!data.teacherMet)
             {
                 data.teacherMet = true;
                 GameSaveManager.Instance.Commit();
-                Say(MainMenu, name + ", პირველი ცდა კარგად გამოგივიდა.",
-                    "ჩემთან ყოველთვის შეგიძლია მოხვიდე. დავალებას მოგცემ, ან რაც არ გესმის, აგიხსნი.");
+                Say(MainMenu, name + ", ახლა უკვე იცი, სად ჩაიწერო ნასწავლი.",
+                    "ჩემთან ყოველთვის შეგიძლია მოხვიდე: ახალ გაკვეთილს დაგიწყებ, ან რაც არ გესმის, აგიხსნი.");
                 return;
             }
             var quest = TeacherQuests.Active;
@@ -238,6 +238,9 @@ namespace ChemistryGame
         {
             var quest = TeacherQuests.Active;
             var list = new List<Choice>();
+            var chemistry = GameSaveManager.Instance.Data.tutorialCompleted ? Curriculum.Next : null;
+            if (chemistry != null) list.Add(new Choice("ქიმიის გაკვეთილი: " + chemistry.Title, () => game.Lessons.Begin(chemistry)));
+            if (GameSaveManager.Instance.Data.tutorialCompleted) list.Add(new Choice("სასწავლო რუკა", () => { End(); game.Lessons.OpenMap(); }));
             var lesson = TeacherGuide.Next;
             if (lesson != null) list.Add(new Choice("გაკვეთილი: " + lesson.Title, () => TeacherGuide.Play(game, lesson, MainMenu)));
             var research = ResearchProjects.Submittable;
@@ -257,7 +260,13 @@ namespace ChemistryGame
             var data = GameSaveManager.Instance.Data;
             if (!data.tutorialCompleted)
             {
-                Say(MainMenu, "ჯერ პირველი ცდა დავასრულოთ. ჩემს მაგიდასთან დაგელოდები!");
+                Say(MainMenu, "ჯერ რვეული გაიცანი. ჩემს მაგიდასთან დაგელოდები!");
+                return;
+            }
+            if (!Curriculum.Complete)
+            {
+                Say(MainMenu, "რთულ დავალებებს მოგვიანებით მოგცემ, როცა საფუძვლებს ისწავლი.",
+                    "ახლა შენი დავალებაა გაკვეთილი „" + Curriculum.Next.Title + "“. ყოველი გაკვეთილი ჯილდოს გაძლევს!");
                 return;
             }
             var quest = TeacherQuests.Active;

@@ -37,6 +37,7 @@ namespace ChemistryGame
         public string ActiveID { get; private set; }
         public void Open(string id)
         {
+            if (!Curriculum.ActivityOpen(id)) { LabGame.Instance?.HUD.Notify(Curriculum.LockedText + " " + Curriculum.Requirement(id)); return; }
             if (id == "membrane" || id == "chromatography" || id == "gas")
             {
                 var research = GetComponent<LabResearchUI>();

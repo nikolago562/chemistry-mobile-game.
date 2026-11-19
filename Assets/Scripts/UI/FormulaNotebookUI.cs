@@ -1,3 +1,4 @@
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -8,7 +9,14 @@ namespace ChemistryGame
         private LabWindow window;
         private RectTransform content;
         private readonly System.Collections.Generic.List<UnityEngine.UI.Button> tabs = new System.Collections.Generic.List<UnityEngine.UI.Button>();
-        private readonly string[] pages =
+        private const string Intro =
+            "როგორ ვისწავლოთ\nყოველი გაკვეთილი ასე მიდის: ახსნა → ჩვენება → ვარჯიში მინიშნებით → დამოუკიდებელი ვარჯიში → პატარა ტესტი → ჯილდო.\n\n" +
+            "მიზნის ბარათი\nზედა მარცხენა ბარათზე ყოველთვის წერია შემდეგი ნაბიჯი.\n\n" +
+            "რვეული [N]\nაქ ინახება ყოველი დასრულებული გაკვეთილის მოკლე ჩანაწერი. ცდისა და ტესტის დროსაც შეგიძლია გახსნა.\n\n" +
+            "სასწავლო რუკა [M]\nაჩვენებს გავლილ და შემდეგ გაკვეთილებს, შენს შეცდომებს და გამეორების ღილაკებს.\n\n" +
+            "კლასის მაგიდები\nმასწავლებლის მაგიდასთან ახალ გაკვეთილს იწყებ. სხვა მაგიდები შესაბამისი თეორიის შემდეგ იხსნება და იქ ნასწავლს იმეორებ.\n\n" +
+            "უსაფრთხოება\nლაბორატორიაში ხალათი და სათვალე ყოველთვის გაცვია. შეცდომა საშიში არ არის: მინიშნებას მიიღებ და თავიდან სცდი.";
+        private readonly string[] advanced =
         {
             "შეერთება\nორი ან მეტი ნივთიერება ერთ პროდუქტს წარმოქმნის.\n2H2 + O2 → 2H2O\n\n" +
             "დაშლა\nერთი ნივთიერება რამდენიმე პროდუქტად იშლება.\n2H2O2 → 2H2O + O2\n\n" +
@@ -29,9 +37,21 @@ namespace ChemistryGame
             "მოლი და თანაფარდობა\n2H2 + O2 → 2H2O ნიშნავს 2 : 1 : 2 მოლურ თანაფარდობას.\nნივთიერების რაოდენობაა n = m / M, სადაც m მასაა, M კი მოლური მასა."
         };
         public void Toggle() { if (window != null) window.Close(); else Open(); }
-        public void Open()
+        private string[] pages = new string[0];
+        private static string LessonNotes()
         {
-            if (window != null) { LabUI.BringToFront(window); return; }
+            var saved = Curriculum.Lessons.Where(l => GameSaveManager.Instance.Data.notebookPages.Contains(l.ID)).ToList();
+            if (saved.Count == 0) return "ჯერ ჩანაწერები არ გაქვს\nპირველი გაკვეთილის შემდეგ აქ მისი მოკლე შინაარსი გამოჩნდება.";
+            return string.Join("\n\n", saved.Select(l => Curriculum.Label(l) + "\n" + l.Note));
+        }
+        public void Open() => Open(0);
+        public void Open(int page)
+        {
+            if (window != null) { LabUI.BringToFront(window); ShowPage(Mathf.Clamp(page, 0, pages.Length - 1)); return; }
+            var names = new System.Collections.Generic.List<string> { "როგორ ვისწავლო", "გაკვეთილების ჩანაწერები" };
+            var list = new System.Collections.Generic.List<string> { Intro, LessonNotes() };
+            if (Curriculum.Complete) { names.AddRange(new[] { "რეაქციების ტიპები", "ვალენტობა და იონები", "ხსნადობა და ბალანსი" }); list.AddRange(advanced); }
+            pages = list.ToArray();
             window = LabUI.Window("ქიმიკოსის რვეული", 1040, 640);
             window.Closed = () => window = null;
             var split = LabUI.Row(window.Body, "რვეულის გვერდები", 22);
@@ -41,9 +61,8 @@ namespace ChemistryGame
             var icon = LabUI.Icon(sidebar.transform, LabIcon.Book, LabUI.Gold);
             LabUI.Size(icon.gameObject, 74);
             LabUI.Size(LabUI.Text(sidebar.transform, "შენი გზამკვლევი", 20, Color.white).gameObject, 34);
-            string[] names = { "რეაქციების ტიპები", "ვალენტობა და იონები", "ხსნადობა და ბალანსი" };
             tabs.Clear();
-            for (int i = 0; i < names.Length; i++)
+            for (int i = 0; i < names.Count; i++)
             {
                 int index = i;
                 tabs.Add(LabUI.Button(sidebar.transform, names[i], () => ShowPage(index), 60));
@@ -53,7 +72,7 @@ namespace ChemistryGame
             var right = LabUI.Column(split.transform, "ჩანაწერები");
             LabUI.Size(right.gameObject, 460, -1, 1);
             content = LabUI.Scroll(right.transform);
-            ShowPage(0);
+            ShowPage(Mathf.Clamp(page, 0, pages.Length - 1));
         }
         private void ShowPage(int index)
         {

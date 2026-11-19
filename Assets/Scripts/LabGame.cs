@@ -42,6 +42,7 @@ namespace ChemistryGame
         public ExperimentGamesUI Games { get; private set; }
         public SafeMishaps Mishaps { get; private set; }
         public TeacherGuide Guide { get; private set; }
+        public CurriculumUI Lessons { get; private set; }
         public readonly System.Collections.Generic.List<SchoolNPC> Classmates = new System.Collections.Generic.List<SchoolNPC>();
 
         private void Awake()
@@ -76,18 +77,21 @@ namespace ChemistryGame
             Collection = gameObject.AddComponent<CollectionUI>(); Collection.Initialize(this);
             Journal = gameObject.AddComponent<JournalUI>(); Journal.Initialize(this);
             Games = gameObject.AddComponent<ExperimentGamesUI>(); Games.Initialize(this);
+            Lessons = gameObject.AddComponent<CurriculumUI>(); Lessons.Initialize(this);
             player.gameObject.AddComponent<PlayerCosmetics>().Initialize(this);
             if (!GameSaveManager.Instance.Data.tutorialCompleted)
                 player.transform.localPosition = new Vector3(46.5f, 6.8f, 0);
 
             CreateStation("დამცავი აღჭურვილობის კარადა", lockerPosition.x, lockerPosition.y, StationType.CosmeticShopStation, "[E] დამცავი აღჭურვილობა", true);
             CreateStation("მასწავლებლის მაგიდა", teacherDeskPosition.x, teacherDeskPosition.y, StationType.TutorialStation);
-            CreateStation("ქიმიის სამუშაო მაგიდა", 37.5f, 1, StationType.QuizDesk);
-            CreateStation("მეორე სამუშაო მაგიდა", 52, 1, StationType.QuizDesk);
-            CreateStation("ვიზუალური ცდების მაგიდა", 37.5f, -7, StationType.VisualExperimentDesk, "[E] ვიზუალური ექსპერიმენტი");
-            CreateStation("მეოთხე სამუშაო მაგიდა", 52, -7, StationType.QuizDesk);
-            CreateStation("მეხუთე სამუშაო მაგიდა", 37.5f, -15, StationType.QuizDesk);
-            CreateStation("პირადი სამუშაო მაგიდა", 52, -15, StationType.QuizDesk);
+            // Each bench teaches one part of the curriculum; the advanced desk opens last.
+            CreateStation("ატომების მაგიდა", 37.5f, 1, StationType.AtomTable);
+            CreateStation("ელემენტების სადგური", 52, 1, StationType.ElementStation);
+            CreateStation("რეაქციების მაგიდა", 37.5f, -7, StationType.ReactionTable);
+            CreateStation("მოლეკულების მაგიდა", 52, -7, StationType.MoleculeTable);
+            CreateStation("ხსნარების სადგური", 37.5f, -15, StationType.SolutionStation);
+            CreateStation("მჟავა-ფუძის მაგიდა", 52, -15, StationType.AcidBaseStation);
+            CreateStation("რთული გამოწვევების მაგიდა", 37.5f, -22, StationType.QuizDesk);
             CreateStation("კოსმეტიკის თარო", 63, -10, StationType.CosmeticShopStation, "[E] ლაბორატორიის მაღაზია");
             CreateStation("კვირის რეიტინგის დაფა", 55, 8.5f, StationType.LeaderboardBoard, "[E] კვირის რეიტინგი");
             CreateTeacher();
@@ -116,6 +120,11 @@ namespace ChemistryGame
             station.stationType = kind;
             station.stationPrompt = prompt;
             station.supplyCloset = closet;
+            if (kind != StationType.CosmeticShopStation && kind != StationType.TutorialStation)
+            {
+                station.stationPrompt = "[E] " + name;
+                station.promptText = () => "[E] " + name + (Curriculum.StationOpen(kind) ? "" : " • დაკეტილია");
+            }
             station.Initialize(this);
             if (closet)
             {
@@ -143,7 +152,7 @@ namespace ChemistryGame
                 mat.sortingOrder = 3;
                 halo.Initialize(renderer, Tutorial, mat);
             }
-            if (kind == StationType.VisualExperimentDesk)
+            if (kind == StationType.ReactionTable)
                 Visuals.AddApparatus(go.transform.position + new Vector3(0.8f, 3f));
         }
 
@@ -224,6 +233,13 @@ namespace ChemistryGame
             Add("goggles_crystal", "კრისტალის სათვალე", "ჯილდო კრისტალების გაზრდისთვის.", CosmeticCategory.SafetyGoggles, new Color32(170, 210, 250, 255));
             Add("coat_fair_gold", "ბაზრობის ოქროს ხალათი", "სამეცნიერო ბაზრობის ჩემპიონის ხალათი.", CosmeticCategory.LabCoat, new Color32(239, 194, 102, 255));
             Add("hat_researcher", "მკვლევრის ქუდი", "პროფესორ ლევანის ექსპედიციიდან.", CosmeticCategory.HairOrHat, new Color32(150, 110, 70, 255));
+            // Curriculum and advanced-floor rewards.
+            Add("hat_alchemist", "ალქიმიკოსის ქუდი", "ჯილდო თავისთვის „ქიმიის დასაწყისი“.", CosmeticCategory.HairOrHat, new Color32(96, 74, 150, 255));
+            Add("goggles_atom", "ატომის სათვალე", "ჯილდო თავისთვის „ატომები“.", CosmeticCategory.SafetyGoggles, new Color32(239, 150, 110, 255));
+            Add("coat_periodic", "პერიოდული ცხრილის ხალათი", "ჯილდო თავისთვის „ელემენტები“.", CosmeticCategory.LabCoat, new Color32(120, 170, 210, 255));
+            Add("coat_reaction", "რეაქციების ხალათი", "ჯილდო თავისთვის „რეაქციები“.", CosmeticCategory.LabCoat, new Color32(230, 150, 90, 255));
+            Add("coat_master", "ოსტატის ხალათი", "რთული გამოწვევების მე-3 საფეხურის ჯილდო.", CosmeticCategory.LabCoat, new Color32(60, 70, 110, 255));
+            Add("hat_professor", "პროფესორის ქუდი", "რთული გამოწვევების მე-4 საფეხურის ჯილდო.", CosmeticCategory.HairOrHat, new Color32(40, 44, 60, 255));
             cosmetics = list.ToArray();
         }
 
@@ -272,6 +288,7 @@ namespace ChemistryGame
             if (Input.GetKeyDown(KeyCode.Tab)) OpenMenu(0);
             if (Input.GetKeyDown(KeyCode.N)) OpenMenu(1);
             if (Input.GetKeyDown(KeyCode.B)) OpenMenu(2);
+            if (Input.GetKeyDown(KeyCode.M)) OpenMenu(9);
         }
         public void OpenMenu(int menu)
         {
@@ -286,7 +303,10 @@ namespace ChemistryGame
                 case 0: Periodic.Toggle(); break;
                 case 1: Notebook.Toggle(); break;
                 case 2: Shop.Toggle(); break;
-                case 3: Boards.OpenRankings(); break;
+                case 3:
+                    if (Curriculum.Complete) Boards.OpenRankings();
+                    else HUD.Notify(Curriculum.LockedText + " კვირის რეიტინგი რთულ გამოწვევებთან ერთად გაიხსნება.");
+                    break;
                 case 4: Boards.OpenQuests(); break;
                 case 5:
                     if (Personal.Inside) Personal.Workshop.Toggle();
@@ -295,6 +315,7 @@ namespace ChemistryGame
                 case 6: Research.Toggle(); break;
                 case 7: Collection.Toggle(); break;
                 case 8: Journal.Toggle(); break;
+                case 9: Lessons.ToggleMap(); break;
             }
         }
         public void Interact(InteractableStation station)
@@ -303,11 +324,18 @@ namespace ChemistryGame
             switch (station.stationType)
             {
                 case StationType.TutorialStation:
-                    if (Tutorial.Step == TutorialManager.TutorialStep.FirstReaction) Quiz.Open(true);
-                    else Challenges.Open();
+                    if (Tutorial.Step == TutorialManager.TutorialStep.ReadNotebook) { Notebook.Open(0); Tutorial.CompleteIntro(); }
+                    else if (Curriculum.Next != null) Lessons.Begin(Curriculum.Next);
+                    else Lessons.OpenMap();
                     break;
-                case StationType.QuizDesk: Challenges.Open(); break;
+                case StationType.QuizDesk:
                 case StationType.VisualExperimentDesk: Challenges.Open(); break;
+                case StationType.AtomTable:
+                case StationType.ElementStation:
+                case StationType.MoleculeTable:
+                case StationType.ReactionTable:
+                case StationType.SolutionStation:
+                case StationType.AcidBaseStation: Lessons.OpenStation(station.stationType, station.name); break;
                 case StationType.CosmeticShopStation: OpenMenu(2); break;
                 case StationType.LeaderboardBoard: OpenMenu(3); break;
                 case StationType.TeacherNPC: Dialogue.Talk(); break;

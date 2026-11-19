@@ -81,7 +81,7 @@ public static class LabGameChecks
         Ensure(game.player.GetComponent<UnityEngine.Rendering.SortingGroup>() != null, "Character and cosmetics must render together in front of the locker");
         Ensure(ChemMinigameUI.Normalize(" 2 h2o ") == "2H2O", "Input normalization");
         Ensure(game.interfaceFont.HasCharacter('ა', false, true), "Georgian glyph font");
-        Ensure(game.interfaceFont.faceInfo.familyName.Contains("Noto Serif Georgian"), "Notebook Georgian typeface");
+        Ensure(game.interfaceFont.faceInfo.familyName.Contains("FiraGO"), "FiraGO interface typeface");
         CheckEightWayArt();
         CheckEconomy();
         ResetSave();
@@ -292,7 +292,7 @@ public static class LabGameChecks
     }
     private static void CoatCollected()
     {
-        Ensure(game.Tutorial.Step == TutorialManager.TutorialStep.FirstReaction, "Supply closet trigger progression");
+        Ensure(game.Tutorial.Step == TutorialManager.TutorialStep.ReadNotebook, "Supply closet trigger progression");
         Ensure(GameSaveManager.Instance.Data.equippedLabCoatID == "coat_white", "Starter coat equipped");
         LabUI.CloseTop();
         Snapshot("09-locker");
@@ -300,28 +300,145 @@ public static class LabGameChecks
             .Single(s => s.stationType == StationType.TutorialStation);
         MoveTo(station.transform.position + Vector3.down * 0.75f);
         game.Interact(station);
-        Schedule(FirstQuiz, 0.5);
+        Schedule(IntroNotebook, 0.5);
     }
-    private static void FirstQuiz()
+    private static void IntroNotebook()
     {
-        Ensure(game.Quiz.Current.correctAnswer == "2H2O" && !game.player.canMove, "Guided reaction and UI movement lock");
-        game.Quiz.Answer.text = "wrong";
-        game.Quiz.Answer.onSubmit.Invoke(game.Quiz.Answer.text);
-        Ensure(GameSaveManager.Instance.Combo == 0 && game.Quiz.IsOpen, "Incorrect guided answer");
-        game.Quiz.Answer.text = " 2 h2o ";
-        game.Quiz.Answer.onSubmit.Invoke(game.Quiz.Answer.text);
-        int coins = GameSaveManager.Instance.Data.chemCoins;
-        game.Quiz.Submit();
-        Ensure(GameSaveManager.Instance.Data.chemCoins == coins && coins == 10, "No duplicate quiz payout");
-        Ensure(GameSaveManager.Instance.Data.tutorialCompleted && GameSaveManager.Instance.Data.currentDailyStreak == 1, "Tutorial persistence");
-        Schedule(AfterTutorial, 1.9);
+        var data = GameSaveManager.Instance.Data;
+        Ensure(LabUI.AnyOpen && !game.player.canMove && !game.Quiz.IsOpen, "The teacher's desk opens the notebook, not a chemistry quiz");
+        Ensure(data.tutorialCompleted && data.chemCoins == 10 && data.currentDailyStreak == 1, "Notebook intro completes the tutorial and pays once");
+        game.Tutorial.CompleteIntro();
+        Ensure(data.chemCoins == 10, "No duplicate tutorial payout");
+        Snapshot("01c-notebook-intro");
+        for (int k = 0; k < 10 && LabUI.AnyOpen; k++) LabUI.CloseTop();
+        Schedule(AfterTutorial, 0.8);
     }
     private static void AfterTutorial()
     {
-        Ensure(!game.Quiz.IsOpen, "Quiz success auto-close");
-        Ensure(game.Dialogue.IsOpen, "After the first reaction the teacher starts the classroom tour");
+        Ensure(game.Dialogue.IsOpen, "After the notebook intro the teacher starts the classroom tour");
         LabUI.CloseTop();
         Ensure(!LabUI.AnyOpen && TeacherGuide.Next != null && TeacherGuide.Next.ID == "tour", "A skipped lesson stays available at the teacher");
+        CheckCurriculum();
+        Schedule(AfterCurriculum, 0.6);
+    }
+    private static InteractableStation Station(StationType type) =>
+        UnityEngine.Object.FindObjectsByType<InteractableStation>(FindObjectsSortMode.None).Single(s => s.stationType == type);
+    private static void CheckCurriculum()
+    {
+        var save = GameSaveManager.Instance;
+        var lessons = game.Lessons;
+        Ensure(Curriculum.Next.ID == "c1_matter" && Curriculum.Percent == 0 && !Curriculum.Complete, "The curriculum starts at the first chemistry lesson");
+        Ensure(Curriculum.Lessons.Length >= 40 && Curriculum.Lessons.Select(l => l.ID).Distinct().Count() == Curriculum.Lessons.Length, "Unique curriculum lessons");
+        Ensure(Curriculum.Lessons.Select(l => l.Chapter).Distinct().Count() == 8 && Curriculum.Lessons.Count(l => l.IsReview) == 8, "Eight chapters, each with a review");
+        foreach (var l in Curriculum.Lessons)
+        {
+            Ensure(l.Why.Length > 0 && l.Teach.Length > 0, "Lesson explains why: " + l.ID);
+            if (l.IsReview) { Ensure(Curriculum.ReviewKeys(l).Length == 5, "Chapter review has five questions: " + l.ID); continue; }
+            Ensure(l.Questions.Length == 3 && l.Questions.All(q => q.Choices.Length == 3 && q.Why.Length == 3 && q.Choices.Distinct().Count() == 3 && q.Hint.Length > 0), "Lesson questions: " + l.ID);
+            Ensure(l.Note.Length > 0, "Notebook entry: " + l.ID);
+            if (l.Collect != "") Ensure(LabProgress.Catalog.Any(c => c.ID == l.Collect), "Collection reward exists: " + l.ID);
+            if (l.Kind == PracticeKind.Sort) { Ensure(l.Items.Length >= 6 && l.Items.All(i => i.Bin < l.Bins.Length && i.Why.Length > 0), "Sort items: " + l.ID); continue; }
+            Ensure(l.Steps.Length == 3 && l.Steps.All(p => p.Solution.Length == p.Counters.Length && (p.Check == null || p.Check(p.Solution) == null)), "Three solvable practice steps: " + l.ID);
+            if (l.Kind == PracticeKind.Equation)
+                foreach (var p in l.Steps)
+                {
+                    var parts = p.Formula.Split(new[] { "->" }, StringSplitOptions.None);
+                    int left = parts[0].Split('+').Length;
+                    string Side(int from, int to) => string.Join("+", Enumerable.Range(from, to - from).Select(i => p.Solution[i] + p.Counters[i]));
+                    var a = ChemistryChallenges.Atoms(Side(0, left)); var b = ChemistryChallenges.Atoms(Side(left, p.Counters.Length));
+                    Ensure(a.Count == b.Count && a.All(e => b.TryGetValue(e.Key, out int n) && n == e.Value), "Balanced lesson equation: " + p.Formula);
+                }
+        }
+        foreach (var chapter in Curriculum.Chapters)
+        {
+            Ensure(LabProgress.Catalog.Any(c => c.ID == "badge:" + chapter.ID), "Chapter badge: " + chapter.ID);
+            if (chapter.Cosmetic != "") Ensure(game.cosmetics.Any(c => c.itemID == chapter.Cosmetic), "Chapter cosmetic: " + chapter.Cosmetic);
+            if (chapter.LabItem != "") Ensure(PersonalLab.Catalog.Any(c => c.ID == chapter.LabItem), "Chapter lab item: " + chapter.LabItem);
+        }
+
+        // Advanced content and stations stay locked for a beginner.
+        int coins = save.Data.chemCoins;
+        game.Challenges.Open();
+        Ensure(!game.Challenges.IsOpen && !Curriculum.TierOpen(1), "The advanced floor is locked right after the tutorial");
+        Ensure(!Curriculum.StationOpen(StationType.AtomTable) && !Curriculum.ActivityOpen("solution") && !Curriculum.ActivityOpen("balance"), "Stations and lab activities wait for their theory");
+        game.Interact(Station(StationType.AtomTable));
+        game.Interact(Station(StationType.QuizDesk));
+        game.Personal.Activities.Open("solution");
+        game.OpenMenu(3);
+        Ensure(!LabUI.AnyOpen && !lessons.HubOpen, "Locked stations, activities and rankings only show a message");
+        Ensure(Station(StationType.AtomTable).promptText().Contains("დაკეტილია"), "Locked stations say so in their prompt");
+
+        // Lesson 1: demo, guided and free sorting, the small test and the reward.
+        var lesson = Curriculum.Next;
+        lessons.OpenWorkbook(lesson);
+        Ensure(lessons.IsOpen && lessons.Current == CurriculumUI.Step.Demo, "Lessons start with a demonstration");
+        Ensure(lessons.Advance() && lessons.Current == CurriculumUI.Step.Guided, "The demonstration can be skipped");
+        var item = lesson.Items[2];
+        lessons.Sort(2, (item.Bin + 1) % lesson.Bins.Length);
+        Ensure(!lessons.Solved && lessons.Feedback.Contains(item.Why) && save.Data.chemCoins == coins, "A wrong sort explains the concept without punishment");
+        Ensure(!lessons.Advance(), "Guided practice must be finished first");
+        for (int i = 0; i < lesson.Items.Length; i++) lessons.Sort(i, lesson.Items[i].Bin);
+        Ensure(lessons.Solved && lessons.Advance() && lessons.Current == CurriculumUI.Step.Free, "Guided practice leads to free practice");
+        for (int i = 0; i < lesson.Items.Length; i++) lessons.Sort(i, lesson.Items[i].Bin);
+        Snapshot("54-lesson-sort");
+        Ensure(lessons.Solved && lessons.Advance() && lessons.Current == CurriculumUI.Step.Test, "Free practice leads to the small test");
+        var first = lessons.Question;
+        lessons.Answer(1);
+        Ensure(lessons.Feedback.Contains(first.Why[1]) && lessons.Feedback.Contains(first.Hint) && !lessons.Advance(), "A wrong answer is explained, hinted and retried");
+        Snapshot("55-lesson-test");
+        for (int q = 0; q < 3; q++) { lessons.Answer(0); lessons.Advance(); }
+        Ensure(lessons.Current == CurriculumUI.Step.Reward && Curriculum.Done("c1_matter") && save.Data.chemCoins == coins + 14, "Lesson reward is paid once (" + (save.Data.chemCoins - coins) + ")");
+        Ensure(save.Data.notebookPages.Contains("c1_matter") && save.Data.lessonMistakes.Count == 1 && Curriculum.Mistakes.Count() == 1, "Notebook page and the review mistake are saved");
+        Snapshot("56-lesson-reward");
+        save.Load();
+        Ensure(Curriculum.Done("c1_matter") && Curriculum.Next.ID == "c1_states" && Curriculum.Record("c1_matter").best == 2 && save.Data.lessonMistakes.Count == 1, "Curriculum progress survives a reload");
+        Ensure(!Curriculum.Available(Curriculum.Get("c2_parts")) && Curriculum.Requirement(Curriculum.Get("c2_parts")).Length > 0, "Later lessons name their prerequisite");
+        lessons.Close();
+
+        // Counter practice names what was counted wrong.
+        lessons.OpenWorkbook(Curriculum.Get("c2_parts"));
+        lessons.Advance();
+        lessons.Adjust(0, 1);
+        Ensure(lessons.Feedback.Contains("პროტონები") || lessons.Feedback.Contains("ნეიტრონები") || lessons.Feedback.Contains("ელექტრონები"), "Guided atom hint names the wrong particle");
+        lessons.Adjust(0, 1); lessons.Adjust(1, 2); lessons.Adjust(2, 2);
+        Ensure(lessons.Solved && lessons.Advance() && lessons.Current == CurriculumUI.Step.Free, "Guided atom building");
+        lessons.Check();
+        Ensure(!lessons.Solved && lessons.Feedback.Contains("ჯერ არა"), "Free practice checks on request");
+        lessons.Adjust(0, 3); lessons.Adjust(1, 4); lessons.Adjust(2, 3); lessons.Check();
+        Snapshot("57-lesson-atom");
+        Ensure(lessons.Solved, "Free atom building");
+        lessons.Close();
+        lessons.OpenWorkbook(Curriculum.Get("c6_conserve"));
+        lessons.Advance();
+        lessons.Adjust(2, 1);
+        Ensure(lessons.Feedback.Contains("H: მარცხნივ 2") && lessons.Feedback.Contains("მარჯვნივ — 4"), "Unbalanced equations show which element differs");
+        Snapshot("58-lesson-equation");
+        lessons.Close();
+        lessons.OpenMap();
+        Ensure(lessons.MapOpen, "Learning map opens");
+        Snapshot("59-learning-map");
+        for (int k = 0; k < 10 && LabUI.AnyOpen; k++) LabUI.CloseTop();
+
+        // Finish the beginner path: stations, activities and the advanced floor open.
+        foreach (var l in Curriculum.Lessons) if (!Curriculum.Done(l.ID)) save.Data.lessons.Add(new LessonRecord { id = l.ID, done = true, best = 3 });
+        save.Commit();
+        Ensure(Curriculum.Complete && Curriculum.StationOpen(StationType.AtomTable) && Curriculum.ActivityOpen("solution") && Curriculum.TierOpen(1) && !Curriculum.TierOpen(2), "Completing the theory opens stations and the first advanced tier");
+        game.Interact(Station(StationType.AtomTable));
+        Ensure(lessons.HubOpen, "Unlocked stations open their practice hub");
+        Snapshot("60-station-hub");
+        for (int k = 0; k < 10 && LabUI.AnyOpen; k++) LabUI.CloseTop();
+        for (int tier = 1; tier <= 4; tier++)
+            for (int n = 0; n < 60; n++)
+            {
+                var q = ChemistryChallenges.Tier(tier, game);
+                Ensure(q.Choices.Length == 4 && q.Choices.Distinct().Count() == 4 && q.Feedback.Length == 4 && q.Correct == 0 && q.Reward > 0, "Tier " + tier + " question: " + q.ID);
+            }
+        LabProgress.Add(save.Data.stats, "tier:1", Curriculum.TierGoal - 1);
+        Ensure(Curriculum.CountTier(1) != null && Curriculum.TierOpen(2), "Eight tier-one answers open tier two");
+        Debug.Log("CURRICULUM_CHECKS_PASSED");
+    }
+    private static void AfterCurriculum()
+    {
         game.OpenMenu(0);
         Ensure(LabUI.AnyOpen, "Periodic table menu shortcut opens");
         game.OpenMenu(0);
@@ -933,7 +1050,11 @@ public static class LabGameChecks
         camera.SendMessage("LateUpdate");
         Canvas.ForceUpdateCanvases();
         foreach (var window in UnityEngine.Object.FindObjectsByType<LabWindow>(FindObjectsSortMode.None))
+        {
+            // Capture windows fully faded in, even when opened in this same frame.
+            typeof(LabWindow).GetField("opened", Hidden).SetValue(window, Time.unscaledTime - 1);
             window.SendMessage("LateUpdate");
+        }
         camera.Render();
         var previous = RenderTexture.active;
         RenderTexture.active = target;

@@ -69,6 +69,11 @@ namespace ChemistryGame
         public int pendingSpills;
         public string lastVisitDay = "";
         public List<string> guideLessons = new List<string>();
+
+        // ---- Beginner curriculum (optional; older saves start at the first lesson) ----
+        public List<LessonRecord> lessons = new List<LessonRecord>();
+        public List<string> lessonMistakes = new List<string>();
+        public List<string> notebookPages = new List<string>();
     }
 
     [Serializable] public sealed class KeyValue { public string key = ""; public int value; }
@@ -153,6 +158,10 @@ namespace ChemistryGame
             Data.fairEntries ??= new List<FairEntry>();
             Data.claimedEvents ??= new List<string>();
             Data.guideLessons ??= new List<string>();
+            Data.lessons ??= new List<LessonRecord>();
+            Data.lessons.RemoveAll(r => r == null);
+            Data.lessonMistakes ??= new List<string>();
+            Data.notebookPages ??= new List<string>();
             foreach (var project in Data.projects) project.notes ??= new List<string>();
             // Older saves only knew a single one-time expansion.
             if (Data.labExpanded && Data.labExpansionLevel < 1) Data.labExpansionLevel = 1;
@@ -235,15 +244,29 @@ namespace ChemistryGame
             foreach (string symbol in question.involvedElements)
                 if (!Data.unlockedElements.Contains(symbol)) Data.unlockedElements.Add(symbol);
             LabProgress.OnReactionSolved(question);
-            string date = Iso(today);
-            if (Data.lastPlayedDate != date)
-            {
-                Data.currentDailyStreak = Parse(Data.lastPlayedDate, out var previous) && previous.Date.AddDays(1) == today.Date
-                    ? Data.currentDailyStreak + 1 : 1;
-                Data.lastPlayedDate = date;
-            }
+            TouchStreak(today);
             Commit();
             return reward;
+        }
+
+        /// <summary>Beginner lessons pay small rewards and count toward the daily goal and streak, but not toward combos or rankings.</summary>
+        public void RecordLesson(int coins)
+        {
+            var today = DateTime.UtcNow.Date;
+            RefreshCalendar(today);
+            Data.chemCoins += Mathf.Max(0, coins);
+            Data.dailyQuizzesSolved++;
+            TouchStreak(today);
+            Commit();
+        }
+
+        private void TouchStreak(DateTime today)
+        {
+            string date = Iso(today);
+            if (Data.lastPlayedDate == date) return;
+            Data.currentDailyStreak = Parse(Data.lastPlayedDate, out var previous) && previous.Date.AddDays(1) == today.Date
+                ? Data.currentDailyStreak + 1 : 1;
+            Data.lastPlayedDate = date;
         }
 
         public void RecordWrong()

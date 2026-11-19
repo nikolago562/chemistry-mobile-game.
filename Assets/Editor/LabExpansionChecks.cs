@@ -29,6 +29,7 @@ public static class LabExpansionChecks
         GameSaveManager.TestDirectory=Path.GetFullPath("Logs/expansion-qa-profile");Directory.CreateDirectory(GameSaveManager.TestDirectory);
         var data=new GameSaveData{profileCompleted=true,playerName="მკვლევარი",tutorialCompleted=true,starterCoatCollected=true,chemCoins=2000};
         data.ownedLabItems=PersonalLab.Catalog.Select(c=>c.ID).ToList();
+        data.lessons=Curriculum.Lessons.Select(l=>new LessonRecord{id=l.ID,done=true,best=3}).ToList();
         for(int i=0;i<7;i++)data.labPlacements.Add(new LabPlacement{itemID=PersonalLab.Catalog[i].ID,column=i<4?i:i==4?0:i==5?1:2,row=i<4?0:i==4?1:2});
         File.WriteAllText(Path.Combine(GameSaveManager.TestDirectory,"chem-lab.json"),JsonUtility.ToJson(data));
         Application.logMessageReceived+=Observe;EditorApplication.update+=Tick;EditorApplication.playModeStateChanged+=Restore;
@@ -86,13 +87,13 @@ public static class LabExpansionChecks
     private static void Home()
     {
         Ensure(LabUI.AnyOpen && !game.player.canMove,"Challenge movement lock");Snapshot("20-challenge-menu");
-        game.Challenges.StartRound(false);before=GameSaveManager.Instance.Data.chemCoins;
+        game.Challenges.StartTier(1);before=GameSaveManager.Instance.Data.chemCoins;int partial=Mathf.Max(1,Mathf.RoundToInt(game.Challenges.Current.Reward*0.6f));
         game.Challenges.Choose(1);Ensure(GameSaveManager.Instance.Data.chemCoins==before,"Wrong answers cannot pay");
         Ensure(((TMP_Text)Field(game.Challenges,"feedback")).text.Contains(game.Challenges.Current.Feedback[1]),"Wrong-choice explanation");
-        game.Challenges.UseHint();game.Challenges.Choose(0);Ensure(GameSaveManager.Instance.Data.chemCoins==before+6,"Hint/retry reward");
-        game.Challenges.Choose(0);Ensure(GameSaveManager.Instance.Data.chemCoins==before+6,"No duplicate solve reward");Schedule(Quiz,0.4);
+        game.Challenges.UseHint();game.Challenges.Choose(0);Ensure(GameSaveManager.Instance.Data.chemCoins==before+partial,"Hint/retry reward");
+        game.Challenges.Choose(0);Ensure(GameSaveManager.Instance.Data.chemCoins==before+partial,"No duplicate solve reward");Schedule(Quiz,0.4);
     }
-    private static void Quiz(){Snapshot("21-general-quiz");game.Challenges.StartRound(true);game.Challenges.Choose(1);Schedule(Equation,0.4);}
+    private static void Quiz(){Snapshot("21-general-quiz");LabProgress.Add(GameSaveManager.Instance.Data.stats,"tier:1",Curriculum.TierGoal);game.Challenges.StartTier(2);game.Challenges.Choose(1);Schedule(Equation,0.4);}
     private static void Equation()
     {
         Snapshot("22-equation-explanation");game.Challenges.Choose(0);game.Challenges.Close();

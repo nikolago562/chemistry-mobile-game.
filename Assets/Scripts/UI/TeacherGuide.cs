@@ -63,12 +63,12 @@ namespace ChemistryGame
             },
             new GuideLesson
             {
-                ID = "coat", Title = "პირველი ცდა", Ready = () => Data.starterCoatCollected,
+                ID = "coat", Title = "რვეული და მიზნები", Ready = () => Data.starterCoatCollected,
                 Steps = new[]
                 {
-                    S("ხალათი კარგად გიხდება. ახლა პირველი ცდის დროა.", g => g.Dialogue.Teacher.transform.position),
-                    S("ჩემს მაგიდასთან მიდი და [E] დააჭირე. წყალბადისა და ჟანგბადისგან წყალს მივიღებთ.", g => Class(g, g.teacherDeskPosition.x, g.teacherDeskPosition.y + 1), "", 5),
-                    S("პასუხი ჩაწერე და Enter დააჭირე. თუ შეცდები, არაუშავს: მინიშნებას ნახავ და თავიდან სცადებ."),
+                    S("ხალათი კარგად გიხდება. ქიმიაზე სანამ დავიწყებთ, გაჩვენებ, სად ჩაიწერო ნასწავლი.", g => g.Dialogue.Teacher.transform.position),
+                    S("ჩემს მაგიდასთან მიდი და [E] დააჭირე. იქ შენი რვეული გელოდება.", g => Class(g, g.teacherDeskPosition.x, g.teacherDeskPosition.y + 1), "", 5),
+                    S("რვეულს N ღილაკით ყოველთვის გახსნი, სასწავლო რუკას კი — M ღილაკით. ზედა მარცხენა ბარათი კი ყოველთვის გეტყვის, რა არის შემდეგი ნაბიჯი.", null, "tracker"),
                 }
             },
             new GuideLesson
@@ -76,16 +76,16 @@ namespace ChemistryGame
                 ID = "tour", Title = "კლასის დათვალიერება", Ready = () => Data.tutorialCompleted,
                 Steps = new[]
                 {
-                    S("ყოჩაღ, {name}! პირველი რეაქცია ამოხსენი და 10 ქიმქოინი მიიღე. ახლა კლასს დაგათვალიერებინებ.", g => g.Dialogue.Teacher.transform.position),
+                    S("ყოჩაღ, {name}! რვეული გაიცანი და 10 ქიმქოინი მიიღე. ახლა კლასს დაგათვალიერებინებ.", g => g.Dialogue.Teacher.transform.position),
                     S("ზედა მარჯვენა კუთხეში ჩანს ქიმქოინები, დღიური სერია და ზედიზედ სწორი პასუხები. ყოველდღე თამაშისას სერია იზრდება.", null, "stats"),
-                    S("ამ სამუშაო მაგიდებთან რეაქციებს ხსნი. ყოველი სწორი პასუხი ქიმქოინებს გაძლევს.", g => Class(g, 37.5f, 3), "", 4.4f),
-                    S("ამ მაგიდაზე რეაქციას საკუთარი თვალით ნახავ: ფერის ცვლილებას, ბუშტუკებს და ალს.", g => Class(g, 37.5f, -5), "", 4.4f),
+                    S("ეს მაგიდები სწავლის გზის ნაწილია: ატომების, ელემენტების, მოლეკულების, რეაქციების, ხსნარებისა და მჟავა-ფუძის მაგიდები. თითოეული გაიხსნება, როცა შესაბამის გაკვეთილს გაივლი.", g => Class(g, 44.75f, -3), "", 5.4f),
+                    S("ქვემოთ რთული გამოწვევების მაგიდაა: შემთხვევითი კითხვები, განტოლებები და შეჯიბრი. ის ბოლოს გაიხსნება, როცა საფუძვლებს ისწავლი.", g => Class(g, 37.5f, -20), "", 4.4f),
                     S("კარადასა და თაროსთან ხალათებს, სათვალეებს და ქუდებს იყიდი. მაღაზია B ღილაკითაც იხსნება.", g => Class(g, 62, -8), "", 4.4f),
-                    S("აქ კვირის რეიტინგია. ნახავ, როგორ ხარ კლასელებთან შედარებით.", g => Class(g, 55, 10.5f), "", 4.4f),
+                    S("აქ კვირის რეიტინგია. ისიც რთულ გამოწვევებთან ერთად გაიხსნება.", g => Class(g, 55, 10.5f), "", 4.4f),
                     S("განცხადებების დაფაზე დღის მოვლენები და პატარა საქმეები წერია. ის J ღილაკითაც იხსნება.", g => Class(g, 42.9f, 12), "", 4.4f),
                     S("ამ კარადაში შენი კოლექცია ინახება: მინერალები, ნიმუშები, ფაქტები და ჯილდოები. C ღილაკითაც გახსნი.", g => Class(g, 28.4f, 10.5f), "", 4.4f),
                     S("ქვედა პანელიდან ყველა მენიუ იხსნება. ღილაკების ასოები ქვემოთ წერია.", null, "dock"),
-                    S("ჯერჯერობით ესაა. როცა მზად იქნები, ჩემთან მოდი და შემდეგ გაკვეთილზე პირად ლაბორატორიას გაჩვენებ.", g => g.Dialogue.Teacher.transform.position),
+                    S("ახლა კი მთავარი: ქიმიის პირველ გაკვეთილს დავიწყებთ. ნულიდან ვისწავლით, ნაბიჯ-ნაბიჯ.", g => g.Dialogue.Teacher.transform.position),
                 }
             },
             new GuideLesson
@@ -168,7 +168,10 @@ namespace ChemistryGame
                 dialogue.PointAt(null);
                 dialogue.Snap(null, "");
                 game.HUD.Highlight("");
-                if (then != null) then(); else dialogue.End();
+                if (then != null) then();
+                // After the classroom tour the teacher begins the chemistry curriculum.
+                else if (lesson.ID == "tour" && Curriculum.Next != null && game.Lessons != null) game.Lessons.Begin(Curriculum.Next);
+                else dialogue.End();
             }, lines, page =>
             {
                 var step = lesson.Steps[page];

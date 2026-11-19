@@ -21999,7 +21999,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bbd2f46616df4d0418714d6947860cbf, type: 2}
   - {fileID: 11400000, guid: 9a9dc0b3590f9bf4ea31bb31c8d4a572, type: 2}
   elements: {fileID: 11400000, guid: 52a48077f697e104bbeedb47ee95ad4a, type: 2}
-  interfaceFont: {fileID: 11400000, guid: 11633bbcc9cb44c43ad72318c02c3fbc, type: 2}
+  interfaceFont: {fileID: 11400000, guid: ca4fafe6ee8059541b5ddea50b1b48eb, type: 2}
   visualTheme: {fileID: 11400000, guid: 5c2349079e7775d458637622f81ef6b4, type: 2}
   teacherSprite: {fileID: 7446819272197213851, guid: fc1ba66648fe16b4eb7415a6a85dc0ef, type: 2}
   teacherMaterial: {fileID: 2100000, guid: 3b0ced9c0fedfc748ad07e8e91eabd81, type: 2}

@@ -98,6 +98,143 @@ namespace ChemistryGame
             }
             return result;
         }
+        // ------------------------------------------------------------------ advanced floor tiers
+
+        private static readonly string[] Formulas = { "H2O", "CO2", "NH3", "CH4", "O2", "NaCl", "H2SO4", "CaCO3", "C6H12O6", "Ca(OH)2", "Al2O3", "HCl", "NaOH", "MgCl2", "C2H6", "N2" };
+        public static readonly int[] TierRewards = { 0, 8, 10, 14, 16 };
+        private static T Pick<T>(IList<T> list) => list[UnityEngine.Random.Range(0, list.Count)];
+
+        /// <summary>A four-choice question with the right answer first; duplicates of the answer are dropped.</summary>
+        private static StudyQuestion Make(string id, string prompt, string hint, string right, string why, int reward, params (string choice, string why)[] wrong)
+        {
+            var distinct = wrong.Where(w => w.choice != right).GroupBy(w => w.choice).Select(g => g.First()).Take(3).ToList();
+            if (distinct.Count < 3) return null;
+            return new StudyQuestion { ID = id, Prompt = prompt, Hint = hint, Explanation = why, Reward = reward,
+                Choices = new[] { right }.Concat(distinct.Select(w => w.choice)).ToArray(),
+                Feedback = new[] { why }.Concat(distinct.Select(w => w.why)).ToArray() };
+        }
+
+        private static string Show(string equation) => equation.Replace("->", "→");
+        private static string FullEquation(ChemistryQuestionSO q) => q.equationPrompt.Replace("?", q.correctAnswer);
+        private static (int coefficient, string formula)[] Terms(string side) => side.Split('+').Select(t => t.Trim()).Where(t => t.Length > 0)
+            .Select(t => { var m = Regex.Match(t, @"^(\d*)(.+)$"); return (m.Groups[1].Length == 0 ? 1 : int.Parse(m.Groups[1].Value), m.Groups[2].Value); }).ToArray();
+        private static string Compose(Dictionary<string, int> atoms) => string.Concat(atoms.Select(p => p.Key + (p.Value > 1 ? p.Value.ToString() : "")));
+        private static string Describe(Dictionary<string, int> atoms) => string.Join(", ", atoms.Select(p => p.Value + " " + p.Key));
+
+        /// <summary>One question for a tier of the advanced floor (4 = mixed exam). Prerequisites rise with the tier.</summary>
+        public static StudyQuestion Tier(int tier, LabGame game)
+        {
+            for (int attempt = 0; attempt < 20; attempt++)
+            {
+                int level = tier >= 4 ? UnityEngine.Random.Range(1, 4) : tier;
+                var question = Generate(level, game);
+                if (question == null) continue;
+                question.Reward = TierRewards[Math.Max(1, Math.Min(4, tier))];
+                if (tier >= 4) question.ID = "exam_" + question.ID;
+                return question;
+            }
+            return General[0];
+        }
+
+        private static StudyQuestion Generate(int level, LabGame game)
+        {
+            int kind = UnityEngine.Random.Range(0, 4);
+            var equations = game.questions.Where(q => q != null && !q.correctAnswer.Contains("(")).ToList();
+            switch (level * 10 + kind)
+            {
+                case 10: // element identification
+                {
+                    var pool = game.elements.elements.Where(e => e.atomicNumber <= 20).ToList();
+                    var e = Pick(pool);
+                    var others = pool.Where(o => o != e).OrderBy(_ => UnityEngine.Random.value).Take(3);
+                    return Make("t1_symbol_" + e.symbol, "რომელია ელემენტის — " + e.georgianName + " — ქიმიური სიმბოლო?", "სიმბოლოს პირველი ასო დიდია. ატომური ნომერი: " + e.atomicNumber + ".",
+                        e.symbol, e.georgianName + " — " + e.symbol + ", ატომური ნომერი " + e.atomicNumber + ".", 0,
+                        others.Select(o => (o.symbol, o.symbol + " სხვა ელემენტის სიმბოლოა: " + o.georgianName + ".")).ToArray());
+                }
+                case 11: // total atom count
+                {
+                    string f = Pick(Formulas); var atoms = Atoms(f); int total = atoms.Values.Sum();
+                    string count = string.Join(" + ", atoms.Select(p => p.Key + " " + p.Value)) + " = " + total;
+                    return Make("t1_count_" + f, "სულ რამდენი ატომია ფორმულაში " + f + "?", "დაითვალე თითოეული ელემენტის ატომები და შეკრიბე. ინდექსის გარეშე — 1.", total.ToString(), f + ": " + count + ".", 0,
+                        ((total + 1).ToString(), "ერთით მეტია. " + count + "."), ((total - 1).ToString(), "ერთი ატომი გამოგრჩა. " + count + "."),
+                        (atoms.Count.ToString(), "ეს ელემენტების რაოდენობაა და არა ატომების."), ((total + 2).ToString(), count + "."));
+                }
+                case 12: // formula reading
+                {
+                    string f = Pick(Formulas.Where(x => Atoms(x).Count > 1).ToList()); var atoms = Atoms(f);
+                    string symbol = Pick(atoms.Keys.ToList()); int n = atoms[symbol];
+                    return Make("t1_read_" + f + symbol, "რამდენი " + symbol + " ატომია ფორმულაში " + f + "?", "ინდექსი მის წინ მდგარ სიმბოლოს ეკუთვნის; ფრჩხილის შემდეგი ინდექსი მთელ ჯგუფს ამრავლებს.", n.ToString(),
+                        f + "-ში " + symbol + "-ის ატომების რაოდენობაა " + n + ".", 0,
+                        ((n + 1).ToString(), "ერთით მეტია."), ((n + 2).ToString(), "ორით მეტია."), (atoms.Values.Sum().ToString(), "ეს ყველა ატომის ჯამია."), (Math.Max(0, n - 1).ToString(), "ერთით ნაკლებია."));
+                }
+                case 13: // reactants and products
+                {
+                    var q = Pick(equations); var sides = FullEquation(q).Split(new[] { "->" }, StringSplitOptions.None);
+                    var left = Terms(sides[0]).Select(t => t.formula).ToList(); var right = Terms(sides[1]).Select(t => t.formula).ToList();
+                    string product = Pick(right);
+                    var wrong = left.Select(r => (r, r + " ისრის მარცხნივაა — ის რეაგენტია.")).Concat(Formulas.Where(x => !left.Contains(x) && !right.Contains(x)).Take(3).Select(x => (x, x + " ამ რეაქციაში საერთოდ არ მონაწილეობს."))).ToArray();
+                    return Make("t1_product_" + q.questionID, Show(FullEquation(q)) + "\nრომელია პროდუქტი?", "პროდუქტები ისრის მარჯვნივ იწერება.", product, product + " ისრის მარჯვნივაა, ესე იგი პროდუქტია.", 0, wrong);
+                }
+                case 20: // molecule construction
+                {
+                    string f = Pick(Formulas.Where(x => !x.Contains("(") && Atoms(x).Count > 1).ToList()); var atoms = Atoms(f);
+                    var keysList = atoms.Keys.ToList();
+                    var swapped = new Dictionary<string, int>(atoms); (swapped[keysList[0]], swapped[keysList[1]]) = (atoms[keysList[1]], atoms[keysList[0]]);
+                    var more = new Dictionary<string, int>(atoms); more[keysList[0]] += 1;
+                    var other = Pick(Formulas.Where(x => x != f && !x.Contains("(")).ToList());
+                    return Make("t2_build_" + f, "რომელი ფორმულა შეესაბამება მოლეკულას: " + Describe(atoms) + "?", "ელემენტის სიმბოლოს შემდეგ ინდექსად მისი ატომების რაოდენობა დაწერე.", f, Describe(atoms) + " → " + f + ".", 0,
+                        (Compose(swapped), "ინდექსები სხვა ელემენტებს მიაწერე."), (Compose(more), keysList[0] + "-ის ატომები ზედმეტია."), (other, other + " სულ სხვა ნივთიერებაა."), (f + "2", "ბოლოს ზედმეტი ინდექსია."));
+                }
+                case 21: // reaction classification
+                {
+                    var pool = equations.Where(q => q.reactionCategory == ReactionCategory.Decomposition
+                        || q.reactionCategory == ReactionCategory.Synthesis && !q.equationPrompt.Contains("O2")
+                        || q.reactionCategory == ReactionCategory.Combustion && q.equationPrompt.Contains("H")
+                        || q.reactionCategory == ReactionCategory.AcidBase && q.equationPrompt.Split(new[] { "->" }, StringSplitOptions.None)[0].Contains("OH")).ToList();
+                    var q2 = Pick(pool);
+                    string[] names = { "შეერთება", "დაშლა", "წვა", "ნეიტრალიზაცია" };
+                    string[] why = { "შეერთებისას რამდენიმე ნივთიერება ერთ პროდუქტს ქმნის.", "დაშლისას ერთი ნივთიერება რამდენიმედ იშლება.", "წვისას საწვავი ჟანგბადთან რეაგირებს და CO2 და H2O მიიღება.", "ნეიტრალიზაციისას მჟავა და ფუძე მარილსა და წყალს იძლევა." };
+                    int right = q2.reactionCategory == ReactionCategory.Synthesis ? 0 : q2.reactionCategory == ReactionCategory.Decomposition ? 1 : q2.reactionCategory == ReactionCategory.Combustion ? 2 : 3;
+                    return Make("t2_type_" + q2.questionID, Show(FullEquation(q2)) + "\nრა ტიპის რეაქციაა?", "დათვალე რეაგენტები და პროდუქტები. არის O2 და CO2 + H2O? მჟავა და ფუძე?", names[right], why[right], 0,
+                        Enumerable.Range(0, 4).Where(i => i != right).Select(i => (names[i], "არა: " + why[i])).ToArray());
+                }
+                case 22: // beginner balancing
+                    return Equation(Pick(game.questions.Where(q => q.difficultyTier == 1).ToList()));
+                case 23: // concentration
+                {
+                    float n = Pick(new[] { 0.2f, 0.5f, 1f, 1.5f, 2f }), v = Pick(new[] { 0.5f, 1f, 2f, 4f });
+                    string F(float x) => x.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + " მოლ/ლ";
+                    string N(float x) => x.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+                    float c = n / v;
+                    return Make("t2_conc_" + N(n) + "_" + N(v), N(n) + " მოლი ნივთიერება გახსნილია " + N(v) + " ლ ხსნარში. რა არის კონცენტრაცია?", "C = n / V.", F(c), "C = n / V = " + N(n) + " / " + N(v) + " = " + F(c) + ".", 0,
+                        (F(n * v), "ეს n × V-ია; საჭიროა გაყოფა."), (F(v / n), "ეს V / n-ია — პირიქით გაყავი."), (F(n), "ეს მხოლოდ ნივთიერების რაოდენობაა."), (F(c * 2), "ორჯერ მეტია."), (F(c / 2), "ორჯერ ნაკლებია."));
+                }
+                case 30: // harder balancing
+                    return Equation(Pick(game.questions.Where(q => q.difficultyTier >= 2).ToList()));
+                case 31: // stoichiometry: mole ratios from a balanced equation
+                {
+                    var q = Pick(equations.Where(x => x.difficultyTier == 1).ToList());
+                    var sides = FullEquation(q).Split(new[] { "->" }, StringSplitOptions.None);
+                    var a = Pick(Terms(sides[0])); var p = Pick(Terms(sides[1]));
+                    int k = UnityEngine.Random.Range(2, 5), given = a.coefficient * k, answer = p.coefficient * k;
+                    return Make("t3_stoich_" + q.questionID + k, Show(FullEquation(q)) + "\nრამდენი მოლი " + p.formula + " მიიღება " + given + " მოლი " + a.formula + "-დან?", "კოეფიციენტები მოლურ თანაფარდობას გვიჩვენებს: " + a.formula + " : " + p.formula + " = " + a.coefficient + " : " + p.coefficient + ".",
+                        answer.ToString(), a.formula + " : " + p.formula + " = " + a.coefficient + " : " + p.coefficient + ", ამიტომ " + given + " × " + p.coefficient + " / " + a.coefficient + " = " + answer + ".", 0,
+                        (given.ToString(), "თანაფარდობა 1 : 1 არ არის."), ((answer * 2).ToString(), "ორჯერ მეტია; კოეფიციენტები გადაამოწმე."), ((answer + 1).ToString(), "ერთით მეტია."), (k.ToString(), "ეს მხოლოდ მამრავლია."));
+                }
+                case 32: // acid-base calculation
+                {
+                    int x = UnityEngine.Random.Range(1, 5); bool acid = UnityEngine.Random.value < 0.5f;
+                    string c = (1 / Math.Pow(10, x)).ToString("0.####", System.Globalization.CultureInfo.InvariantCulture);
+                    int ph = acid ? x : 14 - x;
+                    return Make("t3_ph_" + (acid ? "a" : "b") + x, "რა არის " + c + " მოლ/ლ " + (acid ? "HCl" : "NaOH") + " ხსნარის pH? (ძლიერი " + (acid ? "მჟავა" : "ფუძე") + ", 25°C)",
+                        acid ? "pH = −log[H⁺]." : "ჯერ იპოვე pOH = −log[OH⁻], შემდეგ pH = 14 − pOH.", ph.ToString(),
+                        acid ? "[H⁺] = " + c + ", ამიტომ pH = " + x + "." : "pOH = " + x + ", ამიტომ pH = 14 − " + x + " = " + ph + ".", 0,
+                        ((14 - ph).ToString(), acid ? "ეს ფუძის pH იქნებოდა." : "ეს pOH-ია და არა pH."), ("7", "7 მხოლოდ ნეიტრალური ხსნარია."), ((ph + 1).ToString(), "ერთით მეტია."), ((ph - 1).ToString(), "ერთით ნაკლებია."));
+                }
+            }
+            return Pick(General);
+        }
+
         public static string ExplainMismatch(string equation, string choice)
         {
             var sides = equation.Replace("?", choice).Split(new[] { "->" }, StringSplitOptions.None);

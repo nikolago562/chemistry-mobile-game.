@@ -38,6 +38,7 @@ namespace ChemistryGame
 
         public void Open(string id, string projectID = null)
         {
+            if (!Curriculum.ActivityOpen(id)) { LabGame.Instance?.HUD.Notify(Curriculum.LockedText + " " + Curriculum.Requirement(id)); return; }
             if (window != null) window.Close();
             activity = id; project = projectID; finished = false; tick = null;
             window = LabUI.Window(Title(id) + (projectID != null ? " • " + ResearchProjects.Get(projectID)?.Title : ""), 1060, 650);
