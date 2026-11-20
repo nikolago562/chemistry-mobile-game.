@@ -27,8 +27,14 @@ namespace ChemistryGame
         private Animator animator;
         private TMP_Text marker, bubble;
         private CanvasGroup nameplate;
-        private float hop, talkBlend, angle = 30, workTarget = 30, nextWork, nextScribble;
-        private bool facePlayer;
+        private float hop, talkBlend, angle = 90, workTarget = 90, nextScribble, workUntil, nextPour, nextMarker;
+        private bool facePlayer, lookingUp;
+        /// <summary>Two places at her desk: by the test tubes and by the colour-changing flask (classroom-local).</summary>
+        private static readonly Vector2[] Spots = { new Vector2(35.1f, 8.6f), new Vector2(37.0f, 8.6f) };
+        private int spot;
+        private SpriteRenderer flask;
+        /// <summary>True while she is busy at her desk (not talking, not turning to someone).</summary>
+        public bool AtWork => !facePlayer && !Busy;
 
         public void Initialize(LabGame lab, SpriteRenderer art, TMP_Text questMarker, CanvasGroup label)
         {
@@ -42,6 +48,13 @@ namespace ChemistryGame
                 animator.runtimeAnimatorController = source.runtimeAnimatorController;
                 animator.SetBool("IsMoving", false);
             }
+            // She walks along her desk, so her feet collider needs a kinematic body to move cheaply.
+            var rb = gameObject.AddComponent<Rigidbody2D>();
+            rb.bodyType = RigidbodyType2D.Kinematic;
+            // A flask she lifts, swirls and pours from while working.
+            flask = LaboratoryArt.Draw(transform, "მასწავლებლის კოლბა", new Vector2(0.45f, 1.2f), PixelArt.Flask(), 9);
+            flask.transform.localScale = Vector3.one * 0.8f;
+            flask.enabled = false;
             PersonalLab.Label(transform, "ერთი წამით...", new Vector2(0, 2.9f), LabUI.Paper);
             bubble = transform.Find("ერთი წამით...").GetComponentInChildren<TMP_Text>();
             bubble.alpha = 0;
@@ -85,22 +98,57 @@ namespace ChemistryGame
             if (Talking) facePlayer = true;
             else if (!Busy) facePlayer = false;
 
-            // Work: face the bench (east) or the chalkboard (north-east), switching every few seconds.
-            if (!facePlayer && t > nextWork)
+            bool moving = false, pouring = false;
+            if (AtWork && game != null)
             {
-                nextWork = t + UnityEngine.Random.Range(4f, 7f);
-                workTarget = workTarget > 20 ? 0 : 50;
+                // Walk between the tubes and the flask; at each, work facing the desk, sometimes glance at the class.
+                Vector2 goal = game.classroom.TransformPoint(Spots[spot]);
+                Vector2 d = goal - (Vector2)transform.position;
+                if (d.magnitude > 0.05f)
+                {
+                    transform.position += (Vector3)Vector2.ClampMagnitude(d.normalized * 1.4f * dt, d.magnitude);
+                    moving = true;
+                    workTarget = Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg;
+                    workUntil = t + UnityEngine.Random.Range(3.5f, 6f);
+                    lookingUp = false;
+                }
+                else if (t > workUntil)
+                {
+                    if (!lookingUp && UnityEngine.Random.value < 0.3f) { lookingUp = true; workUntil = t + 1.6f; }
+                    else { lookingUp = false; spot = 1 - spot; }
+                }
+                else
+                {
+                    workTarget = lookingUp ? -90 : 90;
+                    pouring = !lookingUp && Mathf.Abs(Mathf.DeltaAngle(angle, 90)) < 20;
+                }
+                if (pouring && t > nextScribble)
+                {
+                    nextScribble = t + UnityEngine.Random.Range(0.4f, 0.9f);
+                    hop = Mathf.Max(hop, 0.35f);
+                }
+                if (pouring && t > nextPour)
+                {
+                    nextPour = t + UnityEngine.Random.Range(0.7f, 1.3f);
+                    // Coloured drops land in the glassware on the desk in front of her.
+                    var local = Spots[spot] + new Vector2(UnityEngine.Random.Range(-0.3f, 0.3f), 2.2f);
+                    var colour = Color.HSVToRGB(Mathf.Repeat(t * 0.05f + spot * 0.4f, 1), 0.55f, 1);
+                    LabAtmosphere.Instance?.Puff(game.classroom, local, colour, new Vector2(0, 0.45f), 0.9f, 9);
+                }
             }
-            if (!facePlayer && t > nextScribble)
+            flask.enabled = pouring;
+            if (pouring)
             {
-                nextScribble = t + UnityEngine.Random.Range(0.35f, 0.9f);
-                hop = Mathf.Max(hop, 0.35f);
+                // Lift, swirl and tilt the flask as if checking and pouring.
+                flask.transform.localPosition = new Vector3(0.45f, 1.2f + Mathf.Sin(t * 2.4f) * 0.08f, 0);
+                flask.transform.localRotation = Quaternion.Euler(0, 0, Mathf.Sin(t * 3.1f) * 25 - 10);
             }
             angle = Mathf.MoveTowardsAngle(angle, facePlayer ? AngleToPlayer() : workTarget, TurnSpeed * dt);
             if (animator != null)
             {
                 animator.SetFloat(MoveX, Mathf.Cos(angle * Mathf.Deg2Rad));
                 animator.SetFloat(MoveY, Mathf.Sin(angle * Mathf.Deg2Rad));
+                animator.SetBool("IsMoving", moving);
             }
 
             talkBlend = Mathf.MoveTowards(talkBlend, Talking ? 1 : 0, dt * 4);
@@ -115,11 +163,15 @@ namespace ChemistryGame
 
             if (nameplate != null) nameplate.alpha = 1 - talkBlend;
             if (marker == null) return;
-            var data = GameSaveManager.Instance.Data;
-            var quest = TeacherQuests.Active;
-            string symbol = !data.tutorialCompleted ? "" : TeacherGuide.Next != null || quest == null ? "!" : TeacherQuests.Done(quest) ? "?" : "";
-            if (marker.text != symbol) marker.text = symbol;
-            marker.color = symbol == "?" ? LabUI.Mint : LabUI.Gold;
+            if (t >= nextMarker)
+            {
+                nextMarker = t + 0.5f;
+                var data = GameSaveManager.Instance.Data;
+                var quest = TeacherQuests.Active;
+                string symbol = !data.tutorialCompleted ? "" : TeacherGuide.Next != null || quest == null ? "!" : TeacherQuests.Done(quest) ? "?" : "";
+                if (marker.text != symbol) marker.text = symbol;
+                marker.color = symbol == "?" ? LabUI.Mint : LabUI.Gold;
+            }
             marker.alpha = Busy ? 0 : 1 - talkBlend;
             marker.rectTransform.localPosition = new Vector3(0, Mathf.Abs(Mathf.Sin(t * 2.6f)) * 9f, 0);
         }

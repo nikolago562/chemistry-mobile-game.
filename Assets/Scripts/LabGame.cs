@@ -163,20 +163,22 @@ namespace ChemistryGame
         {
             var npc = new GameObject("ქიმიის მასწავლებელი");
             npc.transform.SetParent(classroom, false);
-            npc.transform.localPosition = new Vector3(32f, 10f);
+            // In front of her own desk (the back-wall bench with the tubes and the colour-changing flask).
+            npc.transform.localPosition = new Vector3(35.1f, 8.6f);
             // The sprite lives on a child so talking animations never scale the labels.
             var body = new GameObject("სხეული", typeof(SpriteRenderer));
             body.transform.SetParent(npc.transform, false);
             var renderer = body.GetComponent<SpriteRenderer>();
             renderer.sprite = teacherSprite != null ? teacherSprite : player.GetComponentInChildren<SpriteRenderer>().sprite;
-            renderer.sortingOrder = 6;
+            // Drawn over her desk (6) and its glassware (7): she stands in front of them.
+            renderer.sortingOrder = 8;
             renderer.color = Color.white;
             if (teacherMaterial != null) renderer.sharedMaterial = teacherMaterial;
-            // Solid feet so the player walks around her, and draws behind her when above.
+            // Solid feet so the player walks around her. No depth zone: she moves along the desk,
+            // and the desk's own zone already covers the floor behind it.
             var feet = npc.AddComponent<BoxCollider2D>();
             feet.size = new Vector2(0.8f, 0.35f);
             feet.offset = new Vector2(0, 0.15f);
-            DepthOccluders.Add(npc.transform.position, 0.7f, 0.2f, 2.3f);
 
             var canvas = new GameObject("მასწავლებლის სახელი", typeof(RectTransform), typeof(Canvas), typeof(CanvasGroup));
             canvas.transform.SetParent(npc.transform, false);

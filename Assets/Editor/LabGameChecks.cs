@@ -618,12 +618,12 @@ public static class LabGameChecks
     private static void TeacherTalk()
     {
         normalCameraSize = Camera.main.orthographicSize;
-        MoveTo(game.classroom.TransformPoint(new Vector3(32f, 8.7f)));
+        MoveTo(game.classroom.TransformPoint(new Vector3(36.5f, 6.6f)));
         var station = UnityEngine.Object.FindObjectsByType<InteractableStation>(FindObjectsSortMode.None)
             .First(s => s.stationType == StationType.TeacherNPC);
         Ensure(game.Tutorial.Allows(station), "Teacher can always be talked to");
         var teacher = game.Dialogue.Teacher;
-        Ensure(teacher.Facing > -10 && teacher.Facing < 60, "The teacher works facing her bench or the chalkboard (" + teacher.Facing + ")");
+        Ensure(teacher.AtWork, "The teacher is busy at her desk before anyone talks to her");
         game.Interact(station);
         Ensure(teacher.Busy && !game.Dialogue.IsOpen, "The teacher says 'one sec' and finishes her note before talking");
         Schedule(TeacherTurned, 0.3);
