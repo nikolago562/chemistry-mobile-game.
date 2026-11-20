@@ -110,6 +110,7 @@ namespace ChemistryGame
             WelcomeBack();
 
             if (!string.IsNullOrEmpty(GameSaveManager.Instance.Status)) HUD.Notify(GameSaveManager.Instance.Status);
+            if (PerfWalk.Requested) gameObject.AddComponent<PerfWalk>().Initialize(this);
         }
 
         private readonly System.Collections.Generic.Dictionary<StationType, Vector3> stationPoints = new System.Collections.Generic.Dictionary<StationType, Vector3>();

@@ -55,7 +55,24 @@ didn't measurably change it: culling those sprites was cheap.
 Unity.exe -projectPath "<project>" -executeMethod RainPerfProbe.RunWalk -logFile walk.log
 ```
 
+## Built game (no editor): walking is a steady 60 FPS
+
+Measured with the Windows build and `ChemistryLab.exe -perf-walk` (auto-walk self-test,
+results in `perf-walk.txt` next to the save), 1920×1080, VSync on at 60 Hz:
+
+| Phase | Average | p95 | Max (after start-up) |
+|---|---|---|---|
+| Standing | 59–60 fps (17.0 ms) | 18.3–18.6 ms | 37 ms |
+| Walking | 59 fps (17.1 ms) | 18.6–19.2 ms | 35–97 ms |
+
+A user profiler capture of an editor frame showed the same split: game scripts 1.25 ms and
+rendering 0.65 ms, against `EditorLoop` 8.2 ms and `Profiler.ParseThreadData` 3.3 ms. Remaining
+drops while playing in the editor come from editor windows and the Profiler itself.
+
 ## Tips
 
 - Test performance in a **build**, or with nothing selected and the Scene view closed.
+- In the editor: use **Play Maximized** (Game view toolbar), keep the Scene view and Inspector
+  out of sight during play, and close the **Profiler** when you aren't measuring (it costs
+  ~3 ms per frame on its own, plus its window redraw).
 - The remaining frame time in the editor is mostly editor overhead (`EditorLoop`, `OnGUI`).

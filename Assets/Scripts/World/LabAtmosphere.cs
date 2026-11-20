@@ -155,7 +155,8 @@ namespace ChemistryGame
             }
             else
             {
-                f.T.SetParent(parent, false);
+                // Reparenting makes the editor's Hierarchy window rebuild; skip it when unchanged.
+                if (f.T.parent != parent) f.T.SetParent(parent, false);
                 f.T.localPosition = local;
                 f.Art.sprite = sprite ?? DecorArt.Bubble();
                 f.Art.sortingOrder = order;
