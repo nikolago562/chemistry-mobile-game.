@@ -115,6 +115,10 @@ namespace ChemistryGame
                 case "samples": game.Collection.Open(CollectionKind.Sample); break;
                 case "mineral_case": game.Collection.Open(CollectionKind.Mineral); break;
                 case "trophy": case "fair_trophy": game.Collection.Open(CollectionKind.Award); break;
+                case "steam_wheel":
+                    AmbientAudio.Instance?.Sparkle();
+                    game.HUD.Notify("ბორბალი ისევ ტრიალებს. ორთქლს მოძრაობის ძალა აქვს!");
+                    break;
                 case "storage": game.Collection.OpenTab("materials"); break;
                 case "radio":
                     if (!data.radioOn) { data.radioOn = true; data.radioStation = 0; }

@@ -43,6 +43,7 @@ namespace ChemistryGame
         public SafeMishaps Mishaps { get; private set; }
         public TeacherGuide Guide { get; private set; }
         public CurriculumUI Lessons { get; private set; }
+        public ActOne ActOne { get; private set; }
         public readonly System.Collections.Generic.List<SchoolNPC> Classmates = new System.Collections.Generic.List<SchoolNPC>();
 
         private void Awake()
@@ -102,6 +103,8 @@ namespace ChemistryGame
             Areas.Initialize(this);
             Mishaps = gameObject.AddComponent<SafeMishaps>();
             Mishaps.Initialize(this);
+            ActOne = gameObject.AddComponent<ActOne>();
+            ActOne.Initialize(this);
             foreach (var classmate in ChemistryGame.Classmates.All) Classmates.Add(SchoolNPC.Spawn(this, classmate));
             HUD.AddLifeSimPanel();
             WelcomeBack();

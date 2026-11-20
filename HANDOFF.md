@@ -36,6 +36,7 @@ Look for `CURRICULUM_CHECKS_PASSED`, `LIFE_SIM_CHECKS_PASSED` and `LAB_PLAYMODE_
 - **Playtest mode is ON:** `GameSaveManager.FreshStartEachLaunch = true` discards the save on every launch and starts a new player with 9999 coins. Set it to `false` before release. Automated checks and the rain probe use their own save folder and aren't affected.
 - Lessons start at their chapter's station (ch1 teacher desk, ch2 atom table, …). That station glows as the objective and the waypoint arrow points to it; solved steps move on by themselves.
 - The teacher uses the student 8-way animator: she works facing her bench or chalkboard and, when talked to, says "ერთი წამით..." and turns smoothly (`TeacherNPC.Attend`).
+- Missions (`Progression/Missions.cs`): ordered missions of steps (text, done rule, world target); the current step owns the HUD line, objective glow and waypoint, and completion pays coins, reputation and an optional lab item. World props set flags with `Missions.Set`. Act 1 lives in `World/ActOne.cs` (safety hazards, desk sorting, three states on the experiment cart, steam machine → `steam_wheel` in the lab). Plan for the later acts: `Docs/progression-design.md`.
 - Fonts: `LabUI.Prewarm` loads all Georgian glyphs at boot (see `Docs/rain-lag-research.md`). `RainPerfProbe.Run` repeats the performance measurements.
 
 ## Known gaps / risks

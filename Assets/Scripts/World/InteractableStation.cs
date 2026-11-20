@@ -80,6 +80,8 @@ namespace ChemistryGame
         private bool Objective()
         {
             if (game == null) return false;
+            // A running mission owns the objective: only its target glows.
+            if (Missions.Steering) return stationType != StationType.TeacherNPC && Missions.IsTarget(transform.position);
             var step = game.Tutorial.Step;
             if (supplyCloset) return step == TutorialManager.TutorialStep.CollectCoat;
             if (stationType == StationType.TutorialStation && step == TutorialManager.TutorialStep.ReadNotebook) return true;

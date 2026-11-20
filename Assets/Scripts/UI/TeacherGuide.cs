@@ -63,7 +63,7 @@ namespace ChemistryGame
                 ID = "coat", Title = "პირველი ცდა", Ready = () => Data.starterCoatCollected,
                 Steps = new[]
                 {
-                    S("ხალათი გიხდება! ახლა ჩემს მაგიდასთან მოდი — პირველ ცდას ერთად გავაკეთებთ.", g => Class(g, g.teacherDeskPosition.x, g.teacherDeskPosition.y + 1), "", 5),
+                    S("ხალათი გიხდება! მაგრამ ვიღაცამ კლასში სამი სახიფათო რამ დატოვა. იპოვე და გამოასწორე!", g => Class(g, ActOne.CartPoint.x, ActOne.CartPoint.y + 1), "", 5),
                 }
             },
             new GuideLesson

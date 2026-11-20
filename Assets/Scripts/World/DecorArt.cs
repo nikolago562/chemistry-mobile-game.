@@ -288,6 +288,7 @@ namespace ChemistryGame
                 case "glow_jar": return Paint("d_glowjar", 16, 22, p => { p.Box(2, 0, 13, 17, new Color32(120, 220, 240, 230), new Color32(80, 140, 170, 255)); p.Fill(3, 18, 12, 20, WoodLight); p.Dot(6, 8, Color.white); p.Dot(9, 12, Color.white); });
                 case "mineral_case": return Paint("d_mineral", 34, 24, p => { p.Fill(3, 0, 4, 8, WoodDark); p.Fill(29, 0, 30, 8, WoodDark); p.Box(0, 7, 33, 23, Glass, WoodDark); Color32[] c = { new Color32(232, 232, 240, 255), Gold, new Color32(150, 110, 210, 255), new Color32(70, 170, 110, 255), Coral, Paper }; for (int i = 0; i < 6; i++) p.Disc(5 + (i % 3) * 11, 12 + (i / 3) * 6, 2.2f, c[i]); });
                 case "fair_trophy": return Paint("d_ftrophy", 18, 30, p => { p.Box(3, 0, 14, 6, WoodDark, Line); p.Fill(7, 7, 10, 13, Gold); p.Box(2, 14, 15, 26, Gold, new Color32(180, 130, 40, 255)); p.Fill(0, 20, 2, 24, Gold); p.Fill(15, 20, 17, 24, Gold); p.Dot(8, 21, Color.white); });
+                case "steam_wheel": return Paint("d_steamwheel", 20, 30, p => { p.Box(3, 0, 16, 6, WoodDark, Line); p.Fill(9, 7, 10, 18, MetalDark); p.Disc(9.5f, 23, 6.5f, Paper); p.Fill(4, 22, 15, 24, Coral); p.Fill(8, 17, 11, 29, Mint); p.Disc(9.5f, 23, 1.5f, Gold); });
                 default: return null;
             }
         }

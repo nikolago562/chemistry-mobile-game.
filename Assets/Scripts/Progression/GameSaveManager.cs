@@ -74,6 +74,9 @@ namespace ChemistryGame
         public List<LessonRecord> lessons = new List<LessonRecord>();
         public List<string> lessonMistakes = new List<string>();
         public List<string> notebookPages = new List<string>();
+        /// <summary>Mission progress: finished missions and the world flags their steps check.</summary>
+        public List<string> missionsDone = new List<string>();
+        public List<string> missionFlags = new List<string>();
     }
 
     [Serializable] public sealed class KeyValue { public string key = ""; public int value; }
@@ -175,6 +178,8 @@ namespace ChemistryGame
             Data.lessons.RemoveAll(r => r == null);
             Data.lessonMistakes ??= new List<string>();
             Data.notebookPages ??= new List<string>();
+            Data.missionsDone ??= new List<string>();
+            Data.missionFlags ??= new List<string>();
             foreach (var project in Data.projects) project.notes ??= new List<string>();
             // Older saves only knew a single one-time expansion.
             if (Data.labExpanded && Data.labExpansionLevel < 1) Data.labExpansionLevel = 1;

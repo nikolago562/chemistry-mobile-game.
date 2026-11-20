@@ -62,6 +62,7 @@ namespace ChemistryGame
             new LabEquipment("glow_jar", "მანათობელი ქილა", "ფერცვალებადი ხსნარის სუვენირი.", 0, LabUI.Mint, true, 0, "პროექტი: ფერცვალებადი ხსნარი"),
             new LabEquipment("mineral_case", "მინერალების ყუთი", "იშვიათი მინერალების ვიტრინა.", 0, LabUI.Gold, true, 0, "პროფესორი ლევანი (ხუთშაბათი, პარასკევი)"),
             new LabEquipment("fair_trophy", "ბაზრობის თასი", "სამეცნიერო ბაზრობის პირველი ადგილი.", 0, LabUI.Gold, true, 0, "სამეცნიერო ბაზრობის გამარჯვება"),
+            new LabEquipment("steam_wheel", "ორთქლის ბორბალი", "შენი პირველი ორთქლის მანქანა.", 0, LabUI.Mint, true, 0, "მისია: ორთქლის მანქანა"),
         };
         public static readonly int[] ExpansionPrices = { 250, 400, 600 };
         public static readonly int[] ExpansionReputation = { 0, 2, 3 };
@@ -184,6 +185,15 @@ namespace ChemistryGame
             save.Data.labPlacements.RemoveAll(p => p.itemID == id);
             save.Data.labPlacements.Add(new LabPlacement { itemID = id, column = column, row = row });
             save.Commit(); BuildEquipment(); return true;
+        }
+        /// <summary>Puts an earned item in the first free cell, so the reward is already standing in the lab.</summary>
+        public bool PlaceAnywhere(string id)
+        {
+            var data = GameSaveManager.Instance.Data;
+            for (int row = 0; row < Rows; row++)
+                for (int column = 0; column < Columns; column++)
+                    if (!IsEntranceCell(column, row) && !data.labPlacements.Any(p => p.column == column && p.row == row) && Place(id, column, row)) return true;
+            return false;
         }
         public void Store(string id)
         {

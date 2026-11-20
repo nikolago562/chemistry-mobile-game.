@@ -317,8 +317,67 @@ public static class LabGameChecks
     {
         LabUI.CloseTop();
         Ensure(!LabUI.AnyOpen && TeacherGuide.Next != null && TeacherGuide.Next.ID == "tour", "A skipped lesson stays available at the teacher");
+        CheckSafetyMission();
         CheckCurriculum();
-        Schedule(AfterCurriculum, 0.6);
+        Schedule(MissionStates, 0.6);
+    }
+    private static WorldInteractable Prop(string prompt) =>
+        UnityEngine.Object.FindObjectsByType<WorldInteractable>(FindObjectsSortMode.None).First(w => w.PromptText() == prompt);
+    private static void CheckSafetyMission()
+    {
+        var data = GameSaveManager.Instance.Data;
+        Ensure(Missions.Current == ActOne.Safety && Missions.StepIndex == 1 && Missions.Steering, "After the coat the safety mission asks for the hazards");
+        Ensure(!Missions.IsTarget(Station(StationType.TutorialStation).transform.position) && Missions.IsTarget(game.classroom.TransformPoint(ActOne.CartPoint)),
+            "The first hazard, not the desk, is the objective");
+        int coins = data.chemCoins;
+        game.ActOne.UseCart();
+        Prop("[E] მოწმენდა").Use();
+        Ensure(Missions.Current == ActOne.Safety && Missions.Step.Text().Contains("2/3"), "Hazards count up one by one");
+        Prop("[E] ეტიკეტის დაწერა").Use();
+        Ensure(Missions.IsDone("safety") && data.chemCoins == coins + 10, "Fixing three hazards completes the safety mission and pays once");
+        Ensure(Missions.Current == ActOne.Matter && Missions.IsTarget(Station(StationType.TutorialStation).transform.position), "Next mission points at the teacher's desk");
+        Snapshot("61-mission-matter");
+    }
+    private static void MissionStates()
+    {
+        Missions.Refresh();
+        Ensure(Missions.IsDone("matter") && Missions.Current == ActOne.States, "Sorting matter at the desk finishes the second mission");
+        coinsBefore = GameSaveManager.Instance.Data.chemCoins;
+        game.ActOne.UseCart();
+        Schedule(MissionBoil, 3.0);
+    }
+    private static int coinsBefore;
+    private static void MissionBoil()
+    {
+        Ensure(Missions.Flag("melted") && Missions.StepIndex == 1, "Heating the ice melts it");
+        game.ActOne.UseCart();
+        Schedule(MissionCondense, 3.6);
+    }
+    private static void MissionCondense()
+    {
+        Ensure(Missions.Flag("boiled"), "More heat boils the water");
+        game.ActOne.UseCart();
+        Schedule(MissionSteam, 3.4);
+    }
+    private static void MissionSteam()
+    {
+        var data = GameSaveManager.Instance.Data;
+        Ensure(Missions.IsDone("states") && data.chemCoins == coinsBefore + 15 && Missions.Current == ActOne.Steam, "Melt, boil and condense complete the three-states mission");
+        Snapshot("62-mission-states");
+        Prop("[E] ჩაიდნის აღება და ავსება").Use();
+        Ensure(Missions.Flag("kettle_full") && Missions.StepIndex == 1, "The kettle is picked up and filled");
+        game.ActOne.UseCart();
+        Ensure(Missions.Flag("kettle_placed"), "The kettle is placed on the cart");
+        game.ActOne.UseCart();
+        Schedule(MissionDone, 5.0);
+    }
+    private static void MissionDone()
+    {
+        var data = GameSaveManager.Instance.Data;
+        Ensure(Missions.IsDone("steam") && Missions.Current == null && !Missions.Steering, "The steam machine finishes act one");
+        Ensure(data.ownedLabItems.Contains("steam_wheel") && data.labPlacements.Any(p => p.itemID == "steam_wheel"), "The steam wheel trophy is standing in the lab");
+        Snapshot("63-mission-steam");
+        Schedule(AfterCurriculum, 0.3);
     }
     private static InteractableStation Station(StationType type) =>
         UnityEngine.Object.FindObjectsByType<InteractableStation>(FindObjectsSortMode.None).Single(s => s.stationType == type);
@@ -640,6 +699,8 @@ public static class LabGameChecks
         var lab = game.Personal;
         var save = GameSaveManager.Instance;
         Ensure(lab != null && !lab.Inside && lab.Columns == 4 && lab.Rows == 3, "Small personal laboratory");
+        // The buying and placing checks below start from an empty lab, so set aside the act-one trophy.
+        save.Data.ownedLabItems.Remove("steam_wheel"); save.Data.labPlacements.RemoveAll(p => p.itemID == "steam_wheel");
         save.Data.chemCoins = 0; save.Commit();
         Ensure(!lab.Buy("molecule") && !lab.Expand(), "Insufficient coins must not buy equipment or expansion");
         save.Data.chemCoins = 1000; save.Commit();

@@ -16,7 +16,10 @@ namespace ChemistryGame
         private TMPro.TMP_Text label;
         private Focus focus;
 
-        public static WorldInteractable Create(Transform parent, Vector2 local, Vector2 size, float promptHeight, Func<string> text, Action use, Func<bool> available = null, Glow glow = Glow.Equipment)
+        /// <summary>Usable now: its own rule when given (mission props work during the tutorial), otherwise after the tutorial.</summary>
+        private bool Usable => Available != null ? Available() : GameSaveManager.Instance.Data.tutorialCompleted;
+
+        public static WorldInteractable Create(Transform parent, Vector2 local, Vector2 size, float promptHeight, Func<string> text, Action use, Func<bool> available = null, Glow glow = Glow.Equipment, Func<bool> objective = null)
         {
             var go = new GameObject("ურთიერთქმედება", typeof(BoxCollider2D), typeof(WorldInteractable));
             go.transform.SetParent(parent, false);
@@ -31,14 +34,13 @@ namespace ChemistryGame
             item.prompt.SetActive(false);
             // A prompt without "[E]" means today's use is spent ("…ხვალამდე ისვენებს"), so it turns green and quiet.
             item.focus = Focus.Attach(go, size, Vector2.zero, () =>
-                !GameSaveManager.Instance.Data.tutorialCompleted || item.Available != null && !item.Available() ? Glow.Hidden
-                : item.PromptText().StartsWith("[E]") ? glow : Glow.Done);
+                !item.Usable ? Glow.Hidden : item.PromptText().StartsWith("[E]") ? glow : Glow.Done, objective);
             return item;
         }
 
         private void Update()
         {
-            focus.Near = near && (Available == null || Available()) && GameSaveManager.Instance.Data.tutorialCompleted;
+            focus.Near = near && Usable;
             bool allowed = focus.IsFocused && !LabUI.AnyOpen;
             if (prompt.activeSelf != allowed) { prompt.SetActive(allowed); if (allowed) label.text = PromptText(); }
             if (allowed && Input.GetKeyDown(KeyCode.E)) { Use?.Invoke(); if (prompt.activeSelf) label.text = PromptText(); }
