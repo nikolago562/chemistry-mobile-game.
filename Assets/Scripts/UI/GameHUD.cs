@@ -85,11 +85,23 @@ namespace ChemistryGame
             waypointCard = LabUI.Panel(LabUI.Root, "მიზნის მაჩვენებელი", LabUI.Green);
             // Isolate the moving marker so it cannot rebuild every static HUD graphic.
             waypointCard.gameObject.AddComponent<Canvas>();
-            waypointCard.rectTransform.sizeDelta = new Vector2(235, 44);
+            waypointCard.rectTransform.sizeDelta = new Vector2(CompactWidth, 44);
+            waypointGroup = waypointCard.gameObject.AddComponent<CanvasGroup>();
+            waypointGroup.alpha = 0;
+            waypointGroup.blocksRaycasts = false;
+            // Label on the left (only in the wide card), a pointer on the right that turns toward the target.
             waypoint = LabUI.Text(waypointCard.transform, "", 18, Color.white);
             waypoint.alignment = TextAlignmentOptions.Center;
+            waypoint.textWrappingMode = TextWrappingModes.NoWrap;
             LabUI.Fill(waypoint.rectTransform, 7);
+            waypoint.rectTransform.offsetMax = new Vector2(-40, -7);
+            waypoint.alpha = 0;
+            pointer = LabUI.Text(waypointCard.transform, "→", 26, LabUI.Gold);
+            pointer.alignment = TextAlignmentOptions.Center;
+            pointer.fontStyle = FontStyles.Bold;
+            Anchor(pointer.rectTransform, new Vector2(1, 0.5f), new Vector2(-4, 0), new Vector2(40, 40));
             waypointCard.raycastTarget = false;
+            waypointCard.gameObject.SetActive(false);
             panels["identity"] = Compact(identity.rectTransform);
             panels["stats"] = Compact((RectTransform)stats.transform);
             panels["tracker"] = Compact(tracker.rectTransform);
@@ -147,25 +159,46 @@ namespace ChemistryGame
                     Vector2.Distance(game.player.transform.position, waypointTarget) > 4;
                 waypointLabel = game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat ? "დამცავი ხალათი" : mission ? "მისია" : tutorial ? "პირველი ცდა" : "ახალი ცდა";
             }
+            // Fade in and out instead of popping.
+            float dt = Time.unscaledDeltaTime;
             bool show = waypointWanted && !LabUI.AnyOpen;
-            if (waypointCard.gameObject.activeSelf != show) waypointCard.gameObject.SetActive(show);
-            if (!show) return;
+            waypointGroup.alpha = Mathf.MoveTowards(waypointGroup.alpha, show ? 1 : 0, dt * 5);
+            bool visible = waypointGroup.alpha > 0.001f;
+            if (waypointCard.gameObject.activeSelf != visible) waypointCard.gameObject.SetActive(visible);
+            if (!visible) { waypointShown = false; return; }
+
             Vector3 point = worldCamera.WorldToViewportPoint(waypointTarget);
+            Vector3 feet = worldCamera.WorldToViewportPoint(game.player.transform.position);
             Vector2 size = ((RectTransform)LabUI.Root).rect.size;
-            var position = new Vector2(Mathf.Clamp(point.x, 0.1f, 0.9f) * size.x - size.x / 2,
-                Mathf.Clamp(point.y, 0.20f, 0.80f) * size.y - size.y / 2);
-            waypointCard.rectTransform.anchoredPosition = position + Vector2.up * Mathf.Sin(Time.unscaledTime * 3) * 4;
-            string arrow = point.x > 1 ? " →" : point.x < 0 ? " ←" : point.y > 1 ? " ↑" : " ↓";
-            if (!ReferenceEquals(arrow, shownArrow) || !ReferenceEquals(waypointLabel, shownLabel))
-            {
-                shownArrow = arrow; shownLabel = waypointLabel;
-                waypoint.text = waypointLabel + arrow;
-            }
+            // Kept inside the middle of the screen, clear of the top-left mission card and top-right coins.
+            var goal = new Vector2(Mathf.Clamp(point.x, 0.08f, 0.92f) * size.x - size.x / 2,
+                Mathf.Clamp(point.y, 0.12f, 0.70f) * size.y - size.y / 2);
+            waypointPosition = waypointShown ? Vector2.Lerp(waypointPosition, goal, 1 - Mathf.Exp(-8 * dt)) : goal;
+            waypointCard.rectTransform.anchoredPosition = waypointPosition + Vector2.up * Mathf.Sin(Time.unscaledTime * 3) * 3;
+
+            // The pointer turns smoothly toward the target, seen from the player.
+            float wanted = Mathf.Atan2((point.y - feet.y) * size.y, (point.x - feet.x) * size.x) * Mathf.Rad2Deg;
+            pointerAngle = waypointShown ? Mathf.LerpAngle(pointerAngle, wanted, 1 - Mathf.Exp(-10 * dt)) : wanted;
+            pointer.rectTransform.localRotation = Quaternion.Euler(0, 0, pointerAngle);
+
+            // Far away: just the arrow. Closer: it widens into the labelled card (with hysteresis so it doesn't flicker).
+            float distance = Vector2.Distance(game.player.transform.position, waypointTarget);
+            waypointWide = distance < (waypointWide ? 10f : 8.5f);
+            waypointBlend = Mathf.MoveTowards(waypointBlend, waypointWide ? 1 : 0, dt * 3);
+            float s = Mathf.SmoothStep(0, 1, waypointBlend);
+            waypointCard.rectTransform.sizeDelta = new Vector2(Mathf.Lerp(CompactWidth, WideWidth, s), 44);
+            waypoint.alpha = Mathf.Clamp01(s * 2 - 1);
+            if (!ReferenceEquals(waypointLabel, shownLabel)) { shownLabel = waypointLabel; waypoint.text = waypointLabel; }
+            waypointShown = true;
         }
-        private float nextWaypoint;
-        private bool waypointWanted;
+        private const float CompactWidth = 48, WideWidth = 200;
+        private float nextWaypoint, pointerAngle, waypointBlend;
+        private bool waypointWanted, waypointShown, waypointWide;
+        private Vector2 waypointPosition;
         private Vector3 waypointTarget;
-        private string waypointLabel, shownLabel, shownArrow;
+        private string waypointLabel, shownLabel;
+        private TMP_Text pointer;
+        private CanvasGroup waypointGroup;
         private readonly System.Collections.Generic.Dictionary<string, RectTransform> panels = new System.Collections.Generic.Dictionary<string, RectTransform>();
         private Image highlight;
         private RectTransform highlighted;
