@@ -14,8 +14,9 @@ namespace ChemistryGame
         private bool near;
         private GameObject prompt;
         private TMPro.TMP_Text label;
+        private Focus focus;
 
-        public static WorldInteractable Create(Transform parent, Vector2 local, Vector2 size, float promptHeight, Func<string> text, Action use, Func<bool> available = null)
+        public static WorldInteractable Create(Transform parent, Vector2 local, Vector2 size, float promptHeight, Func<string> text, Action use, Func<bool> available = null, Glow glow = Glow.Equipment)
         {
             var go = new GameObject("ურთიერთქმედება", typeof(BoxCollider2D), typeof(WorldInteractable));
             go.transform.SetParent(parent, false);
@@ -28,13 +29,17 @@ namespace ChemistryGame
             PersonalLab.Label(item.prompt.transform, text(), new Vector2(0, promptHeight), Color.white);
             item.label = item.prompt.GetComponentInChildren<TMPro.TMP_Text>();
             item.prompt.SetActive(false);
+            // A prompt without "[E]" means today's use is spent ("…ხვალამდე ისვენებს"), so it turns green and quiet.
+            item.focus = Focus.Attach(go, size, Vector2.zero, () =>
+                !GameSaveManager.Instance.Data.tutorialCompleted || item.Available != null && !item.Available() ? Glow.Hidden
+                : item.PromptText().StartsWith("[E]") ? glow : Glow.Done);
             return item;
         }
 
         private void Update()
         {
-            bool allowed = near && !LabUI.AnyOpen && (Available == null || Available()) &&
-                GameSaveManager.Instance.Data.tutorialCompleted;
+            focus.Near = near && (Available == null || Available()) && GameSaveManager.Instance.Data.tutorialCompleted;
+            bool allowed = focus.IsFocused && !LabUI.AnyOpen;
             if (prompt.activeSelf != allowed) { prompt.SetActive(allowed); if (allowed) label.text = PromptText(); }
             if (allowed && Input.GetKeyDown(KeyCode.E)) { Use?.Invoke(); if (prompt.activeSelf) label.text = PromptText(); }
         }
@@ -47,6 +52,11 @@ namespace ChemistryGame
     {
         public string To;
         public SchoolAreas Areas;
+        private void Start()
+        {
+            var zone = GetComponent<BoxCollider2D>();
+            Focus.Attach(gameObject, zone.size, zone.offset, () => Glow.Door).Selectable = false;
+        }
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (other.GetComponentInParent<PlayerController>() != null) Areas.Travel(To, gameObject);
@@ -402,8 +412,11 @@ namespace ChemistryGame
             RemoveDecorTiles(new Rect(32.2f, 8.9f, 1.6f, 1.8f));
             var cabinet = Prop(classroom, "კოლექციის კარადა", new Vector2(28.4f, 9.3f), DecorArt.CollectionCabinet(), new Vector2(1.8f, 0.8f));
             cabinet.gameObject.AddComponent<CollectionShelfView>();
-            WorldInteractable.Create(classroom, new Vector2(28.4f, 8.2f), new Vector2(2.2f, 1.4f), 3.6f, () => "[E] კოლექციის კარადა", () => game.Collection.Open(CollectionKind.Mineral));
-            WorldInteractable.Create(classroom, new Vector2(42.9f, 10.4f), new Vector2(2.2f, 1.4f), 2.4f, () => "[E] განცხადებების დაფა", () => game.Journal.Open());
+            WorldInteractable.Create(classroom, new Vector2(28.4f, 8.2f), new Vector2(2.2f, 1.4f), 3.6f, () => "[E] კოლექციის კარადა", () => game.Collection.Open(CollectionKind.Mineral), null, Glow.Reward);
+            WorldInteractable.Create(classroom, new Vector2(42.9f, 10.4f), new Vector2(2.2f, 1.4f), 2.4f, () => "[E] განცხადებების დაფა", () => game.Journal.Open(), null, Glow.Optional);
+            // The periodic table is a wall chart you walk up to, not a menu tab.
+            LaboratoryArt.Draw(classroom, "პერიოდული ცხრილის პლაკატი", new Vector2(57.4f, 13.2f), DecorArt.PeriodicChart(), 4);
+            WorldInteractable.Create(classroom, new Vector2(57.4f, 10.5f), new Vector2(2.6f, 1.2f), 3.9f, () => "[E] პერიოდული ცხრილი", () => game.Periodic.Open(), null, Glow.Optional);
             Seasonal(classroom, new Vector2(46.5f, 14.95f), 40);
         }
 

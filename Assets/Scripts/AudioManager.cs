@@ -25,6 +25,8 @@ namespace ChemistryGame
         public void Open() => Play(uiOpen);
         public void Close() => Play(uiClose);
         public void Click() => Play(buttonClick);
+        /// <summary>Soft cue when an object becomes the one [E] will use.</summary>
+        public void Hover() { if (buttonClick != null) effects.PlayOneShot(buttonClick, 0.35f); }
         public void Correct() { Play(correctAnswer); onCorrect.Invoke(); }
         public void Wrong() { Play(wrongAnswer); onWrong.Invoke(); }
         public void Coin() => Play(coinPickup);

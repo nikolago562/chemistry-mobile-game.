@@ -75,6 +75,36 @@ namespace ChemistryGame
             for (int x = 6; x < 13; x += 2) p.Dot(x, 20, MetalDark);
             for (int x = 19; x < 26; x += 2) p.Dot(x, 18, MetalDark);
         }, 16, new Vector2(0.5f, 0.5f));
+        /// <summary>Wall chart: the 18-column table shape in group colours, with the f-block below.</summary>
+        public static Sprite PeriodicChart() => Paint("periodic", 48, 32, p =>
+        {
+            p.Box(0, 0, 47, 31, Paper, WoodDark);
+            Color32[] group = { Coral, Gold, Violet, Mint, new Color32(120, 170, 210, 255) };
+            for (int row = 0; row < 7; row++)
+            for (int col = 0; col < 18; col++)
+            {
+                bool cell = row == 0 ? col == 0 || col == 17 : row < 3 ? col < 2 || col > 11 : true;
+                if (!cell) continue;
+                var c = col < 2 ? group[0] : col < 12 ? group[4] : col < 17 ? group[3] : group[2];
+                p.Fill(3 + col * 2 + col / 6, 27 - row * 3, 4 + col * 2 + col / 6, 28 - row * 3, c);
+            }
+            for (int col = 0; col < 15; col++) p.Fill(9 + col * 2, 3, 10 + col * 2, 4, group[1]);
+        }, 16, new Vector2(0.5f, 0.5f));
+        public static Sprite Lectern() => Paint("lectern", 16, 22, p =>
+        {
+            p.Fill(6, 0, 9, 12, WoodDark); p.Fill(4, 0, 11, 1, Line);
+            p.Box(1, 12, 14, 18, Wood, Line);
+            p.Fill(2, 16, 7, 20, Paper); p.Fill(8, 16, 13, 20, new Color32(232, 222, 196, 255)); p.Fill(7, 15, 8, 20, Line);
+            for (int x = 3; x < 7; x++) p.Dot(x, 18, MetalDark);
+            for (int x = 9; x < 13; x++) p.Dot(x, 18, MetalDark);
+        });
+        public static Sprite PlanStand() => Paint("planstand", 18, 28, p =>
+        {
+            p.Fill(3, 0, 4, 14, MetalDark); p.Fill(13, 0, 14, 14, MetalDark);
+            p.Box(1, 12, 16, 27, Paper, WoodDark);
+            p.Fill(3, 22, 8, 25, Mint); p.Fill(10, 22, 14, 25, Coral); p.Fill(3, 15, 8, 20, Gold); p.Fill(10, 15, 14, 20, Violet);
+            p.Fill(7, 26, 10, 27, Metal);
+        });
         public static Sprite TrophyCase() => Paint("trophycase", 28, 40, p =>
         {
             p.Box(0, 0, 27, 39, Glass, WoodDark); p.Fill(1, 0, 26, 5, Wood);

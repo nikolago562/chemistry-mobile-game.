@@ -123,9 +123,8 @@ namespace ChemistryGame
             if (kind != StationType.CosmeticShopStation && kind != StationType.TutorialStation)
             {
                 station.stationPrompt = "[E] " + name;
-                station.promptText = () => "[E] " + name + (Curriculum.StationOpen(kind) ? "" : " • დაკეტილია");
+                station.promptText = () => "[E] " + name + (!Curriculum.StationOpen(kind) ? " • დაკეტილია" : kind == StationType.QuizDesk ? " ★ არჩევითი" : "");
             }
-            station.Initialize(this);
             if (closet)
             {
                 var art = new GameObject("კარადა", typeof(SpriteRenderer));
@@ -142,16 +141,9 @@ namespace ChemistryGame
                 renderer.sprite = PixelArt.Closet();
                 renderer.sortingOrder = 6;
                 DepthOccluders.Add(go.transform.position, 1.25f, 1.0f, 3.3f);
-                var halo = go.AddComponent<ClosetGlow>();
-                var guide = new GameObject("კარადის წინ მონიშნული ადგილი", typeof(SpriteRenderer));
-                guide.transform.SetParent(go.transform, false);
-                guide.transform.localPosition = new Vector3(0, -1f);
-                var mat = guide.GetComponent<SpriteRenderer>();
-                mat.sprite = PixelArt.Make(40, 14, (px, py) =>
-                    px < 2 || px > 37 || py < 2 || py > 11 ? new Color(0.23f, 0.9f, 0.79f, 0.7f) : new Color(0.23f, 0.9f, 0.79f, 0.18f));
-                mat.sortingOrder = 3;
-                halo.Initialize(renderer, Tutorial, mat);
             }
+            // After the closet art exists, so its sprite takes the highlight tint.
+            station.Initialize(this);
             if (kind == StationType.ReactionTable)
                 Visuals.AddApparatus(go.transform.position + new Vector3(0.8f, 3f));
         }
@@ -257,7 +249,7 @@ namespace ChemistryGame
             int waiting = ResearchProjects.Active.Count(p => ResearchProjects.Stage(p)?.Kind == StageKind.Wait && ResearchProjects.Ready(p) && !string.IsNullOrEmpty(p.readyDay));
             GameSaveManager.Instance.Commit();
             string message = (returning ? "კეთილი იყოს შენი დაბრუნება! " : "") + SchoolCalendar.DateText + " • " + SchoolCalendar.PartName + ". " +
-                (waiting > 0 ? "ღამით ცდა დასრულდა, კვლევების დაფა [R] გელოდება. " : "") + (fair ?? "განცხადებების დაფაზე [J] დღის მოვლენებია.");
+                (waiting > 0 ? "ღამით ცდა დასრულდა — ლაბორატორიაში შეამოწმე. " : "") + (fair ?? "დღის ამბები განცხადებების დაფაზეა.");
             HUD.Notify(message);
         }
 
@@ -324,7 +316,7 @@ namespace ChemistryGame
             switch (station.stationType)
             {
                 case StationType.TutorialStation:
-                    if (Tutorial.Step == TutorialManager.TutorialStep.ReadNotebook) { Notebook.Open(0); Tutorial.CompleteIntro(); }
+                    if (Tutorial.Step == TutorialManager.TutorialStep.ReadNotebook) { Tutorial.CompleteIntro(); Lessons.Begin(Curriculum.Next); }
                     else if (Curriculum.Next != null) Lessons.Begin(Curriculum.Next);
                     else Lessons.OpenMap();
                     break;
@@ -341,23 +333,6 @@ namespace ChemistryGame
                 case StationType.TeacherNPC: Dialogue.Talk(); break;
                 case StationType.Classmate: station.GetComponentInParent<SchoolNPC>()?.Talk(); break;
             }
-        }
-    }
-
-    public sealed class ClosetGlow : MonoBehaviour
-    {
-        private SpriteRenderer visual;
-        private TutorialManager tutorial;
-        private SpriteRenderer ground;
-        public void Initialize(SpriteRenderer renderer, TutorialManager manager, SpriteRenderer guide) { visual = renderer; tutorial = manager; ground = guide; }
-        private void Update()
-        {
-            if (ground != null)
-                ground.color = tutorial.Step == TutorialManager.TutorialStep.CollectCoat
-                    ? Color.white : new Color(1, 1, 1, 0.25f);
-            visual.color = tutorial.Step == TutorialManager.TutorialStep.CollectCoat
-                ? Color.Lerp(Color.white, new Color(0.55f, 1, 0.65f), (Mathf.Sin(Time.time * 3) + 1) / 2)
-                : Color.white;
         }
     }
 }

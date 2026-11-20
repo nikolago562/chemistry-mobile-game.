@@ -26,6 +26,13 @@ Look for `CURRICULUM_CHECKS_PASSED`, `LIFE_SIM_CHECKS_PASSED` and `LAB_PLAYMODE_
 - Classroom benches are themed stations (atom, element, reaction, molecule, solution, acid-base); new advanced desk at (37.5, -22). `ChemChallengeUI` is the advanced floor: tiers 1–4 (8 correct answers unlock the next; stats `tier:N`), timed bonus from tier 3, 10-question exam at tier 4; science fair opens at tier 4; rankings and teacher quests open after the curriculum.
 - Save fields: `lessons`, `lessonMistakes`, `notebookPages` (default empty; old saves start at lesson 1).
 
+## Gameplay-first rules (interaction layer)
+- `World/Focus.cs` — every interactable (stations, `WorldInteractable`, personal-lab equipment, doors) gets a coloured floor outline by `Glow` kind (mint equipment, gold reward, violet teacher, coral urgent, blue door, green done). It wakes near the player, sparkles when focused, blinks from afar when it is the objective. Only one object is focused at a time (objective → closest → doors → optional); only the focused one shows its prompt and takes [E].
+- No menu dock. Menus are world objects: periodic wall chart (classroom, x 57.4), notebook lectern and shop/room-plan stand (personal lab back corners), shelf, cabinet, boards. The keys still work as shortcuts.
+- Opening: 2-line welcome → closet → 1 line → teacher desk starts lesson 1 directly. The classroom tour and other guide lessons are optional, offered when you talk to the teacher.
+- Lessons: one-line setup → demo → guided → free → reward (shows the concept after the action). The 3 quiz questions per lesson now only feed the chapter reviews.
+- HUD: one objective line + progress bar; streak and combo stay hidden until the advanced floor opens.
+
 ## Known gaps / risks
 - Not hand-played yet; pacing and difficulty are untested by a human. Curriculum is ~42 lessons; no human has timed them.
 - Existing saves keep all items but restart the theory path, so the advanced quizzes are locked for them until it is finished.

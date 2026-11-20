@@ -13,8 +13,8 @@ namespace ChemistryGame
         private bool welcomeShown;
         public Vector3 Target => game.classroom.TransformPoint(Step == TutorialStep.CollectCoat
             ? (Vector3)(game.lockerPosition + new Vector2(0, -1f)) : (Vector3)game.teacherDeskPosition);
-        public string Objective => Step == TutorialStep.CollectCoat ? "მიაკითხე მბზინავ კარადას და აიღე ხალათი."
-            : Step == TutorialStep.ReadNotebook ? "მიდი მასწავლებლის მაგიდასთან, დააჭირე [E] და გაეცანი რვეულს."
+        public string Objective => Step == TutorialStep.CollectCoat ? "აიღე ხალათი მბზინავ კარადაში."
+            : Step == TutorialStep.ReadNotebook ? "მასწავლებლის მაგიდასთან პირველი ცდა გელოდება."
             : Curriculum.NextAction;
 
         public void Initialize(LabGame lab)
@@ -64,7 +64,7 @@ namespace ChemistryGame
             Dialogue("ხალათი მოირგე!\n\nახლა მიდი მასწავლებლის მაგიდასთან და დააჭირე [E]. " +
                 "ჩვენი პირველი დავალებაა წყალბადისა და ჟანგბადისგან წყლის მიღება.");
         }
-        /// <summary>Finishes the opening tutorial once the player has seen the notebook and the interface.</summary>
+        /// <summary>Finishes the opening at the teacher's desk; the caller starts the first hands-on lesson.</summary>
         public void CompleteIntro()
         {
             if (Step != TutorialStep.ReadNotebook) return;
@@ -74,8 +74,7 @@ namespace ChemistryGame
             Step = TutorialStep.Completed;
             Changed?.Invoke();
             AudioManager.Instance?.Milestone();
-            game.HUD.Notify("რვეული და მიზნების ბარათი გაიცანი! მიღებულია 10 ქიმქოინი. მალე ქიმიის პირველი გაკვეთილი დაიწყება.");
-            game.Guide.Queue("tour");
+            game.HUD.Notify("+10 ქიმქოინი • ლაბორატორია შენია!");
         }
 #pragma warning restore CS0162
         public void Dialogue(string message)

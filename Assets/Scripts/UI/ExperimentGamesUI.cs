@@ -713,7 +713,7 @@ namespace ChemistryGame
             GameSaveManager.Instance.Commit();
             var art = LaboratoryArt.Draw(parent, "უვნებელი ავარია", local, DecorArt.Puddle(look), parent == game.classroom ? 3 : -298);
             spills.Add(art.gameObject);
-            WorldInteractable.Create(art.transform, Vector2.zero, new Vector2(1.6f, 1.2f), 1.6f, () => "[E] დასუფთავება", () => Clean(art.gameObject));
+            WorldInteractable.Create(art.transform, Vector2.zero, new Vector2(1.6f, 1.2f), 1.6f, () => "[E] დასუფთავება", () => Clean(art.gameObject), null, Glow.Urgent);
         }
 
         private void Clean(GameObject spill)

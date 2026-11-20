@@ -17,6 +17,7 @@ namespace ChemistryGame
         private int targetCoins;
         private int visibleCoins = -1;
         private Camera worldCamera;
+        private RectTransform statsRect;
 
         public void Initialize(LabGame lab)
         {
@@ -50,8 +51,11 @@ namespace ChemistryGame
             streak = Stat(stats.transform, LabIcon.Flame, LabUI.Coral, "დღიური სერია");
             combo = Stat(stats.transform, LabIcon.Flask, LabUI.Mint, "სწორი პასუხების სერია");
 
-            var tracker = LabUI.Card(LabUI.Root, "აქტიური მიზანი", LabUI.Paper, 18);
-            Anchor(tracker.rectTransform, new Vector2(0, 1), new Vector2(16, -82), new Vector2(300, 174));
+            stats.childForceExpandWidth = false;
+            statsRect = (RectTransform)stats.transform;
+            // One objective and one progress bar; menus live in the world, so there is no dock.
+            var tracker = LabUI.Card(LabUI.Root, "აქტიური მიზანი", LabUI.Paper, 14);
+            Anchor(tracker.rectTransform, new Vector2(0, 1), new Vector2(16, -82), new Vector2(300, 112));
             LabUI.Shadow(tracker);
             taskTitle = LabUI.Text(tracker.transform, "", 15, LabUI.Green);
             taskTitle.fontStyle = FontStyles.Bold;
@@ -64,26 +68,8 @@ namespace ChemistryGame
             objective.enableAutoSizing = true;
             objective.fontSizeMin = 14;
             objective.fontSizeMax = 18;
-            LabUI.Size(objective.gameObject, 66);
+            LabUI.Size(objective.gameObject, 44);
             progress = LabUI.Progress(tracker.transform, 0, LabUI.Mint);
-            var clue = LabUI.Text(tracker.transform, "[WASD] მოძრაობა   [E] მოქმედება", 13, LabUI.Muted);
-            LabUI.Size(clue.gameObject, 18);
-
-            var dock = LabUI.Panel(LabUI.Root, "მენიუს პანელი", LabUI.Navy);
-            Anchor(dock.rectTransform, new Vector2(0.5f, 0), new Vector2(0, 8), new Vector2(1250, 66));
-            LabUI.Shadow(dock);
-            var row = LabUI.Row(dock.transform, "ნავიგაცია", 8);
-            LabUI.Fill((RectTransform)row.transform, 10);
-            DockButton(row.transform, LabIcon.Check, "გაკვეთილები", "M", 9, LabUI.Gold);
-            DockButton(row.transform, LabIcon.Atom, "ელემენტები", "Tab", 0, LabUI.Mint);
-            DockButton(row.transform, LabIcon.Book, "რვეული", "N", 1, LabUI.Paper);
-            DockButton(row.transform, LabIcon.Coat, "მაღაზია", "B", 2, LabUI.Coral);
-            DockButton(row.transform, LabIcon.Trophy, "რეიტინგი", "", 3, LabUI.Gold);
-            DockButton(row.transform, LabIcon.Quest, "დავალებები", "", 4, LabUI.Paper);
-            DockButton(row.transform, LabIcon.Flask, "ჩემი ლაბი", "L", 5, LabUI.Mint);
-            DockButton(row.transform, LabIcon.Book, "კვლევები", "R", 6, LabUI.Coral);
-            DockButton(row.transform, LabIcon.Atom, "კოლექცია", "C", 7, LabUI.Gold);
-            DockButton(row.transform, LabIcon.Quest, "დაფა", "J", 8, LabUI.Mint);
 
             toastCard = LabUI.Panel(LabUI.Root, "შეტყობინება", LabUI.Navy);
             Anchor(toastCard.rectTransform, new Vector2(0.5f, 1), new Vector2(-135, -24), new Vector2(340, 88));
@@ -107,7 +93,6 @@ namespace ChemistryGame
             panels["identity"] = Compact(identity.rectTransform);
             panels["stats"] = Compact((RectTransform)stats.transform);
             panels["tracker"] = Compact(tracker.rectTransform);
-            panels["dock"] = Compact(dock.rectTransform);
             toastCard.rectTransform.localScale = Vector3.one * 0.85f;
             GameSaveManager.Instance.Changed += Refresh;
             game.Tutorial.Changed += Refresh;
@@ -135,22 +120,6 @@ namespace ChemistryGame
             return value;
         }
 
-        private void DockButton(Transform parent, LabIcon icon, string label, string key, int menu, Color accent)
-        {
-            var button = LabUI.Button(parent, "", () => game.OpenMenu(menu), 50);
-            button.GetComponent<Image>().color = new Color32(52, 82, 65, 255);
-            var graphic = LabUI.Icon(button.transform, icon, accent);
-            Anchor(graphic.rectTransform, new Vector2(0, 0.5f), new Vector2(7, 0), new Vector2(32, 32));
-            var text = button.GetComponentInChildren<TMP_Text>();
-            text.text = label + (key.Length > 0 ? "\n<size=11><color=#BBD3B4>[" + key + "]</color></size>" : "");
-            text.fontSize = text.fontSizeMax = 15;
-            // Ten buttons share the dock: shrink a label rather than break a word.
-            text.textWrappingMode = TextWrappingModes.NoWrap;
-            text.fontSizeMin = 9;
-            text.rectTransform.offsetMin = new Vector2(39, 5);
-            text.rectTransform.offsetMax = new Vector2(-7, -5);
-        }
-
         private void Update()
         {
             if (lifeSim != null && Time.unscaledTime > lifeSimRefresh)
@@ -173,7 +142,7 @@ namespace ChemistryGame
                 Mathf.Clamp(point.y, 0.20f, 0.80f) * size.y - size.y / 2);
             waypointCard.rectTransform.anchoredPosition = position + Vector2.up * Mathf.Sin(Time.unscaledTime * 3) * 4;
             string arrow = point.x > 1 ? " →" : point.x < 0 ? " ←" : point.y > 1 ? " ↑" : " ↓";
-            waypoint.text = (game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat ? "დამცავი ხალათი" : "რვეული") + arrow;
+            waypoint.text = (game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat ? "დამცავი ხალათი" : "პირველი ცდა") + arrow;
         }
         private readonly System.Collections.Generic.Dictionary<string, RectTransform> panels = new System.Collections.Generic.Dictionary<string, RectTransform>();
         private Image highlight;
@@ -245,6 +214,11 @@ namespace ChemistryGame
             streak.text = save.Data.currentDailyStreak + " დღე";
             combo.text = save.Combo >= 3 ? "×" + save.ComboMultiplier.ToString("0.0", CultureInfo.InvariantCulture) : save.Combo.ToString();
             title.text = game.Rankings.Title;
+            // Streak and combo only matter on the advanced floor; a beginner sees just the coins.
+            bool advanced = Curriculum.Complete;
+            streak.transform.parent.gameObject.SetActive(advanced);
+            combo.transform.parent.gameObject.SetActive(advanced);
+            statsRect.sizeDelta = new Vector2(advanced ? 570 : 186, statsRect.sizeDelta.y);
             bool tutorial = game.Tutorial.Step != TutorialManager.TutorialStep.Completed;
             bool learning = !tutorial && !Curriculum.Complete;
             taskTitle.text = tutorial ? "პირველი დღე ლაბორატორიაში" : learning ? "სწავლის გზა • " + Curriculum.Percent + "%" : "დღის მიზანი";
@@ -252,7 +226,7 @@ namespace ChemistryGame
             if (game.Personal != null && game.Personal.Inside)
             {
                 taskTitle.text = "შენი ლაბორატორია";
-                objective.text = "[L] მაღაზია და მოწყობა\n[E] ცდის დაწყება\nზედა კარი — კლასში დაბრუნება";
+                objective.text = "მიდი მბზინავ ხელსაწყოსთან და სცადე ცდა.";
             }
             float amount = tutorial ? (game.Tutorial.Step == TutorialManager.TutorialStep.ReadNotebook ? 0.5f : 0.1f)
                 : learning ? Curriculum.Percent / 100f : Mathf.Clamp01(save.Data.dailyQuizzesSolved / 3f);

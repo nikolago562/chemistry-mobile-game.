@@ -22,10 +22,13 @@ namespace ChemistryGame
         private CanvasGroup prompt;
         private TMP_Text label;
         private LabGame game;
+        private Focus focus;
 
         public void Initialize(LabGame lab)
         {
             game = lab;
+            var zone = GetComponent<BoxCollider2D>();
+            focus = Focus.Attach(gameObject, zone.size, zone.offset, Kind, Objective, GetComponentsInChildren<SpriteRenderer>());
             var root = new GameObject("მინიშნება", typeof(RectTransform), typeof(Canvas), typeof(CanvasGroup));
             root.transform.SetParent(transform, false);
             root.transform.localPosition = new Vector3(0, promptHeight >= 0 ? promptHeight : supplyCloset ? 3.35f : 2.6f);
@@ -46,15 +49,41 @@ namespace ChemistryGame
         {
             if (game == null) return;
             bool allowed = game.Tutorial.Allows(this);
-            prompt.alpha = Mathf.MoveTowards(prompt.alpha, inRange && allowed && !LabUI.AnyOpen ? 1 : 0, Time.deltaTime * 8);
+            focus.Near = inRange && allowed;
+            bool focused = focus.IsFocused;
+            prompt.alpha = Mathf.MoveTowards(prompt.alpha, focused && !LabUI.AnyOpen ? 1 : 0, Time.deltaTime * 8);
             if (promptText != null && inRange) label.text = promptText();
             if (supplyCloset && game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat && inRange && allowed && !LabUI.AnyOpen)
             {
                 game.Tutorial.CollectCoat();
                 return;
             }
-            if (inRange && allowed && !LabUI.AnyOpen && Input.GetKeyDown(KeyCode.E))
+            if (focused && !LabUI.AnyOpen && Input.GetKeyDown(KeyCode.E))
                 game.Interact(this);
+        }
+        private Glow Kind()
+        {
+            if (game == null || !game.Tutorial.Allows(this)) return Glow.Hidden;
+            switch (stationType)
+            {
+                case StationType.TeacherNPC:
+                case StationType.TutorialStation:
+                case StationType.Classmate: return Glow.Teacher;
+                case StationType.CosmeticShopStation: return supplyCloset && !GameSaveManager.Instance.Data.starterCoatCollected ? Glow.Equipment : Glow.Reward;
+                case StationType.LeaderboardBoard: return Curriculum.Complete ? Glow.Reward : Glow.Hidden;
+                case StationType.QuizDesk:
+                case StationType.VisualExperimentDesk: return Curriculum.TierOpen(1) ? Glow.Reward : Glow.Hidden;
+                default: return Curriculum.StationOpen(stationType) ? Glow.Equipment : Glow.Hidden;
+            }
+        }
+        /// <summary>The closet during the coat step, then the teacher's desk until the beginner path is done.</summary>
+        private bool Objective()
+        {
+            if (game == null) return false;
+            var step = game.Tutorial.Step;
+            if (supplyCloset) return step == TutorialManager.TutorialStep.CollectCoat;
+            return stationType == StationType.TutorialStation && (step == TutorialManager.TutorialStep.ReadNotebook ||
+                step == TutorialManager.TutorialStep.Completed && !Curriculum.Complete);
         }
         private void OnTriggerEnter2D(Collider2D other)
         {

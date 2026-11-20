@@ -94,8 +94,8 @@ public static class LabGameChecks
     {
         var dialogueType = typeof(TeacherDialogueUI);
         var pages = (string[])dialogueType.GetField("pages", Hidden).GetValue(game.Dialogue);
-        Ensure(pages.Length >= 5, "Welcome lesson covers the basics");
-        dialogueType.GetField("page", Hidden).SetValue(game.Dialogue, 3);
+        Ensure(pages.Length >= 2 && pages.Length <= 3, "Welcome is short: movement, then the closet");
+        dialogueType.GetField("page", Hidden).SetValue(game.Dialogue, 1);
         dialogueType.GetMethod("BeginPage", Hidden).Invoke(game.Dialogue, null);
         Schedule(TutorialPanView, 1.6);
     }
@@ -305,8 +305,8 @@ public static class LabGameChecks
     private static void IntroNotebook()
     {
         var data = GameSaveManager.Instance.Data;
-        Ensure(LabUI.AnyOpen && !game.player.canMove && !game.Quiz.IsOpen, "The teacher's desk opens the notebook, not a chemistry quiz");
-        Ensure(data.tutorialCompleted && data.chemCoins == 10 && data.currentDailyStreak == 1, "Notebook intro completes the tutorial and pays once");
+        Ensure(game.Dialogue.IsOpen && !game.Quiz.IsOpen, "The teacher's desk starts the first hands-on lesson, not a quiz");
+        Ensure(data.tutorialCompleted && data.chemCoins == 10 && data.currentDailyStreak == 1, "The desk completes the tutorial and pays once");
         game.Tutorial.CompleteIntro();
         Ensure(data.chemCoins == 10, "No duplicate tutorial payout");
         Snapshot("01c-notebook-intro");
@@ -315,7 +315,6 @@ public static class LabGameChecks
     }
     private static void AfterTutorial()
     {
-        Ensure(game.Dialogue.IsOpen, "After the notebook intro the teacher starts the classroom tour");
         LabUI.CloseTop();
         Ensure(!LabUI.AnyOpen && TeacherGuide.Next != null && TeacherGuide.Next.ID == "tour", "A skipped lesson stays available at the teacher");
         CheckCurriculum();
@@ -323,6 +322,20 @@ public static class LabGameChecks
     }
     private static InteractableStation Station(StationType type) =>
         UnityEngine.Object.FindObjectsByType<InteractableStation>(FindObjectsSortMode.None).Single(s => s.stationType == type);
+    private static void CheckFocus()
+    {
+        var desk = Station(StationType.TutorialStation).GetComponent<Focus>();
+        var atom = Station(StationType.AtomTable).GetComponent<Focus>();
+        var shop = UnityEngine.Object.FindObjectsByType<InteractableStation>(FindObjectsSortMode.None)
+            .First(s => s.stationType == StationType.CosmeticShopStation && !s.supplyCloset).GetComponent<Focus>();
+        Ensure(desk.IsObjective && desk.Kind() == Glow.Teacher && atom.Kind() == Glow.Hidden && shop.Kind() == Glow.Reward, "Highlight colours follow the interaction type");
+        desk.Near = shop.Near = true;
+        Ensure(Focus.Current == desk && desk.IsFocused && !shop.IsFocused, "The objective wins the [E] prompt over other objects");
+        var door = UnityEngine.Object.FindObjectsByType<Focus>(FindObjectsSortMode.None).First(f => f.Kind() == Glow.Door);
+        door.Near = true; desk.Near = false;
+        Ensure(Focus.Current != door, "Doors glow but never take the [E] prompt");
+        door.Near = shop.Near = false;
+    }
     private static void CheckCurriculum()
     {
         var save = GameSaveManager.Instance;
@@ -367,6 +380,7 @@ public static class LabGameChecks
         game.OpenMenu(3);
         Ensure(!LabUI.AnyOpen && !lessons.HubOpen, "Locked stations, activities and rankings only show a message");
         Ensure(Station(StationType.AtomTable).promptText().Contains("დაკეტილია"), "Locked stations say so in their prompt");
+        CheckFocus();
 
         // Lesson 1: demo, guided and free sorting, the small test and the reward.
         var lesson = Curriculum.Next;
@@ -381,17 +395,20 @@ public static class LabGameChecks
         Ensure(lessons.Solved && lessons.Advance() && lessons.Current == CurriculumUI.Step.Free, "Guided practice leads to free practice");
         for (int i = 0; i < lesson.Items.Length; i++) lessons.Sort(i, lesson.Items[i].Bin);
         Snapshot("54-lesson-sort");
-        Ensure(lessons.Solved && lessons.Advance() && lessons.Current == CurriculumUI.Step.Test, "Free practice leads to the small test");
+        Ensure(lessons.Solved && lessons.Advance() && lessons.Current == CurriculumUI.Step.Reward, "Free practice leads straight to the reward, no quiz");
+        Ensure(Curriculum.Done("c1_matter") && save.Data.chemCoins == coins + 10, "Lesson reward is paid once (" + (save.Data.chemCoins - coins) + ")");
+        Ensure(save.Data.notebookPages.Contains("c1_matter") && save.Data.lessonMistakes.Count == 0, "Notebook page is saved");
+        Snapshot("56-lesson-reward");
+        save.Load();
+        Ensure(Curriculum.Done("c1_matter") && Curriculum.Next.ID == "c1_states", "Curriculum progress survives a reload");
+        // Chapter reviews keep the short quiz with explained wrong answers.
+        lessons.OpenWorkbook(Curriculum.Lessons.First(l => l.IsReview));
         var first = lessons.Question;
+        Ensure(lessons.Current == CurriculumUI.Step.Test && first != null, "Chapter reviews still quiz");
         lessons.Answer(1);
         Ensure(lessons.Feedback.Contains(first.Why[1]) && lessons.Feedback.Contains(first.Hint) && !lessons.Advance(), "A wrong answer is explained, hinted and retried");
         Snapshot("55-lesson-test");
-        for (int q = 0; q < 3; q++) { lessons.Answer(0); lessons.Advance(); }
-        Ensure(lessons.Current == CurriculumUI.Step.Reward && Curriculum.Done("c1_matter") && save.Data.chemCoins == coins + 14, "Lesson reward is paid once (" + (save.Data.chemCoins - coins) + ")");
-        Ensure(save.Data.notebookPages.Contains("c1_matter") && save.Data.lessonMistakes.Count == 1 && Curriculum.Mistakes.Count() == 1, "Notebook page and the review mistake are saved");
-        Snapshot("56-lesson-reward");
-        save.Load();
-        Ensure(Curriculum.Done("c1_matter") && Curriculum.Next.ID == "c1_states" && Curriculum.Record("c1_matter").best == 2 && save.Data.lessonMistakes.Count == 1, "Curriculum progress survives a reload");
+        lessons.Close();
         Ensure(!Curriculum.Available(Curriculum.Get("c2_parts")) && Curriculum.Requirement(Curriculum.Get("c2_parts")).Length > 0, "Later lessons name their prerequisite");
         lessons.Close();
 

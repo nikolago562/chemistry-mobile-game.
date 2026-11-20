@@ -396,7 +396,7 @@ namespace ChemistryGame
                         OpenFair();
                     }, 46);
                 var done = ResearchProjects.All.Where(p => ResearchProjects.State(p.ID)?.timesCompleted > 0).ToList();
-                if (done.Count == 0) Ui.Line(window.Body, "ჯერ დასრულებული პროექტი არ გაქვს. კვლევების დაფა [R] გელოდება!", 17, LabUI.Coral, 40);
+                if (done.Count == 0) Ui.Line(window.Body, "ჯერ დასრულებული პროექტი არ გაქვს. კვლევების დაფა ლაბორატორიაში გელოდება!", 17, LabUI.Coral, 40);
                 foreach (var p in done)
                 {
                     var project = p;

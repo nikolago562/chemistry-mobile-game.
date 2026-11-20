@@ -143,7 +143,7 @@ namespace ChemistryGame
             var camera = Camera.main.GetComponent<ClassroomCamera>();
             camera.SetRoom(RoomMinimum, RoomMaximum, Inside);
             game.HUD.Refresh();
-            game.HUD.Notify(Inside ? "შენს ლაბორატორიაში ხარ! [L] — აღჭურვილობა და განლაგება. კლასში დასაბრუნებლად ზედა კართან მიდი." : "კლასში დაბრუნდი!");
+            game.HUD.Notify(Inside ? "შენს ლაბორატორიაში ხარ! გეგმის დაფასთან ხელსაწყოებს იყიდი და დადგამ." : "კლასში დაბრუნდი!");
             return true;
         }
         public bool Buy(string id)
@@ -220,7 +220,16 @@ namespace ChemistryGame
             LabAtmosphere.Instance?.AddWindow(Room, new Vector2(-5, BackWallY + 2.2f), new Vector2(1.6f, 1.4f));
             LabAtmosphere.Instance?.AddGlow(Room, new Vector2(-2, BackWallY - 3), new Color(1f, 0.72f, 0.4f), 9, true);
             LabAtmosphere.Instance?.AddDust(Room, new Vector2(-5, BackWallY - 3), new Vector2(6, 5));
+            // Optional support is furniture: the notebook on a lectern, the shop and room plan on a clipboard stand.
+            Furniture(new Vector2(-8, BackWallY - 1.7f), DecorArt.Lectern(), "[E] რვეული", () => game.Notebook.Open(), Glow.Optional);
+            Furniture(new Vector2(right - 0.2f, BackWallY - 1.7f), DecorArt.PlanStand(), "[E] აღჭურვილობა და მოწყობა", () => Workshop.Open(), Glow.Reward);
             BuildEquipment();
+        }
+        private void Furniture(Vector2 local, Sprite sprite, string prompt, System.Action use, Glow glow)
+        {
+            var art = LaboratoryArt.Draw(Room, prompt, local, sprite, -50 - Mathf.RoundToInt(local.y * 10));
+            var shape = art.gameObject.AddComponent<BoxCollider2D>(); shape.size = new Vector2(1f, 0.4f); shape.offset = new Vector2(0, 0.2f);
+            WorldInteractable.Create(Room, local + new Vector2(0, -0.5f), new Vector2(1.8f, 1.4f), 2.6f, () => prompt, use, () => Inside, glow);
         }
         private void BackWallColumn(float x, float width = 1)
         {
@@ -334,7 +343,12 @@ namespace ChemistryGame
     public sealed class LabDoorway : MonoBehaviour
     {
         private PersonalLab lab; private bool exit;
-        public void Initialize(PersonalLab owner, bool isExit) { lab = owner; exit = isExit; }
+        public void Initialize(PersonalLab owner, bool isExit)
+        {
+            lab = owner; exit = isExit;
+            var zone = GetComponent<BoxCollider2D>();
+            Focus.Attach(gameObject, zone.size, zone.offset, () => Glow.Door).Selectable = false;
+        }
         private void OnTriggerEnter2D(Collider2D other)
         { if (other.GetComponentInParent<PlayerController>() != null) lab.Travel(exit); }
     }
@@ -346,20 +360,27 @@ namespace ChemistryGame
             lab = owner; item = equipment;
             prompt = new GameObject("მინიშნება"); prompt.transform.SetParent(transform, false);
             PersonalLab.Label(prompt.transform, "[E] " + item.Name, new Vector2(0, 3.4f), item.Color); prompt.SetActive(false);
+            var zone = GetComponent<BoxCollider2D>();
+            // Machines a research project is waiting on call out in coral; decorations stay quiet.
+            focus = Focus.Attach(gameObject, zone.size, zone.offset, () => item.Decor ? Glow.Optional : Waiting() != null ? Glow.Urgent : Glow.Equipment);
         }
+        private Focus focus;
+        /// <summary>A research project waiting on this kind of experiment takes priority over free play.</summary>
+        private ProjectProgress Waiting() => item.Decor ? null : ResearchProjects.Active.FirstOrDefault(p =>
+        {
+            var stage = ResearchProjects.Stage(p);
+            return stage != null && stage.Kind == StageKind.Experiment &&
+                (stage.Target == item.ID || stage.Target == "water" && item.ID == "analysis" || stage.Target == "distill" && item.ID == "thermo");
+        });
         private void Update()
         {
-            prompt.SetActive(near && lab.Inside && !LabUI.AnyOpen);
-            if (!near || !lab.Inside || LabUI.AnyOpen || !Input.GetKeyDown(KeyCode.E)) return;
+            focus.Near = near && lab.Inside;
+            bool focused = focus.IsFocused && !LabUI.AnyOpen;
+            prompt.SetActive(focused);
+            if (!focused || !Input.GetKeyDown(KeyCode.E)) return;
             var game = lab.Game;
             if (item.Decor) { PersonalDecor.Use(game, item.ID); return; }
-            // A research project waiting on this kind of experiment takes priority over free play.
-            var waiting = ResearchProjects.Active.FirstOrDefault(p =>
-            {
-                var stage = ResearchProjects.Stage(p);
-                return stage != null && stage.Kind == StageKind.Experiment &&
-                    (stage.Target == item.ID || stage.Target == "water" && item.ID == "analysis" || stage.Target == "distill" && item.ID == "thermo");
-            });
+            var waiting = Waiting();
             if (waiting != null) { game.Games.Open(ResearchProjects.Stage(waiting).Target, waiting.id); return; }
             if (ExperimentGamesUI.IsGame(item.ID)) { game.Games.Open(item.ID); return; }
             LabProgress.CountStat("activity:any"); LabProgress.CountStat("activity:" + item.ID);

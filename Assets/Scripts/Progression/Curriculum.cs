@@ -125,8 +125,8 @@ namespace ChemistryGame
             get
             {
                 var next = Next;
-                if (next == null) return "თეორია დასრულებულია! რთული გამოწვევების მაგიდა კლასის ქვედა მარცხენა კუთხეშია.";
-                return "შემდეგი: „" + next.Title + "“\nმასწავლებლის მაგიდა [E]  •  სასწავლო რუკა [M]";
+                if (next == null) return "ოქროსფრად მბზინავი გამოწვევების მაგიდა გაიხსნა.";
+                return "შემდეგი ცდა: „" + next.Title + "“ — მასწავლებლის მაგიდასთან";
             }
         }
 
@@ -243,7 +243,7 @@ namespace ChemistryGame
                 if (chapter.Cosmetic != "" && !Data.unlockedCosmeticIDs.Contains(chapter.Cosmetic))
                 {
                     save.UnlockCosmetic(chapter.Cosmetic);
-                    rewards.Add("ახალი სამოსი მაღაზიაში [B]: " + (LabGame.Instance?.cosmetics?.FirstOrDefault(c => c != null && c.itemID == chapter.Cosmetic)?.displayName ?? chapter.Cosmetic));
+                    rewards.Add("ახალი სამოსი მაღაზიის თაროზე: " + (LabGame.Instance?.cosmetics?.FirstOrDefault(c => c != null && c.itemID == chapter.Cosmetic)?.displayName ?? chapter.Cosmetic));
                 }
                 if (chapter.LabItem != "" && !Data.ownedLabItems.Contains(chapter.LabItem))
                 {

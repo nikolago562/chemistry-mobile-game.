@@ -56,10 +56,11 @@ namespace ChemistryGame
             if (map != null) map.Close();
             if (hub != null) hub.Close();
             var dialogue = game.Dialogue;
-            var lines = new List<string> { "რატომ ვსწავლობთ ამას? " + lesson.Why };
-            lines.AddRange(lesson.Teach);
-            lines.Add(lesson.IsReview ? "მზად ხარ? დავიწყოთ." : "ახლა გაჩვენებ, შემდეგ კი შენ სცადე. მინიშნებები ყოველთვის ახლოს იქნება.");
-            void Teach() => dialogue.Line(() => { dialogue.End(); OpenWorkbook(lesson); }, lines.ToArray());
+            // Play first: one line to set the scene, the explanation comes after the player has tried it.
+            var lines = new[] { lesson.IsReview ? "მოკლე შემოწმება: ხუთი კითხვა ამ თავზე. მზად ხარ?"
+                : lesson.Kind == PracticeKind.Sort ? "ნახე, როგორ დავალაგებ პირველ ორს, მერე შენ სცადე!"
+                : "ჯერ გაჩვენებ, მერე შენ ააწყე!" };
+            void Teach() => dialogue.Line(() => { dialogue.End(); OpenWorkbook(lesson); }, lines);
             if (dialogue.IsOpen) Teach();
             else dialogue.Converse(dialogue.Teacher, "მასწავლებელი • " + lesson.Title, Teach);
         }
@@ -98,11 +99,11 @@ namespace ChemistryGame
         {
             var row = LabUI.Row(window.Body, "გაკვეთილის ნაბიჯები", 6);
             LabUI.Size(row.gameObject, 30);
-            var steps = Lesson.IsReview ? new[] { Step.Teach, Step.Test, Step.Reward } : practiceOnly ? new[] { Step.Free } : (Step[])Enum.GetValues(typeof(Step));
+            var steps = Lesson.IsReview ? new[] { Step.Teach, Step.Test, Step.Reward } : practiceOnly ? new[] { Step.Free } : new[] { Step.Demo, Step.Guided, Step.Free, Step.Reward };
             foreach (var step in steps)
             {
                 var color = step < Current ? LabUI.Green : step == Current ? (Color)new Color32(176, 120, 38, 255) : (Color)new Color32(150, 156, 140, 255);
-                var label = LabUI.Pill(row.transform, ((int)step + 1) + ". " + Curriculum.StepNames[(int)step], color);
+                var label = LabUI.Pill(row.transform, (Array.IndexOf(steps, step) + 1) + ". " + Curriculum.StepNames[(int)step], color);
                 label.enableAutoSizing = true; label.fontSizeMin = 11; label.fontSizeMax = 15;
             }
         }
@@ -142,7 +143,7 @@ namespace ChemistryGame
             feedback.enableAutoSizing = true; feedback.fontSizeMin = 12; feedback.fontSizeMax = 17;
 
             var footer = LabUI.Row(window.Body, "ქმედებები", 10);
-            LabUI.Size(LabUI.Secondary(footer.transform, "ახსნის გამეორება", () => Say(string.Join("\n", Lesson.Teach), LabUI.Ink), 42).gameObject, 42, 230, 0);
+            LabUI.Size(LabUI.Secondary(footer.transform, "რა ხდება აქ?", () => Say(string.Join("\n", Lesson.Teach), LabUI.Ink), 42).gameObject, 42, 230, 0);
             LabUI.Size(LabUI.Secondary(footer.transform, "რვეული [N]", () => game.Notebook.Open(1), 42).gameObject, 42, 160, 0);
             if (Current == Step.Free && !sort) LabUI.Size(LabUI.Button(footer.transform, "შემოწმება", Check, 42).gameObject, 42, 180, 0);
             next = LabUI.Button(footer.transform, Current == Step.Demo ? "გამოტოვება →" : "შემდეგი →", () => Advance(), 42);
@@ -200,7 +201,8 @@ namespace ChemistryGame
                 case Step.Guided: Go(Step.Free); break;
                 case Step.Free:
                     if (practiceOnly) { game.HUD.Notify("ყოჩაღ! ვარჯიში დასრულდა."); window.Close(); }
-                    else Go(Step.Test);
+                    // Lessons end on what the player built; the quiz questions live on in chapter reviews.
+                    else { keys = new string[0]; Go(Step.Reward); }
                     break;
                 case Step.Test:
                     if (!answered) return false;
@@ -743,9 +745,11 @@ namespace ChemistryGame
             int score = keys.Count(k => !wrong.Contains(k));
             var title = LabUI.Text(window.Body, Lesson.IsReview ? "თავი „" + Curriculum.ChapterOf(Lesson).Title + "“ დასრულებულია!" : "გაკვეთილი დასრულებულია!", 30, LabUI.Green);
             title.fontStyle = FontStyles.Bold; LabUI.Size(title.gameObject, 44);
-            var summary = LabUI.Text(window.Body, "პირველივე ცდით სწორი პასუხები: " + score + " / " + keys.Length +
-                (score < keys.Length ? "  •  შეცდომები სასწავლო რუკაზე [M] შეინახა — მოგვიანებით გაიმეორე." : "  •  უშეცდომოდ! ბრწყინვალეა."), 18, LabUI.Ink);
-            LabUI.Size(summary.gameObject, 30);
+            var summary = LabUI.Text(window.Body, !Lesson.IsReview ? "შენ თავად გააკეთე! აი, რა აღმოაჩინე: " + Lesson.Teach[0]
+                : "პირველივე ცდით სწორი პასუხები: " + score + " / " + keys.Length +
+                (score < keys.Length ? "  •  შეცდომებს მასწავლებელი მოგვიანებით გაგიმეორებს." : "  •  უშეცდომოდ! ბრწყინვალეა."), 18, LabUI.Ink);
+            summary.enableAutoSizing = true; summary.fontSizeMin = 12; summary.fontSizeMax = 18;
+            LabUI.Size(summary.gameObject, 52);
             var row = LabUI.Row(window.Body, "ჯილდო და ჩანაწერი", 16);
             LabUI.FlexibleHeight(row.gameObject);
             row.childForceExpandHeight = true;
