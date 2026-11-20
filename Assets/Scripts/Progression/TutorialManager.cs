@@ -11,8 +11,9 @@ namespace ChemistryGame
         public event Action Changed;
         private LabGame game;
         private bool welcomeShown;
-        public Vector3 Target => game.classroom.TransformPoint(Step == TutorialStep.CollectCoat
-            ? (Vector3)(game.lockerPosition + new Vector2(0, -1f)) : (Vector3)game.teacherDeskPosition);
+        public Vector3 Target => Step == TutorialStep.CollectCoat ? game.classroom.TransformPoint(game.lockerPosition + new Vector2(0, -1f))
+            : Step == TutorialStep.ReadNotebook || Curriculum.Next == null ? game.classroom.TransformPoint(game.teacherDeskPosition)
+            : game.StationPoint(Curriculum.ChapterOf(Curriculum.Next).Station);
         public string Objective => Step == TutorialStep.CollectCoat ? "აიღე ხალათი მბზინავ კარადაში."
             : Step == TutorialStep.ReadNotebook ? "მასწავლებლის მაგიდასთან პირველი ცდა გელოდება."
             : Curriculum.NextAction;
@@ -27,6 +28,7 @@ namespace ChemistryGame
 
         private void Start()
         {
+            if (Step == TutorialStep.CollectCoat) gameObject.AddComponent<CoatArrows>().Initialize(game);
             game.Profile.Begin(ShowWelcome);
         }
         private void ShowWelcome()
@@ -121,6 +123,64 @@ namespace ChemistryGame
             LabUI.Size(help.gameObject, 50, -1, 1);
             var button = LabUI.Button(controls.transform, Step == TutorialStep.CollectCoat ? "დავიწყოთ!" : "ცდისკენ!", window.Close, 52);
             LabUI.Size(button.gameObject, 52, 210, 0);
+        }
+    }
+
+    /// <summary>Yellow floor arrows that chase toward the coat closet, plus one bobbing above it, until the coat is taken.</summary>
+    public sealed class CoatArrows : MonoBehaviour
+    {
+        private LabGame game;
+        private readonly System.Collections.Generic.List<SpriteRenderer> trail = new System.Collections.Generic.List<SpriteRenderer>();
+        private SpriteRenderer marker;
+        private Vector3 markerBase;
+        private static Sprite arrow;
+
+        public void Initialize(LabGame lab)
+        {
+            game = lab;
+            Vector2 from = new Vector2(48.5f, 7.2f), to = game.lockerPosition + new Vector2(-1.8f, -1.1f);
+            float angle = Mathf.Atan2(to.y - from.y, to.x - from.x) * Mathf.Rad2Deg;
+            for (int i = 0; i < 6; i++)
+            {
+                var art = Draw("ისარი ხალათისკენ", Vector2.Lerp(from, to, i / 5f), 4);
+                art.transform.localRotation = Quaternion.Euler(0, 0, angle);
+                trail.Add(art);
+            }
+            marker = Draw("ისარი კარადაზე", game.lockerPosition + new Vector2(0, 3.7f), 12);
+            marker.transform.localRotation = Quaternion.Euler(0, 0, -90);
+            marker.transform.localScale = Vector3.one * 1.6f;
+            markerBase = marker.transform.localPosition;
+        }
+
+        private SpriteRenderer Draw(string name, Vector2 local, int order)
+        {
+            arrow ??= PixelArt.Make(14, 12, (x, y) =>
+            {
+                // A right-pointing chevron arrow with a dark rim so it reads on any floor colour.
+                bool head = x >= 7 && Mathf.Abs(y - 5.5f) <= 13 - x;
+                bool shaft = x < 8 && y >= 4 && y <= 7;
+                bool rimHead = x >= 6 && Mathf.Abs(y - 5.5f) <= 14 - x;
+                bool rimShaft = x < 8 && y >= 3 && y <= 8;
+                if (head || shaft) return new Color32(255, 214, 64, 255);
+                return rimHead || rimShaft ? new Color32(120, 78, 20, 255) : Color.clear;
+            });
+            var art = LaboratoryArt.Draw(game.classroom, name, local, arrow, order);
+            return art;
+        }
+
+        private void Update()
+        {
+            bool show = game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat;
+            if (!show) { foreach (var a in trail) Destroy(a.gameObject); Destroy(marker.gameObject); Destroy(this); return; }
+            float t = Time.time;
+            for (int i = 0; i < trail.Count; i++)
+            {
+                // A wave runs along the trail toward the closet.
+                float wave = Mathf.Max(0, Mathf.Sin(t * 4 - i * 0.9f));
+                trail[i].color = new Color(1, 1, 1, 0.35f + 0.65f * wave);
+                trail[i].transform.localScale = Vector3.one * (1 + 0.2f * wave);
+            }
+            marker.transform.localPosition = markerBase + Vector3.up * Mathf.Abs(Mathf.Sin(t * 3)) * 0.35f;
         }
     }
 }

@@ -73,17 +73,17 @@ namespace ChemistryGame
                 case StationType.LeaderboardBoard: return Curriculum.Complete ? Glow.Reward : Glow.Hidden;
                 case StationType.QuizDesk:
                 case StationType.VisualExperimentDesk: return Curriculum.TierOpen(1) ? Glow.Reward : Glow.Hidden;
-                default: return Curriculum.StationOpen(stationType) ? Glow.Equipment : Glow.Hidden;
+                default: return Curriculum.StationOpen(stationType) || Curriculum.LessonAt(stationType) ? Glow.Equipment : Glow.Hidden;
             }
         }
-        /// <summary>The closet during the coat step, then the teacher's desk until the beginner path is done.</summary>
+        /// <summary>The closet during the coat step, the desk for the first experiment, then whichever station holds the next lesson.</summary>
         private bool Objective()
         {
             if (game == null) return false;
             var step = game.Tutorial.Step;
             if (supplyCloset) return step == TutorialManager.TutorialStep.CollectCoat;
-            return stationType == StationType.TutorialStation && (step == TutorialManager.TutorialStep.ReadNotebook ||
-                step == TutorialManager.TutorialStep.Completed && !Curriculum.Complete);
+            if (stationType == StationType.TutorialStation && step == TutorialManager.TutorialStep.ReadNotebook) return true;
+            return stationType != StationType.TeacherNPC && Curriculum.LessonAt(stationType);
         }
         private void OnTriggerEnter2D(Collider2D other)
         {

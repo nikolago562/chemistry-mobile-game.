@@ -95,6 +95,9 @@ namespace ChemistryGame
         public static bool Done(string id) => Record(id)?.done == true;
         public static Lesson Next => Lessons.FirstOrDefault(l => !Done(l.ID));
         public static bool Complete => Next == null;
+        /// <summary>True when the next lesson is played at this station (each chapter lives at its own bench).</summary>
+        public static bool LessonAt(StationType station) =>
+            Data.tutorialCompleted && Next != null && ChapterOf(Next).Station == station;
         public static int Percent => Lessons.Count(l => Done(l.ID)) * 100 / Lessons.Length;
         public static Lesson[] Of(int chapter) => Lessons.Where(l => l.Chapter == chapter).ToArray();
         public static Chapter ChapterOf(Lesson lesson) => Chapters[lesson.Chapter - 1];
@@ -126,7 +129,7 @@ namespace ChemistryGame
             {
                 var next = Next;
                 if (next == null) return "ოქროსფრად მბზინავი გამოწვევების მაგიდა გაიხსნა.";
-                return "შემდეგი ცდა: „" + next.Title + "“ — მასწავლებლის მაგიდასთან";
+                return "შემდეგი ცდა: „" + next.Title + "“ — " + ChapterOf(next).StationName;
             }
         }
 

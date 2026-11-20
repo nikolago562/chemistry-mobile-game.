@@ -183,15 +183,15 @@ namespace ChemistryGame
                 Say(MainMenu, "გამარჯობა, " + name + "! მე შენი ქიმიის მასწავლებელი ვარ.",
                     game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat
                         ? "სანამ რამეს შევეხებით, მბზინავი კარადიდან დამცავი ხალათი აიღე. უსაფრთხოება პირველ ადგილზეა."
-                        : "ხალათი გიხდება. ახლა ჩემს მაგიდასთან მიდი და [E] დააჭირე. რვეულს გაჩვენებ.");
+                        : "ხალათი გიხდება! ჩემს მაგიდასთან მოდი — პირველ ცდას ერთად გავაკეთებთ.");
                 return;
             }
             if (!data.teacherMet)
             {
                 data.teacherMet = true;
                 GameSaveManager.Instance.Commit();
-                Say(MainMenu, name + ", ახლა უკვე იცი, სად ჩაიწერო ნასწავლი.",
-                    "ჩემთან ყოველთვის შეგიძლია მოხვიდე: ახალ გაკვეთილს დაგიწყებ, ან რაც არ გესმის, აგიხსნი.");
+                Say(MainMenu, name + ", ლაბორატორია შენია!",
+                    "როცა მზად იქნები, ახალ ცდას დაგიწყებ.");
                 return;
             }
             var quest = TeacherQuests.Active;

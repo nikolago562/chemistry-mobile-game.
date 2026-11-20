@@ -109,6 +109,10 @@ namespace ChemistryGame
             if (!string.IsNullOrEmpty(GameSaveManager.Instance.Status)) HUD.Notify(GameSaveManager.Instance.Status);
         }
 
+        private readonly System.Collections.Generic.Dictionary<StationType, Vector3> stationPoints = new System.Collections.Generic.Dictionary<StationType, Vector3>();
+        /// <summary>World position of the first station of this type (where its lessons are played).</summary>
+        public Vector3 StationPoint(StationType kind) => stationPoints.TryGetValue(kind, out var p) ? p : classroom.TransformPoint(teacherDeskPosition);
+
         private void CreateStation(string name, float x, float y, StationType kind,
             string prompt = "[E] ექსპერიმენტის დაწყება", bool closet = false)
         {
@@ -120,11 +124,14 @@ namespace ChemistryGame
             station.stationType = kind;
             station.stationPrompt = prompt;
             station.supplyCloset = closet;
+            if (!closet && !stationPoints.ContainsKey(kind)) stationPoints[kind] = go.transform.position;
             if (kind != StationType.CosmeticShopStation && kind != StationType.TutorialStation)
             {
                 station.stationPrompt = "[E] " + name;
-                station.promptText = () => "[E] " + name + (!Curriculum.StationOpen(kind) ? " • დაკეტილია" : kind == StationType.QuizDesk ? " ★ არჩევითი" : "");
+                station.promptText = () => "[E] " + name + (Curriculum.LessonAt(kind) ? " • ახალი ცდა!" : !Curriculum.StationOpen(kind) ? " • დაკეტილია" : kind == StationType.QuizDesk ? " ★ არჩევითი" : "");
             }
+            else if (kind == StationType.TutorialStation)
+                station.promptText = () => Curriculum.LessonAt(kind) || Tutorial.Step == TutorialManager.TutorialStep.ReadNotebook ? "[E] ახალი ცდა!" : "[E] სასწავლო რუკა";
             if (closet)
             {
                 var art = new GameObject("კარადა", typeof(SpriteRenderer));
@@ -317,7 +324,7 @@ namespace ChemistryGame
             {
                 case StationType.TutorialStation:
                     if (Tutorial.Step == TutorialManager.TutorialStep.ReadNotebook) { Tutorial.CompleteIntro(); Lessons.Begin(Curriculum.Next); }
-                    else if (Curriculum.Next != null) Lessons.Begin(Curriculum.Next);
+                    else if (Curriculum.LessonAt(StationType.TutorialStation)) Lessons.Begin(Curriculum.Next);
                     else Lessons.OpenMap();
                     break;
                 case StationType.QuizDesk:
@@ -327,10 +334,13 @@ namespace ChemistryGame
                 case StationType.MoleculeTable:
                 case StationType.ReactionTable:
                 case StationType.SolutionStation:
-                case StationType.AcidBaseStation: Lessons.OpenStation(station.stationType, station.name); break;
+                case StationType.AcidBaseStation:
+                    if (Curriculum.LessonAt(station.stationType)) Lessons.Begin(Curriculum.Next);
+                    else Lessons.OpenStation(station.stationType, station.name);
+                    break;
                 case StationType.CosmeticShopStation: OpenMenu(2); break;
                 case StationType.LeaderboardBoard: OpenMenu(3); break;
-                case StationType.TeacherNPC: Dialogue.Talk(); break;
+                case StationType.TeacherNPC: Dialogue.Teacher.Attend(Dialogue.Talk); break;
                 case StationType.Classmate: station.GetComponentInParent<SchoolNPC>()?.Talk(); break;
             }
         }

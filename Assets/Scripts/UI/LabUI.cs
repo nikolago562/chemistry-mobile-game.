@@ -27,11 +27,29 @@ namespace ChemistryGame
             UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject != null &&
             UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
 
+        /// <summary>
+        /// The FiraGO assets are dynamic: a glyph seen for the first time costs a 50–90 ms font
+        /// lookup (FontEngine GPOS/GSUB) in the middle of play. Load every glyph the game uses,
+        /// in every weight, once at boot instead.
+        /// </summary>
+        private static void Prewarm(TMP_FontAsset font)
+        {
+            if (font == null) return;
+            var glyphs = new System.Text.StringBuilder("აბგდევზთიკლმნოპჟრსტუფქღყშჩცძწჭხჯჰ„“”–—•…→←↑↓★×÷±°·✓");
+            for (char c = ' '; c <= '~'; c++) glyphs.Append(c);
+            var assets = new HashSet<TMP_FontAsset> { font };
+            foreach (var weight in font.fontWeightTable) { assets.Add(weight.regularTypeface); assets.Add(weight.italicTypeface); }
+            if (font.fallbackFontAssetTable != null) assets.UnionWith(font.fallbackFontAssetTable);
+            foreach (var asset in assets)
+                if (asset != null && asset.atlasPopulationMode == AtlasPopulationMode.Dynamic) asset.TryAddCharacters(glyphs.ToString(), out _);
+        }
+
         public static void Initialize(TMP_FontAsset font, LabThemeSO theme = null)
         {
             windows.Clear();
             Font = font;
             Theme = theme;
+            Prewarm(font);
             var go = new GameObject("ინტერფეისი", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             Root = go.transform;
             go.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;

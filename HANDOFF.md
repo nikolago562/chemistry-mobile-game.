@@ -33,6 +33,11 @@ Look for `CURRICULUM_CHECKS_PASSED`, `LIFE_SIM_CHECKS_PASSED` and `LAB_PLAYMODE_
 - Lessons: one-line setup → demo → guided → free → reward (shows the concept after the action). The 3 quiz questions per lesson now only feed the chapter reviews.
 - HUD: one objective line + progress bar; streak and combo stay hidden until the advanced floor opens.
 
+- **Playtest mode is ON:** `GameSaveManager.FreshStartEachLaunch = true` discards the save on every launch and starts a new player with 9999 coins. Set it to `false` before release. Automated checks and the rain probe use their own save folder and aren't affected.
+- Lessons start at their chapter's station (ch1 teacher desk, ch2 atom table, …). That station glows as the objective and the waypoint arrow points to it; solved steps move on by themselves.
+- The teacher uses the student 8-way animator: she works facing her bench or chalkboard and, when talked to, says "ერთი წამით..." and turns smoothly (`TeacherNPC.Attend`).
+- Fonts: `LabUI.Prewarm` loads all Georgian glyphs at boot (see `Docs/rain-lag-research.md`). `RainPerfProbe.Run` repeats the performance measurements.
+
 ## Known gaps / risks
 - Not hand-played yet; pacing and difficulty are untested by a human. Curriculum is ~42 lessons; no human has timed them.
 - Existing saves keep all items but restart the theory path, so the advanced quizzes are locked for them until it is finished.

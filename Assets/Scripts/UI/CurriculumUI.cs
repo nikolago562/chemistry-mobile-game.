@@ -55,14 +55,9 @@ namespace ChemistryGame
             if (!Curriculum.Available(lesson)) { game.HUD.Notify(Curriculum.LockedText + " " + Curriculum.Requirement(lesson)); return; }
             if (map != null) map.Close();
             if (hub != null) hub.Close();
-            var dialogue = game.Dialogue;
-            // Play first: one line to set the scene, the explanation comes after the player has tried it.
-            var lines = new[] { lesson.IsReview ? "მოკლე შემოწმება: ხუთი კითხვა ამ თავზე. მზად ხარ?"
-                : lesson.Kind == PracticeKind.Sort ? "ნახე, როგორ დავალაგებ პირველ ორს, მერე შენ სცადე!"
-                : "ჯერ გაჩვენებ, მერე შენ ააწყე!" };
-            void Teach() => dialogue.Line(() => { dialogue.End(); OpenWorkbook(lesson); }, lines);
-            if (dialogue.IsOpen) Teach();
-            else dialogue.Converse(dialogue.Teacher, "მასწავლებელი • " + lesson.Title, Teach);
+            // Play first: the activity opens straight away; explanations come after the player has tried it.
+            if (game.Dialogue.IsOpen) game.Dialogue.End();
+            OpenWorkbook(lesson);
         }
 
         /// <summary>Opens the hands-on part of a lesson. Station practice starts straight at the free exercise.</summary>
@@ -183,6 +178,15 @@ namespace ChemistryGame
             Say(text, LabUI.Green);
             if (next != null) { next.interactable = true; next.GetComponentInChildren<TMP_Text>().text = "შემდეგი →"; }
             AudioManager.Instance?.Correct();
+            // No "next" clicking: a solved step moves on by itself after the result has been seen.
+            if (Current != Step.Test && !practiceOnly) auto = StartCoroutine(AutoAdvance());
+        }
+        private Coroutine auto;
+        private IEnumerator AutoAdvance()
+        {
+            yield return new WaitForSecondsRealtime(1.6f);
+            auto = null;
+            Advance();
         }
 
         /// <summary>Moves to the next step when the current one allows it (the demo can always be skipped).</summary>
@@ -212,7 +216,11 @@ namespace ChemistryGame
                 case Step.Reward:
                     var upcoming = Curriculum.Next;
                     window.Close();
-                    if (upcoming != null) Begin(upcoming);
+                    // The next activity starts here only if it lives at the same station; otherwise its station lights up.
+                    if (upcoming == null) break;
+                    var station = Curriculum.ChapterOf(upcoming).Station;
+                    if (station == Curriculum.ChapterOf(Lesson).Station) Begin(upcoming);
+                    else game.HUD.Notify("ახალი ცდა გაიხსნა: " + Curriculum.ChapterOf(upcoming).StationName + "!");
                     break;
             }
             return true;
@@ -386,6 +394,8 @@ namespace ChemistryGame
         {
             if (demo != null) StopCoroutine(demo);
             demo = null;
+            if (auto != null) StopCoroutine(auto);
+            auto = null;
             if (practice != null && Current == Step.Demo && values != null) { values = practice.Solution.ToArray(); if (controls != null) { BuildCounters(); Draw(); } }
         }
 

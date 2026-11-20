@@ -133,7 +133,11 @@ namespace ChemistryGame
             int roundedCoins = Mathf.RoundToInt(displayedCoins);
             if (visibleCoins != roundedCoins) { visibleCoins = roundedCoins; coins.SetText("{0}", roundedCoins); }
             toastCard.gameObject.SetActive(Time.unscaledTime < toastUntil);
-            bool show = game.Tutorial.Step != TutorialManager.TutorialStep.Completed && !LabUI.AnyOpen;
+            bool tutorial = game.Tutorial.Step != TutorialManager.TutorialStep.Completed;
+            // After the tutorial the arrow keeps pointing at the station of the next experiment, until you are there.
+            bool inClass = game.Areas != null && game.Areas.Current == "classroom" && game.Personal != null && !game.Personal.Inside;
+            bool show = !LabUI.AnyOpen && (tutorial || Curriculum.Next != null && inClass &&
+                Vector2.Distance(game.player.transform.position, game.Tutorial.Target) > 4);
             waypointCard.gameObject.SetActive(show);
             if (!show) return;
             Vector3 point = worldCamera.WorldToViewportPoint(game.Tutorial.Target);
@@ -142,7 +146,7 @@ namespace ChemistryGame
                 Mathf.Clamp(point.y, 0.20f, 0.80f) * size.y - size.y / 2);
             waypointCard.rectTransform.anchoredPosition = position + Vector2.up * Mathf.Sin(Time.unscaledTime * 3) * 4;
             string arrow = point.x > 1 ? " →" : point.x < 0 ? " ←" : point.y > 1 ? " ↑" : " ↓";
-            waypoint.text = (game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat ? "დამცავი ხალათი" : "პირველი ცდა") + arrow;
+            waypoint.text = (game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat ? "დამცავი ხალათი" : tutorial ? "პირველი ცდა" : "ახალი ცდა") + arrow;
         }
         private readonly System.Collections.Generic.Dictionary<string, RectTransform> panels = new System.Collections.Generic.Dictionary<string, RectTransform>();
         private Image highlight;

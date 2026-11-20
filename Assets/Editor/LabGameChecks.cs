@@ -305,7 +305,7 @@ public static class LabGameChecks
     private static void IntroNotebook()
     {
         var data = GameSaveManager.Instance.Data;
-        Ensure(game.Dialogue.IsOpen && !game.Quiz.IsOpen, "The teacher's desk starts the first hands-on lesson, not a quiz");
+        Ensure(game.Lessons.IsOpen && !game.Dialogue.IsOpen && !game.Quiz.IsOpen, "The teacher's desk opens the first hands-on activity directly, no dialogue or quiz");
         Ensure(data.tutorialCompleted && data.chemCoins == 10 && data.currentDailyStreak == 1, "The desk completes the tutorial and pays once");
         game.Tutorial.CompleteIntro();
         Ensure(data.chemCoins == 10, "No duplicate tutorial payout");
@@ -393,6 +393,9 @@ public static class LabGameChecks
         Ensure(!lessons.Advance(), "Guided practice must be finished first");
         for (int i = 0; i < lesson.Items.Length; i++) lessons.Sort(i, lesson.Items[i].Bin);
         Ensure(lessons.Solved && lessons.Advance() && lessons.Current == CurriculumUI.Step.Free, "Guided practice leads to free practice");
+        Ensure(Curriculum.LessonAt(StationType.TutorialStation) && !Curriculum.LessonAt(StationType.AtomTable), "Chapter one is played at the teacher's desk");
+        var atomLesson = Curriculum.Lessons.First(l => l.Chapter == 2);
+        Ensure(Curriculum.ChapterOf(atomLesson).Station == StationType.AtomTable && game.StationPoint(StationType.AtomTable) != game.StationPoint(StationType.TutorialStation), "Later chapters are played at their own stations");
         for (int i = 0; i < lesson.Items.Length; i++) lessons.Sort(i, lesson.Items[i].Bin);
         Snapshot("54-lesson-sort");
         Ensure(lessons.Solved && lessons.Advance() && lessons.Current == CurriculumUI.Step.Reward, "Free practice leads straight to the reward, no quiz");
@@ -560,10 +563,22 @@ public static class LabGameChecks
         var station = UnityEngine.Object.FindObjectsByType<InteractableStation>(FindObjectsSortMode.None)
             .First(s => s.stationType == StationType.TeacherNPC);
         Ensure(game.Tutorial.Allows(station), "Teacher can always be talked to");
+        var teacher = game.Dialogue.Teacher;
+        Ensure(teacher.Facing > -10 && teacher.Facing < 60, "The teacher works facing her bench or the chalkboard (" + teacher.Facing + ")");
         game.Interact(station);
-        Ensure(game.Dialogue.IsOpen && LabUI.AnyOpen, "Talking to the teacher opens the dialogue");
-        Schedule(TeacherTyping, 0.8);
+        Ensure(teacher.Busy && !game.Dialogue.IsOpen, "The teacher says 'one sec' and finishes her note before talking");
+        Schedule(TeacherTurned, 0.3);
     }
+    private static void TeacherTurned()
+    {
+        var teacher = game.Dialogue.Teacher;
+        if (teacher.Busy && turnWait++ < 60) { Schedule(TeacherTurned, 0.05); return; }
+        Vector2 d = game.player.transform.position - teacher.transform.position;
+        Ensure(!teacher.Busy && Mathf.Abs(Mathf.DeltaAngle(teacher.Facing, Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg)) < 30, "The teacher turns to face the player");
+        Ensure(game.Dialogue.IsOpen && LabUI.AnyOpen, "Talking to the teacher opens the dialogue");
+        Schedule(TeacherTyping, 0.25);
+    }
+    private static int turnWait;
     private static void TeacherTyping()
     {
         int shown = (int)Field(game.Dialogue, "shown"), total = (int)Field(game.Dialogue, "total");

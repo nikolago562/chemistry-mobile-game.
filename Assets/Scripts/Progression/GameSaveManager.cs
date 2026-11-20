@@ -133,17 +133,30 @@ namespace ChemistryGame
         public string Status { get; private set; } = "";
         private string lastCheckedDay;
 
+        /// <summary>
+        /// Playtest mode: every launch starts like a brand-new player (character creation, coat,
+        /// teacher) but with 9999 coins.
+        /// shortcut: discards the save on every launch; set to false before release.
+        /// </summary>
+        public static bool FreshStartEachLaunch = true;
+        public const int PlaytestCoins = 9999;
+
         private void Awake()
         {
             Instance = this;
-            Load();
+#if UNITY_EDITOR
+            bool testing = TestDirectory != null;
+#else
+            const bool testing = false;
+#endif
+            Load(FreshStartEachLaunch && !testing);
             RefreshCalendar(DateTime.UtcNow.Date);
             Commit();
         }
 
-        public void Load()
+        public void Load(bool fresh = false)
         {
-            Data = Read(SavePath) ?? Read(SavePath + ".bak") ?? new GameSaveData();
+            Data = fresh ? new GameSaveData { chemCoins = PlaytestCoins } : Read(SavePath) ?? Read(SavePath + ".bak") ?? new GameSaveData();
             Data.unlockedElements ??= new List<string>();
             Data.unlockedCosmeticIDs ??= new List<string>();
             Data.claimedDailyQuests ??= new List<string>();
