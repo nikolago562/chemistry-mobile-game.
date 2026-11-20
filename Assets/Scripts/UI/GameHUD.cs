@@ -99,7 +99,10 @@ namespace ChemistryGame
             pointer = LabUI.Text(waypointCard.transform, "→", 26, LabUI.Gold);
             pointer.alignment = TextAlignmentOptions.Center;
             pointer.fontStyle = FontStyles.Bold;
-            Anchor(pointer.rectTransform, new Vector2(1, 0.5f), new Vector2(-4, 0), new Vector2(40, 40));
+            // Anchored to the card's right edge but pivoting on its own centre, so it turns in place
+            // (CompactWidth / 2 from the edge = the middle of the small arrow-only tile).
+            Anchor(pointer.rectTransform, new Vector2(1, 0.5f), new Vector2(-CompactWidth / 2, 0), new Vector2(40, 40));
+            pointer.rectTransform.pivot = new Vector2(0.5f, 0.5f);
             waypointCard.raycastTarget = false;
             waypointCard.gameObject.SetActive(false);
             panels["identity"] = Compact(identity.rectTransform);
