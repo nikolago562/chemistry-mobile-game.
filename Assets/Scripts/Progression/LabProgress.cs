@@ -33,7 +33,7 @@ namespace ChemistryGame
     public static class LabProgress
     {
         public static GameSaveData Data => GameSaveManager.Instance.Data;
-        public static string Today => GameSaveManager.Iso(SchoolCalendar.Now.Date);
+        public static string Today => SchoolCalendar.DayKey;
 
         // ---------- generic counters ----------
         public static int Get(List<KeyValue> list, string key) => list.FirstOrDefault(k => k.key == key)?.value ?? 0;
@@ -244,6 +244,18 @@ namespace ChemistryGame
         /// <summary>Tests (and the atmosphere preview) can pin the clock.</summary>
         public static DateTime? Override;
         public static DateTime Now => Override ?? DateTime.Now;
+        private static DateTime keyDate;
+        private static string key;
+        /// <summary>Today as "yyyy-MM-dd", formatted once per day instead of on every call (it is read many times a frame).</summary>
+        public static string DayKey
+        {
+            get
+            {
+                var date = Now.Date;
+                if (key == null || date != keyDate) { keyDate = date; key = GameSaveManager.Iso(date); }
+                return key;
+            }
+        }
 
         public static DayPart Part => Now.Hour >= 6 && Now.Hour < 12 ? DayPart.Morning : Now.Hour >= 12 && Now.Hour < 18 ? DayPart.Afternoon : DayPart.Evening;
         public static string PartName => Part == DayPart.Morning ? "დილა" : Part == DayPart.Afternoon ? "შუადღე" : "საღამო";
@@ -256,7 +268,7 @@ namespace ChemistryGame
             get
             {
                 var data = GameSaveManager.Instance.Data;
-                string day = GameSaveManager.Iso(Now.Date);
+                string day = DayKey;
                 if (data.weatherDay != day)
                 {
                     var random = new System.Random(day.GetHashCode() * 31 + 7);

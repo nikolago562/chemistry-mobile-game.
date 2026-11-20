@@ -52,7 +52,7 @@ namespace ChemistryGame
             focus.Near = inRange && allowed;
             bool focused = focus.IsFocused;
             prompt.alpha = Mathf.MoveTowards(prompt.alpha, focused && !LabUI.AnyOpen ? 1 : 0, Time.deltaTime * 8);
-            if (promptText != null && inRange) label.text = promptText();
+            if (promptText != null && focused) label.text = promptText();
             if (supplyCloset && game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat && inRange && allowed && !LabUI.AnyOpen)
             {
                 game.Tutorial.CollectCoat();

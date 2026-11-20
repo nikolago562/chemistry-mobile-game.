@@ -145,11 +145,28 @@ namespace ChemistryGame
         /// <summary>Short-lived particle used by ambience and harmless mishaps.</summary>
         public void Puff(Transform parent, Vector2 local, Color color, Vector2 velocity, float life, int order, Sprite sprite = null, float scale = 1)
         {
-            var art = LaboratoryArt.Draw(parent, "ნაწილაკი", local, sprite ?? DecorArt.Bubble(), order);
-            art.color = color;
-            art.transform.localScale = Vector3.one * scale;
-            flying.Add(new Flying { T = art.transform, Art = art, Velocity = velocity, Life = life });
+            // Reuse expired particles: creating and destroying a GameObject per bubble made steady garbage.
+            Flying f = null;
+            while (spare.Count > 0 && f == null) { f = spare.Pop(); if (f.T == null) f = null; }
+            if (f == null)
+            {
+                var created = LaboratoryArt.Draw(parent, "ნაწილაკი", local, sprite ?? DecorArt.Bubble(), order);
+                f = new Flying { T = created.transform, Art = created };
+            }
+            else
+            {
+                f.T.SetParent(parent, false);
+                f.T.localPosition = local;
+                f.Art.sprite = sprite ?? DecorArt.Bubble();
+                f.Art.sortingOrder = order;
+                f.T.gameObject.SetActive(true);
+            }
+            f.Art.color = color;
+            f.T.localScale = Vector3.one * scale;
+            f.Velocity = velocity; f.Life = life; f.Age = 0;
+            flying.Add(f);
         }
+        private readonly Stack<Flying> spare = new Stack<Flying>();
 
         private Transform Hand(Transform parent, Vector2 local, int length)
         {
@@ -238,7 +255,7 @@ namespace ChemistryGame
             {
                 var f = flying[i];
                 f.Age += Time.deltaTime;
-                if (f.T == null || f.Age >= f.Life) { if (f.T != null) Destroy(f.T.gameObject); flying.RemoveAt(i); continue; }
+                if (f.T == null || f.Age >= f.Life) { if (f.T != null) { f.T.gameObject.SetActive(false); spare.Push(f); } flying.RemoveAt(i); continue; }
                 f.T.localPosition += (Vector3)(f.Velocity * Time.deltaTime) + new Vector3(Mathf.Sin(f.Age * 9) * 0.004f, 0, 0);
                 var c = f.Art.color; c.a = Mathf.Clamp01(1 - f.Age / f.Life) * 0.85f; f.Art.color = c;
             }

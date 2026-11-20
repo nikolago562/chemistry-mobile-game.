@@ -135,6 +135,7 @@ namespace ChemistryGame
         public string SavePath => Path.Combine(StorageDirectory, "chem-lab.json");
         public string Status { get; private set; } = "";
         private string lastCheckedDay;
+        private DateTime lastCheckedDate;
 
         /// <summary>
         /// Playtest mode: every launch starts like a brand-new player (character creation, coat,
@@ -209,9 +210,12 @@ namespace ChemistryGame
 
         private void Update()
         {
-            string day = Iso(DateTime.UtcNow.Date);
-            if (lastCheckedDay == day) return;
-            RefreshCalendar(DateTime.UtcNow.Date);
+            // Compare dates, not strings: formatting the day every frame made garbage.
+            var today = DateTime.UtcNow.Date;
+            if (today == lastCheckedDate) return;
+            lastCheckedDate = today;
+            if (lastCheckedDay == Iso(today)) return;
+            RefreshCalendar(today);
             Commit();
         }
 

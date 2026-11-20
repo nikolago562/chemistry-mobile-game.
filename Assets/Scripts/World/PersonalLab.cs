@@ -135,6 +135,8 @@ namespace ChemistryGame
             { game.HUD.Notify("ჯერ მასწავლებელთან პირველი ცდა დაასრულე. შემდეგ საკუთარი ლაბორატორია გელოდება!"); return false; }
             if (!exit) returnPoint = game.classroom.TransformPoint(new Vector3(46.5f, 8.3f));
             Inside = !exit;
+            // The lab room (~480 sprites) is only active while the player is in it.
+            Room.gameObject.SetActive(Inside);
             travelAfter = Time.unscaledTime + 1.0f;
             var body = game.player.GetComponent<Rigidbody2D>();
             body.linearVelocity = Vector2.zero;
@@ -234,6 +236,7 @@ namespace ChemistryGame
             Furniture(new Vector2(-8, BackWallY - 1.7f), DecorArt.Lectern(), "[E] რვეული", () => game.Notebook.Open(), Glow.Optional);
             Furniture(new Vector2(right - 0.2f, BackWallY - 1.7f), DecorArt.PlanStand(), "[E] აღჭურვილობა და მოწყობა", () => Workshop.Open(), Glow.Reward);
             BuildEquipment();
+            Room.gameObject.SetActive(Inside);
         }
         private void Furniture(Vector2 local, Sprite sprite, string prompt, System.Action use, Glow glow)
         {

@@ -40,8 +40,9 @@ namespace ChemistryGame
         private SpriteRenderer[] tint = new SpriteRenderer[0];
         private Color[] baseColors = new Color[0];
         private readonly SpriteRenderer[] sparks = new SpriteRenderer[3];
-        private float level;
-        private bool wasFocused;
+        private float level, nextCheck;
+        private bool wasFocused, cachedObjective;
+        private Glow cachedKind = Glow.Hidden;
 
         public bool IsObjective => Objective != null && Objective();
         public bool IsFocused => Selectable && Near && Current == this;
@@ -112,9 +113,16 @@ namespace ChemistryGame
         private void Update()
         {
             if (ring == null) return;
-            var kind = Kind();
+            // Kind and objective read the lesson and mission lists; the glow only needs them a few times a second.
+            if (Time.unscaledTime >= nextCheck)
+            {
+                nextCheck = Time.unscaledTime + 0.2f + UnityEngine.Random.value * 0.05f;
+                cachedKind = Kind();
+                cachedObjective = cachedKind != Glow.Hidden && IsObjective;
+            }
+            var kind = cachedKind;
             bool focused = IsFocused && !LabUI.AnyOpen;
-            bool objective = kind != Glow.Hidden && IsObjective;
+            bool objective = cachedObjective;
             if (focused && !wasFocused) AudioManager.Instance?.Hover();
             wasFocused = focused;
 

@@ -138,16 +138,27 @@ namespace ChemistryGame
         {
             label.color = face ?? Color.white;
             label.fontStyle |= FontStyles.Bold;
-            label.outlineColor = new Color32(0, 0, 0, 255);
-            label.outlineWidth = outline;
-            var material = label.fontMaterial;
-            material.EnableKeyword(ShaderUtilities.Keyword_Underlay);
-            material.SetColor(ShaderUtilities.ID_UnderlayColor, new Color(0, 0, 0, 0.55f));
-            material.SetFloat(ShaderUtilities.ID_UnderlayOffsetX, 0.35f);
-            material.SetFloat(ShaderUtilities.ID_UnderlayOffsetY, -0.45f);
-            material.SetFloat(ShaderUtilities.ID_UnderlaySoftness, 0.35f);
-            material.SetFloat(ShaderUtilities.ID_UnderlayDilate, outline);
+            // One shared material per (font material, outline): per-label instances broke batching,
+            // and creating one fails on labels built inside an inactive room.
+            var source = label.fontSharedMaterial;
+            if (source == null) return;
+            var key = (source, outline);
+            if (!worldMaterials.TryGetValue(key, out var material) || material == null)
+            {
+                material = new Material(source) { name = source.name + " (world label " + outline + ")" };
+                material.SetColor(ShaderUtilities.ID_OutlineColor, new Color32(0, 0, 0, 255));
+                material.SetFloat(ShaderUtilities.ID_OutlineWidth, outline);
+                material.EnableKeyword(ShaderUtilities.Keyword_Underlay);
+                material.SetColor(ShaderUtilities.ID_UnderlayColor, new Color(0, 0, 0, 0.55f));
+                material.SetFloat(ShaderUtilities.ID_UnderlayOffsetX, 0.35f);
+                material.SetFloat(ShaderUtilities.ID_UnderlayOffsetY, -0.45f);
+                material.SetFloat(ShaderUtilities.ID_UnderlaySoftness, 0.35f);
+                material.SetFloat(ShaderUtilities.ID_UnderlayDilate, outline);
+                worldMaterials[key] = material;
+            }
+            label.fontSharedMaterial = material;
         }
+        private static readonly Dictionary<(Material, float), Material> worldMaterials = new Dictionary<(Material, float), Material>();
         public static void Size(GameObject go, float height, float width = -1, float flex = -1)
         {
             var element = go.GetComponent<LayoutElement>();

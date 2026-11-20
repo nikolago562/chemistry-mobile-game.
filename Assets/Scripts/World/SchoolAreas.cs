@@ -122,6 +122,16 @@ namespace ChemistryGame
             BuildGreenhouse(roots["greenhouse"]);
             BuildExhibition(roots["exhibition"]);
             BuildClassroomExtras();
+            ShowCurrentRoom();
+        }
+
+        /// <summary>
+        /// Only the room the player stands in is active. The other rooms held ~2,000 sprites
+        /// (one per floor tile) that Unity still culled and sorted every frame.
+        /// </summary>
+        private void ShowCurrentRoom()
+        {
+            foreach (var room in roots) room.Value.gameObject.SetActive(room.Key == Current);
         }
 
         // ---------------- travel ----------------
@@ -150,8 +160,9 @@ namespace ChemistryGame
             body.linearVelocity = Vector2.zero;
             body.position = arrival;
             game.player.SetMovement(to == "classroom" ? Vector2.up : Vector2.down);
-            Physics2D.SyncTransforms();
             Current = to;
+            ShowCurrentRoom();
+            Physics2D.SyncTransforms();
             travelAfter = Time.unscaledTime + 1f;
             var camera = Camera.main.GetComponent<ClassroomCamera>();
             if (to == "classroom") camera.SetRoom(Vector2.zero, Vector2.zero, false);
@@ -479,8 +490,12 @@ namespace ChemistryGame
     {
         private int shown = -1;
         private readonly List<GameObject> jars = new List<GameObject>();
+        private float next;
         private void Update()
         {
+            // The collection changes rarely; scanning the catalogue once a second is enough.
+            if (Time.unscaledTime < next) return;
+            next = Time.unscaledTime + 1;
             var items = LabProgress.Catalog.Where(c => (c.Kind == CollectionKind.Mineral || c.Kind == CollectionKind.Sample) && LabProgress.Owns(c.ID)).Take(12).ToList();
             if (items.Count == shown) return;
             shown = items.Count;

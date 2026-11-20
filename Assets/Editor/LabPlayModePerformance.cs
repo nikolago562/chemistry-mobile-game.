@@ -2,8 +2,9 @@ using ChemistryGame;
 using UnityEditor;
 using UnityEngine;
 
-// A selected systems object expands many runtime Inspectors (including audio and HUD).
-// Their repaint cost dominated the walking capture. Restore the selection after play.
+// A selected scene object keeps its Inspector repainting during play. With the AudioManager
+// selected, the footstep AudioSource repaints it every frame while walking (5-8 ms of editor
+// GUI and ~150 KB of garbage per frame, halving FPS). Deselect on Play, restore after.
 [InitializeOnLoad]
 internal static class LabPlayModePerformance
 {
@@ -19,7 +20,8 @@ internal static class LabPlayModePerformance
         if (state == PlayModeStateChange.ExitingEditMode)
         {
             var selected = Selection.activeGameObject;
-            if (Selection.objects.Length != 1 || selected == null || selected.GetComponent<LabGame>() == null) return;
+            // Only scene objects; a selected asset (script, sprite) doesn't repaint during play.
+            if (Selection.objects.Length != 1 || selected == null || !selected.scene.IsValid()) return;
             SessionState.SetString(SelectionKey, GlobalObjectId.GetGlobalObjectIdSlow(selected).ToString());
             Selection.activeObject = null;
         }

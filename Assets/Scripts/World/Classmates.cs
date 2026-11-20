@@ -389,7 +389,9 @@ namespace ChemistryGame
         private GameObject nameTag;
         private Vector2 anchor, target;
         private string area = "";
-        private float wait, hop, stride;
+        private float wait, hop, stride, nextThink;
+        private string goalArea;
+        private Vector2 goalTarget, goal;
         private static readonly int MoveX = Animator.StringToHash("MoveX"), MoveY = Animator.StringToHash("MoveY"), IsMoving = Animator.StringToHash("IsMoving");
 
         public static SchoolNPC Spawn(LabGame lab, ClassmateDef def)
@@ -473,11 +475,20 @@ namespace ChemistryGame
         private void Update()
         {
             if (game == null || game.Areas == null) return;
-            Reposition(false);
+            // Schedule and quest-marker checks read the save and the clock (allocating strings);
+            // twice a second is plenty, movement below still runs every frame.
+            if (Time.unscaledTime >= nextThink)
+            {
+                nextThink = Time.unscaledTime + 0.5f + UnityEngine.Random.value * 0.1f;
+                Reposition(false);
+                if (area != "")
+                {
+                    var state = Classmates.State(Def.ID);
+                    string symbol = Classmates.RequestDone(Def, state) ? "?" : Classmates.StoryReady(Def, state) ? "!" : "";
+                    if (marker.text != symbol) marker.text = symbol;
+                }
+            }
             if (area == "") return;
-            var state = Classmates.State(Def.ID);
-            string symbol = Classmates.RequestDone(Def, state) ? "?" : Classmates.StoryReady(Def, state) ? "!" : "";
-            if (marker.text != symbol) marker.text = symbol;
             marker.alpha = Talking ? 0 : 1;
             if (nameTag.activeSelf == Talking) nameTag.SetActive(!Talking);
             marker.rectTransform.localPosition = new Vector3(0, Mathf.Abs(Mathf.Sin(Time.time * 2.6f)) * 9f, 0);
@@ -486,7 +497,7 @@ namespace ChemistryGame
             sprite.transform.localPosition = new Vector3(0, Mathf.Sin(hop * Mathf.PI) * 0.08f, 0);
 
             Vector2 world = transform.position;
-            Vector2 goal = game.Areas.World(area, target);
+            if (goalArea != area || goalTarget != target) { goalArea = area; goalTarget = target; goal = game.Areas.World(area, target); }
             if (Talking)
             {
                 var toPlayer = (Vector2)game.player.transform.position - world;

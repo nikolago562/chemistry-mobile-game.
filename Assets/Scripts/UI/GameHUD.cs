@@ -133,24 +133,39 @@ namespace ChemistryGame
             int roundedCoins = Mathf.RoundToInt(displayedCoins);
             if (visibleCoins != roundedCoins) { visibleCoins = roundedCoins; coins.SetText("{0}", roundedCoins); }
             toastCard.gameObject.SetActive(Time.unscaledTime < toastUntil);
-            bool tutorial = game.Tutorial.Step != TutorialManager.TutorialStep.Completed;
-            // After the tutorial the arrow keeps pointing at the station of the next experiment, until you are there.
-            bool inClass = game.Areas != null && game.Areas.Current == "classroom" && game.Personal != null && !game.Personal.Inside;
-            // A running mission step points at its own target; otherwise the tutorial or next lesson.
-            Vector3 target = Missions.Target ?? game.Tutorial.Target;
-            bool mission = Missions.Steering;
-            bool show = !LabUI.AnyOpen && (tutorial || (mission || Curriculum.Next != null) && inClass &&
-                Vector2.Distance(game.player.transform.position, target) > 4);
-            waypointCard.gameObject.SetActive(show);
+            // Mission and lesson lookups run five times a second; only the card's position follows every frame.
+            if (Time.unscaledTime >= nextWaypoint)
+            {
+                nextWaypoint = Time.unscaledTime + 0.2f;
+                bool tutorial = game.Tutorial.Step != TutorialManager.TutorialStep.Completed;
+                // After the tutorial the arrow keeps pointing at the station of the next experiment, until you are there.
+                bool inClass = game.Areas != null && game.Areas.Current == "classroom" && game.Personal != null && !game.Personal.Inside;
+                // A running mission step points at its own target; otherwise the tutorial or next lesson.
+                waypointTarget = Missions.Target ?? game.Tutorial.Target;
+                bool mission = Missions.Steering;
+                waypointWanted = tutorial || (mission || Curriculum.Next != null) && inClass &&
+                    Vector2.Distance(game.player.transform.position, waypointTarget) > 4;
+                waypointLabel = game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat ? "დამცავი ხალათი" : mission ? "მისია" : tutorial ? "პირველი ცდა" : "ახალი ცდა";
+            }
+            bool show = waypointWanted && !LabUI.AnyOpen;
+            if (waypointCard.gameObject.activeSelf != show) waypointCard.gameObject.SetActive(show);
             if (!show) return;
-            Vector3 point = worldCamera.WorldToViewportPoint(target);
+            Vector3 point = worldCamera.WorldToViewportPoint(waypointTarget);
             Vector2 size = ((RectTransform)LabUI.Root).rect.size;
             var position = new Vector2(Mathf.Clamp(point.x, 0.1f, 0.9f) * size.x - size.x / 2,
                 Mathf.Clamp(point.y, 0.20f, 0.80f) * size.y - size.y / 2);
             waypointCard.rectTransform.anchoredPosition = position + Vector2.up * Mathf.Sin(Time.unscaledTime * 3) * 4;
             string arrow = point.x > 1 ? " →" : point.x < 0 ? " ←" : point.y > 1 ? " ↑" : " ↓";
-            waypoint.text = (game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat ? "დამცავი ხალათი" : mission ? "მისია" : tutorial ? "პირველი ცდა" : "ახალი ცდა") + arrow;
+            if (!ReferenceEquals(arrow, shownArrow) || !ReferenceEquals(waypointLabel, shownLabel))
+            {
+                shownArrow = arrow; shownLabel = waypointLabel;
+                waypoint.text = waypointLabel + arrow;
+            }
         }
+        private float nextWaypoint;
+        private bool waypointWanted;
+        private Vector3 waypointTarget;
+        private string waypointLabel, shownLabel, shownArrow;
         private readonly System.Collections.Generic.Dictionary<string, RectTransform> panels = new System.Collections.Generic.Dictionary<string, RectTransform>();
         private Image highlight;
         private RectTransform highlighted;
