@@ -530,6 +530,41 @@ public static class LabGameChecks
             }
         LabProgress.Add(save.Data.stats, "tier:1", Curriculum.TierGoal - 1);
         Ensure(Curriculum.CountTier(1) != null && Curriculum.TierOpen(2), "Eight tier-one answers open tier two");
+
+        // Open goals accept every valid answer and name the one the player built.
+        var lithium = Curriculum.Get("c2_parts").Steps[2];
+        Ensure(lithium.Check(new[] { 3, 4, 3 }) == null && lithium.Check(new[] { 3, 3, 3 }) == null && lithium.Check(new[] { 3, 5, 3 }) != null && lithium.Named(new[] { 3, 3, 3 }) != null, "Lithium accepts both natural isotopes");
+        var oxides = Curriculum.Get("c4_salt").Steps[2];
+        Ensure(oxides.Check(new[] { 1, 1, 0, 0 }) == null && oxides.Check(new[] { 1, 2, 0, 0 }) == null && oxides.Check(new[] { 1, 3, 0, 0 }) != null && oxides.Check(new[] { 1, 1, 1, 0 }) != null, "Both carbon oxides count");
+        var water = Curriculum.Get("c4_molecule").Steps[2];
+        Ensure(water.Check(new[] { 2, 1 }) == null && water.Check(new[] { 2, 2 }) == null && water.Check(new[] { 2, 0 }) != null, "Water and peroxide count");
+        var bases = Curriculum.Get("c8_ph").Steps[2];
+        Ensure(bases.Check(new[] { 11 }) == null && bases.Check(new[] { 14 }) == null && bases.Check(new[] { 9 }) != null, "Any strong base pH counts");
+
+        // Mixing bench: a consistent rule table answers every pair.
+        foreach (var r in Mixing.Results) Ensure(Mixing.Get(r.A) != null && Mixing.Get(r.B) != null && r.A != r.B && LabProgress.Catalog.Any(c => c.ID == r.ID), "Mix result: " + r.ID);
+        Ensure(Mixing.Results.Select(r => r.ID).Distinct().Count() == Mixing.Results.Length, "Mix results are unique");
+        foreach (var a in Mixing.Reagents)
+            foreach (var b in Mixing.Reagents)
+            {
+                var found = Mixing.Find(a.ID, b.ID);
+                Ensure(found == Mixing.Find(b.ID, a.ID) && (found != null || Mixing.NoReaction(a, b).Length > 0), "Mixing answers " + a.ID + "+" + b.ID);
+                if (a.Tag == "acid" && (b.Tag == "base" || b.Tag == "carbonate")) Ensure(found != null, "Acids react with " + b.ID + ": " + a.ID);
+            }
+        var bench = lessons.Bench;
+        int purse = save.Data.chemCoins;
+        bench.Open();
+        Ensure(bench.IsOpen, "Mixing bench opens after the reaction lessons");
+        bench.Pick("vinegar"); bench.Pick("soda"); bench.Mix();
+        Ensure(!LabProgress.Owns(Mixing.Key("vinegar", "soda")) && bench.Feedback.Contains("გამოიცანი"), "Mixing asks for a prediction first");
+        bench.Guess(MixSign.Gas); bench.Mix();
+        Ensure(LabProgress.Owns(Mixing.Key("vinegar", "soda")) && save.Data.chemCoins == purse + MixBenchUI.Pay + MixBenchUI.PayGuess, "A new, predicted result is collected and paid");
+        Snapshot("61-mix-bench");
+        bench.Guess(MixSign.Nothing); bench.Mix();
+        Ensure(save.Data.chemCoins == purse + MixBenchUI.Pay + MixBenchUI.PayGuess && bench.Feedback.Contains("სინამდვილეში"), "A repeat pays nothing and a wrong guess is explained");
+        bench.Pick("soda"); bench.Pick("copper"); bench.Guess(MixSign.Nothing); bench.Mix();
+        Ensure(bench.Feedback.Contains("სპილენძი") && bench.Feedback.Contains("სწორად"), "Unlisted pairs explain why nothing happens");
+        for (int k = 0; k < 10 && LabUI.AnyOpen; k++) LabUI.CloseTop();
         Debug.Log("CURRICULUM_CHECKS_PASSED");
     }
     private static void AfterCurriculum()

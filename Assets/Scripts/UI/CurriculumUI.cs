@@ -26,7 +26,7 @@ namespace ChemistryGame
         private Practice practice;
         private int[] values;
         private bool practiceOnly, answered;
-        private int from, to, question;
+        private int from, to, question, tries;
         private string[] keys = new string[0];
         private readonly HashSet<int> sorted = new HashSet<int>();
         private readonly Dictionary<int, int> misses = new Dictionary<int, int>();
@@ -43,6 +43,8 @@ namespace ChemistryGame
         public string Feedback => feedback != null ? feedback.text : "";
         public LessonQuestion Question => question < keys.Length ? Curriculum.Resolve(keys[question]).question : null;
         public List<string> Rewards { get; private set; }
+        private MixBenchUI bench;
+        public MixBenchUI Bench => bench != null ? bench : bench = gameObject.AddComponent<MixBenchUI>();
 
         public void Initialize(LabGame lab) => game = lab;
 
@@ -81,7 +83,7 @@ namespace ChemistryGame
         private void Go(Step step)
         {
             StopDemo();
-            Current = step; Solved = false; practice = null;
+            Current = step; Solved = false; practice = null; tries = 0;
             foreach (Transform child in window.Body) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
             choiceButtons.Clear();
             Header();
@@ -181,6 +183,19 @@ namespace ChemistryGame
             // No "next" clicking: a solved step moves on by itself after the result has been seen.
             if (Current != Step.Test && !practiceOnly) auto = StartCoroutine(AutoAdvance());
         }
+        /// <summary>What the player built, in the teacher's words (open goals accept several answers).</summary>
+        private string Result() => practice.Named?.Invoke(values) ?? practice.Done;
+
+        /// <summary>The teacher reacts to how the step was solved, not only that it was.</summary>
+        private string Praise()
+        {
+            if (practice != null && values != null && !values.SequenceEqual(practice.Solution)) return "ესეც სწორი პასუხია! ";
+            if (Current == Step.Free && tries == 0) return "პირველივე ცდაზე! ";
+            if (tries >= 2) return "არ დანებდი და მიაგენი — ასე მუშაობენ ნამდვილი ქიმიკოსები. ";
+            if (tries == 1) return "ერთი შეცდომა და მაშინვე გაასწორე — ყოჩაღ! ";
+            return "სწორია! ";
+        }
+
         private Coroutine auto;
         private IEnumerator AutoAdvance()
         {
@@ -252,6 +267,7 @@ namespace ChemistryGame
             if (bin != entry.Bin)
             {
                 misses[item] = misses.TryGetValue(item, out int m) ? m + 1 : 1;
+                tries++;
                 AudioManager.Instance?.Wrong();
                 bool reveal = Current == Step.Guided || misses[item] > 1;
                 Say("„" + entry.Label + "“ — არა „" + Lesson.Bins[bin] + "“. " + (reveal ? entry.Why : "მინიშნება: " + Lesson.Hint) + "\nსცადე თავიდან.", LabUI.Coral);
@@ -261,7 +277,7 @@ namespace ChemistryGame
             AudioManager.Instance?.Click();
             Say("სწორია! " + entry.Why, LabUI.Green);
             RefreshSort();
-            if (Enumerable.Range(from, to - from).All(sorted.Contains)) MarkSolved("სწორია! " + entry.Why + "\nყველა მაგალითი დალაგებულია!");
+            if (Enumerable.Range(from, to - from).All(sorted.Contains)) MarkSolved(Praise() + entry.Why + "\nყველა მაგალითი დალაგებულია!");
         }
 
         private void RefreshSort()
@@ -359,7 +375,7 @@ namespace ChemistryGame
             Draw();
             if (Current != Step.Guided) { Say("როცა მზად იქნები, დააჭირე „შემოწმებას“.", LabUI.Ink); return; }
             string problem = Problem();
-            if (problem == null) MarkSolved("სწორია! " + practice.Done);
+            if (problem == null) MarkSolved(Praise() + Result());
             else Say("მინიშნება: " + problem, LabUI.Coral);
         }
 
@@ -368,8 +384,8 @@ namespace ChemistryGame
         {
             if (window == null || practice == null || Current != Step.Free || Solved) return;
             string problem = Problem();
-            if (problem == null) MarkSolved("სწორია! " + practice.Done);
-            else { AudioManager.Instance?.Wrong(); Say("ჯერ არა. " + problem + "\nშეცვალე და კიდევ სცადე.", LabUI.Coral); }
+            if (problem == null) MarkSolved(Praise() + Result());
+            else { tries++; AudioManager.Instance?.Wrong(); Say("ჯერ არა. " + problem + "\nშეცვალე და კიდევ სცადე.", LabUI.Coral); }
         }
 
         private IEnumerator BuildDemo()
@@ -922,7 +938,8 @@ namespace ChemistryGame
                     {
                         if (!Curriculum.Done("c6_conserve")) { game.HUD.Notify(Curriculum.LockedText + " საჭიროა გაკვეთილი: „" + Curriculum.Get("c6_conserve").Title + "“."); return; }
                         hub.Close(); game.Quiz.Open(visual: true);
-                    }, 44); break;
+                    }, 44);
+                    LabUI.Button(footer.transform, "შერევის მაგიდა", () => { if (Curriculum.Done(MixBenchUI.Lesson)) hub.Close(); Bench.Open(); }, 44); break;
             }
             LabUI.Size(LabUI.Secondary(footer.transform, "სასწავლო რუკა [M]", () => { hub.Close(); OpenMap(); }, 44).gameObject, 44, 220, 0);
         }

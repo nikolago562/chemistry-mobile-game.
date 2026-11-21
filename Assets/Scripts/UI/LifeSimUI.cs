@@ -211,6 +211,9 @@ namespace ChemistryGame
                 bool owned = LabProgress.Owns("reaction:" + q.questionID);
                 Card(content, new CollectionItem(CollectionKind.Reaction, q.questionID, q.equationPrompt.Replace("?", q.correctAnswer), q.CategoryName + " • " + q.hintText, LabUI.Mint), owned);
             }
+            var mixes = LabProgress.Items(CollectionKind.Reaction).ToList();
+            Ui.Line(content, "შერევის მაგიდის აღმოჩენები: " + mixes.Count(m => LabProgress.Owns(m.ID)) + " / " + mixes.Count, 17, LabUI.Muted, 26);
+            foreach (var m in mixes) Card(content, m, LabProgress.Owns(m.ID));
         }
 
         private void Materials(Transform content)

@@ -200,6 +200,7 @@ namespace ChemistryGame
             Q("study", "მკვლევრის კაბინეტი", "დადგი კვლევების დაფა, ნიმუშების თარო და ფოტოდაფა.");
             Q("cozy", "მყუდრო საღამო", "დადგი სავარძელი, ლამპა და რადიო.");
             Q("museum", "პატარა მუზეუმი", "დადგი ვიტრინა, ჯილდოების თარო და მინერალების ყუთი.");
+            foreach (var mix in Mixing.Results) list.Add(new CollectionItem(CollectionKind.Reaction, mix.ID, mix.Title, mix.Note, mix.Color));
             foreach (var project in ResearchProjects.All)
                 list.Add(new CollectionItem(CollectionKind.Photo, "photo:" + project.ID, project.Title, "ფოტო ცდის დასრულების მომენტიდან.", project.Color));
             return list.ToArray();
