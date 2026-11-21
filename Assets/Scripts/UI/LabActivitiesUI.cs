@@ -28,6 +28,7 @@ namespace ChemistryGame
     public sealed class LabActivitiesUI : MonoBehaviour
     {
         private LabWindow window;
+        public bool IsOpen => window != null;
         private RectTransform stage;
         private Transform controls;
         private TMP_Text readout;

@@ -287,8 +287,13 @@ namespace ChemistryGame
     {
         public static AmbientAudio Instance { get; private set; }
         public static readonly string[] Stations = { "ლაბ-ლოფაი", "წყნარი ფორტეპიანო", "ქიმიური ჩიპტიუნი" };
-        private AudioSource rain, tone, birds, radio, oneShots;
-        private AudioClip door, splash, sparkle;
+        private AudioSource rain, tone, birds, radio, oneShots, crowd, playful;
+        private AudioClip door, splash, sparkle, bell;
+        /// <summary>School rhythm in play time: a bell ends each lesson and each break.</summary>
+        public const float LessonSeconds = 360, BreakSeconds = 90;
+        /// <summary>True during the break between lessons (the school fills with chatter).</summary>
+        public static bool Break { get; private set; }
+        private float phaseEnds = LessonSeconds;
         private readonly AudioClip[] music = new AudioClip[3];
         private bool raining;
         private DayPart part;
@@ -298,12 +303,34 @@ namespace ChemistryGame
         public void Initialize(LabGame lab)
         {
             Instance = this; game = lab;
-            rain = Loop(Noise(2f, 0.6f, 0.55f), 0);
+            rain = Loop(Rain(8f), 0);
             tone = Loop(Hum(3f), 0);
             birds = Loop(Birds(6f), 0);
+            crowd = Loop(Crowd(8f), 0);
+            playful = Loop(Playful(), 0);
             radio = Source(); radio.loop = true; radio.volume = 0;
             oneShots = Source(); oneShots.volume = 0.3f;
-            door = DoorClip(); splash = Noise(0.35f, 0.2f, 0.9f, true); sparkle = Chime();
+            door = DoorClip(); splash = Noise(0.35f, 0.2f, 0.9f, true); sparkle = Chime(); bell = Bell();
+            Break = false;
+            phaseEnds = Time.unscaledTime + LessonSeconds;
+        }
+
+        /// <summary>An activity is on screen: a lesson, mini-game, lab activity, quiz or a mission experiment.</summary>
+        private bool InActivity() =>
+            game.Lessons != null && game.Lessons.IsOpen || game.Games != null && game.Games.IsOpen ||
+            game.Challenges != null && game.Challenges.IsOpen || game.Quiz != null && game.Quiz.IsOpen ||
+            game.Personal != null && game.Personal.Activities != null && game.Personal.Activities.IsOpen ||
+            game.ActOne != null && game.ActOne.Busy;
+
+        /// <summary>Rings the bell and switches between lesson and break (also used by tests).</summary>
+        public void RingBell()
+        {
+            Break = !Break;
+            phaseEnds = Time.unscaledTime + (Break ? BreakSeconds : LessonSeconds);
+            string area = game.Areas != null ? game.Areas.Current : "classroom";
+            bool personal = game.Personal != null && game.Personal.Inside;
+            oneShots.PlayOneShot(bell, personal ? 0.25f : area == "hallway" ? 0.9f : 0.6f);
+            game.HUD?.Notify(Break ? "ზარი! დასვენებაა." : "ზარი! გაკვეთილი იწყება.");
         }
 
         private AudioSource Source() { var s = gameObject.AddComponent<AudioSource>(); s.playOnAwake = false; s.spatialBlend = 0; return s; }
@@ -320,9 +347,15 @@ namespace ChemistryGame
             bool personal = game.Personal != null && game.Personal.Inside;
             bool windows = area == "classroom" || area == "hallway" || area == "greenhouse" || area == "reading" || personal;
             float calm = personal ? Mathf.Clamp01(PersonalDecor.Calm / 10f) : 0;
-            Fade(rain, raining ? (windows ? 0.16f : 0.06f) * (area == "greenhouse" ? 1.8f : 1) : 0);
-            Fade(tone, area == "storage" ? 0.09f : area == "classroom" ? 0.05f : 0.03f);
-            Fade(birds, (part == DayPart.Morning && !raining && (area == "greenhouse" || area == "reading")) ? 0.12f : personal ? calm * 0.05f : 0);
+            if (GameSaveManager.Instance.Data.profileCompleted && Time.unscaledTime >= phaseEnds) RingBell();
+            // During an activity the world steps back and the cheerful activity tune takes over.
+            bool activity = InActivity();
+            float duck = activity ? 0.25f : 1;
+            Fade(playful, activity ? 0.14f : 0, 0.5f);
+            Fade(rain, raining ? (windows ? 0.07f : 0.025f) * (area == "greenhouse" ? 1.5f : 1) * duck : 0);
+            Fade(crowd, Break ? (personal ? 0.012f : area == "hallway" ? 0.16f : area == "classroom" ? 0.07f : 0.045f) * duck : 0, 0.15f);
+            Fade(tone, (area == "storage" ? 0.09f : area == "classroom" ? 0.05f : 0.03f) * duck);
+            Fade(birds, ((part == DayPart.Morning && !raining && (area == "greenhouse" || area == "reading")) ? 0.12f : personal ? calm * 0.05f : 0) * duck);
             var data = GameSaveManager.Instance.Data;
             bool radioPlaying = data.radioOn && data.labPlacements.Exists(p => p.itemID == "radio");
             if (radioPlaying && playingStation != data.radioStation)
@@ -332,11 +365,172 @@ namespace ChemistryGame
                 radio.clip = music[station]; radio.Play(); playingStation = data.radioStation;
             }
             if (!radioPlaying && playingStation >= 0 && radio.volume < 0.01f) { radio.Stop(); playingStation = -1; }
-            Fade(radio, radioPlaying ? (personal ? 0.22f : 0.035f) : 0);
+            Fade(radio, radioPlaying ? (personal ? 0.22f : 0.035f) * duck : 0);
         }
 
-        private static void Fade(AudioSource source, float target) =>
-            source.volume = Mathf.MoveTowards(source.volume, target, Time.unscaledDeltaTime * 0.25f);
+        /// <summary>Glides a volume toward its target at <paramref name="speed"/> per second (gentle by default).</summary>
+        private static void Fade(AudioSource source, float target, float speed = 0.25f) =>
+            source.volume = Mathf.MoveTowards(source.volume, target, Time.unscaledDeltaTime * speed);
+
+        // ---------- loops that must repeat without a seam ----------
+
+        /// <summary>Blends the last <paramref name="overlap"/> samples into the start, so a loop has no click or gap.</summary>
+        private static float[] Seamless(float[] data, int overlap)
+        {
+            int n = data.Length - overlap;
+            var loop = new float[n];
+            System.Array.Copy(data, loop, n);
+            for (int i = 0; i < overlap; i++)
+            {
+                float k = i / (float)overlap;
+                loop[i] = data[i] * k + data[n + i] * (1 - k);
+            }
+            return loop;
+        }
+
+        /// <summary>
+        /// Soft rain: deep filtered noise that swells slowly, a faint hiss and occasional quiet
+        /// droplets. Replaces bright white noise that sounded harsh at volume.
+        /// </summary>
+        private static AudioClip Rain(float seconds)
+        {
+            var random = new System.Random(7);
+            int overlap = Rate / 2, n = Mathf.RoundToInt(seconds * Rate) + overlap;
+            var data = new float[n];
+            float low1 = 0, low2 = 0, hiss = 0;
+            for (int i = 0; i < n; i++)
+            {
+                float white = (float)(random.NextDouble() * 2 - 1);
+                low1 += (white - low1) * 0.08f;
+                low2 += (low1 - low2) * 0.12f;
+                hiss += (white - hiss) * 0.35f;
+                // A slow swell, two cycles per loop so the ends meet.
+                float swell = 0.8f + 0.2f * Mathf.Sin(2 * Mathf.PI * 2 * i / (float)(n - overlap));
+                data[i] = (low2 * 2.4f + hiss * 0.06f) * swell;
+            }
+            // About five soft droplets a second: short, quiet, high "plips".
+            int drops = Mathf.RoundToInt(seconds * 5);
+            for (int d = 0; d < drops; d++)
+            {
+                int start = random.Next(0, n - Rate / 10);
+                float f = 1800 + (float)random.NextDouble() * 1600, gain = 0.025f + (float)random.NextDouble() * 0.03f;
+                for (int i = 0; i < Rate / 12 && start + i < n; i++)
+                {
+                    float t = i / (float)Rate;
+                    data[start + i] += Mathf.Sin(2 * Mathf.PI * f * t * (1 - t * 3)) * Mathf.Exp(-t * 70) * gain;
+                }
+            }
+            return Make("წვიმა", Seamless(data, overlap));
+        }
+
+        /// <summary>
+        /// Break-time chatter: several murmuring voices (a buzzing "voice" filtered soft, cut into
+        /// syllables), with breath noise, overlapping like a crowded hallway.
+        /// </summary>
+        private static AudioClip Crowd(float seconds)
+        {
+            var random = new System.Random(21);
+            int overlap = Rate / 2, n = Mathf.RoundToInt(seconds * Rate) + overlap;
+            var data = new float[n];
+            for (int v = 0; v < 9; v++)
+            {
+                float f0 = 110 + (float)random.NextDouble() * 150, pan = 0.6f + (float)random.NextDouble() * 0.6f;
+                double phase = 0;
+                float low = 0, breath = 0, envelope = 0, target = 0;
+                int nextSyllable = random.Next(0, Rate / 2);
+                for (int i = 0; i < n; i++)
+                {
+                    if (i >= nextSyllable)
+                    {
+                        // A syllable (on) or a short pause (off), at a talking rhythm of about 4-6 per second.
+                        bool talking = random.NextDouble() < 0.72;
+                        target = talking ? 0.5f + (float)random.NextDouble() * 0.5f : 0;
+                        nextSyllable = i + (int)(Rate * (talking ? 0.09 + random.NextDouble() * 0.16 : 0.08 + random.NextDouble() * 0.35));
+                    }
+                    envelope += (target - envelope) * 0.004f;
+                    float t = i / (float)Rate;
+                    phase += f0 * (1 + 0.06f * Mathf.Sin(t * 5.3f + v)) / Rate;
+                    float buzz = (float)(phase % 1.0) * 2 - 1;
+                    low += (buzz - low) * 0.06f;
+                    breath += ((float)(random.NextDouble() * 2 - 1) - breath) * 0.2f;
+                    data[i] += (low * 0.9f + breath * 0.25f) * envelope * pan;
+                }
+            }
+            float peak = 0.0001f;
+            foreach (float s in data) peak = Mathf.Max(peak, Mathf.Abs(s));
+            for (int i = 0; i < n; i++) data[i] = data[i] / peak * 0.6f;
+            return Make("დასვენება", Seamless(data, overlap));
+        }
+
+        /// <summary>An electric school bell: a fast clapper trill on bright metal partials, about two seconds.</summary>
+        private static AudioClip Bell()
+        {
+            int n = Mathf.RoundToInt(2.4f * Rate);
+            var data = new float[n];
+            float[] partials = { 950, 2280, 3610, 5100 }, gains = { 1f, 0.55f, 0.3f, 0.15f };
+            for (int i = 0; i < n; i++)
+            {
+                float t = i / (float)Rate;
+                float strike = Mathf.Exp(-((t * 19) % 1) * 4);
+                float tail = t < 1.9f ? 1 : Mathf.Exp(-(t - 1.9f) * 8);
+                float s = 0;
+                for (int p = 0; p < partials.Length; p++) s += Mathf.Sin(2 * Mathf.PI * partials[p] * t) * gains[p];
+                data[i] = s * (0.35f + 0.65f * strike) * tail * 0.22f;
+            }
+            return Make("ზარი", data);
+        }
+
+        /// <summary>
+        /// A cheerful mini-game loop: 120 bpm in C major (C, G, Am, F), plucky melody, bouncy bass,
+        /// soft kick and hats. Notes that ring past the end wrap to the start, so it loops cleanly.
+        /// </summary>
+        private static AudioClip Playful()
+        {
+            const float bpm = 120;
+            float beat = 60f / bpm;
+            int bars = 8, n = Mathf.RoundToInt(bars * 4 * beat * Rate);
+            var data = new float[n];
+            var random = new System.Random(12);
+            int[][] chords = { new[] { 0, 4, 7 }, new[] { 7, 11, 14 }, new[] { 9, 12, 16 }, new[] { 5, 9, 12 } };
+            float root = 261.63f;
+            void Add(int start, int length, System.Func<float, float> wave)
+            {
+                for (int i = 0; i < length; i++) data[(start + i) % n] += wave(i / (float)Rate);
+            }
+            for (int bar = 0; bar < bars; bar++)
+            {
+                var chord = chords[bar % 4];
+                int barStart = Mathf.RoundToInt(bar * 4 * beat * Rate);
+                for (int step = 0; step < 8; step++)
+                {
+                    int start = barStart + Mathf.RoundToInt(step * 0.5f * beat * Rate);
+                    // Melody: chord tones mostly, an octave up, with a few rests for bounce.
+                    if (step != 3 && step != 7 || random.NextDouble() < 0.4)
+                    {
+                        int note = chord[random.Next(chord.Length)] + 12 + (random.NextDouble() < 0.2 ? 2 : 0);
+                        float f = root * Mathf.Pow(2, note / 12f);
+                        Add(start, Mathf.RoundToInt(0.3f * Rate), t => ((f * t) % 1 < 0.35f ? 1 : -1) * Mathf.Exp(-t * 11) * 0.07f
+                            + Mathf.Sin(2 * Mathf.PI * f * t) * Mathf.Exp(-t * 8) * 0.06f);
+                    }
+                    // Hats on every half beat, a little louder off the beat.
+                    float hat = step % 2 == 1 ? 0.035f : 0.018f;
+                    Add(start, Rate / 30, t => (float)(random.NextDouble() * 2 - 1) * Mathf.Exp(-t * 160) * hat);
+                }
+                for (int b = 0; b < 4; b++)
+                {
+                    int start = barStart + Mathf.RoundToInt(b * beat * Rate);
+                    // Bouncy bass on the root and fifth.
+                    float bass = root / 2 * Mathf.Pow(2, (chord[0] + (b % 2 == 1 ? 7 : 0)) / 12f);
+                    Add(start, Mathf.RoundToInt(0.4f * Rate), t => Mathf.Sin(2 * Mathf.PI * bass * t) * Mathf.Exp(-t * 6) * 0.16f);
+                    // Soft kick on beats one and three.
+                    if (b % 2 == 0) Add(start, Rate / 6, t => Mathf.Sin(2 * Mathf.PI * (50 + 70 * Mathf.Exp(-t * 30)) * t) * Mathf.Exp(-t * 18) * 0.25f);
+                }
+            }
+            float peak = 0.0001f;
+            foreach (float s in data) peak = Mathf.Max(peak, Mathf.Abs(s));
+            for (int i = 0; i < n; i++) data[i] = data[i] / peak * 0.8f;
+            return Make("მხიარული მელოდია", data);
+        }
 
         // ---------- synthesis ----------
         private const int Rate = 22050;

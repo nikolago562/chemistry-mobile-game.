@@ -23,6 +23,8 @@ namespace ChemistryGame
         private SpriteRenderer flame, papers, puddle, bottleLabel, beaker, water, ice, plate, kettleSink, kettleCart, wheel, carry;
         private readonly SpriteRenderer[] drops = new SpriteRenderer[4];
         private bool busy, heating;
+        /// <summary>True while a cart experiment is running (the activity music plays).</summary>
+        public bool Busy => busy;
         private float wheelSpeed, nextRefresh;
         private static GameSaveData Data => GameSaveManager.Instance.Data;
         private static bool F(string flag) => Missions.Flag(flag);

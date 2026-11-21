@@ -377,6 +377,22 @@ public static class LabGameChecks
         Ensure(Missions.IsDone("steam") && Missions.Current == null && !Missions.Steering, "The steam machine finishes act one");
         Ensure(data.ownedLabItems.Contains("steam_wheel") && data.labPlacements.Any(p => p.itemID == "steam_wheel"), "The steam wheel trophy is standing in the lab");
         Snapshot("63-mission-steam");
+        // Activity music: opening a lesson should duck the world and fade in the cheerful tune.
+        var audio = AmbientAudio.Instance;
+        Ensure(!AmbientAudio.Break, "The day starts in a lesson, not a break");
+        audio.RingBell();
+        Ensure(AmbientAudio.Break, "The bell starts a break");
+        audio.RingBell();
+        Ensure(!AmbientAudio.Break, "The next bell ends the break");
+        game.Lessons.OpenWorkbook(Curriculum.Lessons[0], true);
+        Schedule(ActivityMusic, 1.2);
+    }
+    private static void ActivityMusic()
+    {
+        var playful = (AudioSource)Field(AmbientAudio.Instance, "playful");
+        var tone = (AudioSource)Field(AmbientAudio.Instance, "tone");
+        Ensure(playful.isPlaying && playful.volume > 0.1f && tone.volume < 0.03f, "During an activity the cheerful tune plays and the room hum ducks (" + playful.volume + "/" + tone.volume + ")");
+        game.Lessons.Close();
         Schedule(AfterCurriculum, 0.3);
     }
     private static InteractableStation Station(StationType type) =>
