@@ -16,7 +16,9 @@ namespace ChemistryGame
         public Sprite teacherSprite;
         public Material teacherMaterial;
         public Vector2 lockerPosition = new Vector2(61, 9.2f);
-        public Vector2 teacherDeskPosition = new Vector2(35.8f, 8.7f);
+        /// <summary>The lesson table (chapter one is played here), right of the teacher's own desk so their prompts never overlap.</summary>
+        public Vector2 teacherDeskPosition = LessonTable;
+        public static readonly Vector2 LessonTable = new Vector2(40.1f, 8.7f);
         public PlayerController player;
         public Transform classroom;
         public AudioClip[] sounds;
@@ -49,6 +51,8 @@ namespace ChemistryGame
         private void Awake()
         {
             Instance = this;
+            // The scene still stores the old spot on the teacher's own desk; the lesson table lives here now.
+            teacherDeskPosition = LessonTable;
             AddRuntimeCosmetics();
             gameObject.AddComponent<GameSaveManager>();
 

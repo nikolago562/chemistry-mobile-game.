@@ -14,6 +14,10 @@ namespace ChemistryGame
             var furniture = new GameObject("ქიმიის ოთახის ავეჯი");
             furniture.transform.SetParent(game.classroom, false);
             MakeBench(furniture.transform, new Vector2(36, 9.2f), false);
+            // The lesson table stands right of the teacher's own desk along the back wall, so
+            // talking to her and starting a lesson are two separate spots.
+            MakeBench(furniture.transform, new Vector2(40.3f, 9.2f), false);
+            Glassware(furniture.transform, new Vector2(39.3f, 10.65f), false);
             MakeBench(furniture.transform, new Vector2(55, 9.2f), true);
             foreach (float y in new[] { 2f, -6f, -14f })
             foreach (float x in new[] { 37.5f, 52f })
