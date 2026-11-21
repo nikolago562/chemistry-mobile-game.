@@ -514,6 +514,12 @@ public static class LabGameChecks
         Snapshot("59-learning-map");
         for (int k = 0; k < 10 && LabUI.AnyOpen; k++) LabUI.CloseTop();
 
+        // Playtest skip finishes earlier lessons with their normal rewards.
+        string beforeSkip = JsonUtility.ToJson(save.Data);
+        Curriculum.SkipTo(Curriculum.Get("c6_signs"));
+        Ensure(Curriculum.Next.ID == "c6_signs" && LabProgress.Owns("badge:ch5") && Curriculum.StationOpen(StationType.ReactionTable), "Playtest skip lands on the chosen lesson");
+        JsonUtility.FromJsonOverwrite(beforeSkip, save.Data); // later checks expect the skipped rewards still unearned
+
         // Finish the beginner path: stations, activities and the advanced floor open.
         foreach (var l in Curriculum.Lessons) if (!Curriculum.Done(l.ID)) save.Data.lessons.Add(new LessonRecord { id = l.ID, done = true, best = 3 });
         save.Commit();

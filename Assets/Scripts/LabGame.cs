@@ -298,6 +298,21 @@ namespace ChemistryGame
             if (Input.GetKeyDown(KeyCode.N)) OpenMenu(1);
             if (Input.GetKeyDown(KeyCode.B)) OpenMenu(2);
             if (Input.GetKeyDown(KeyCode.M)) OpenMenu(9);
+            if (GameSaveManager.FreshStartEachLaunch) PlaytestKeys();
+        }
+
+        /// <summary>Playtest only (save wiped each launch): F1–F8 jump to a chapter's first lesson, F9 skips the current lesson.</summary>
+        private void PlaytestKeys()
+        {
+            Lesson target = null;
+            for (int c = 0; c < Curriculum.Chapters.Length; c++)
+                if (Input.GetKeyDown(KeyCode.F1 + c)) target = Curriculum.Of(c + 1)[0];
+            if (Input.GetKeyDown(KeyCode.F9) && Curriculum.Next != null) target = Curriculum.Lessons.ElementAtOrDefault(System.Array.IndexOf(Curriculum.Lessons, Curriculum.Next) + 1);
+            if (target == null && !Input.GetKeyDown(KeyCode.F9)) return;
+            if (Tutorial.Step != TutorialManager.TutorialStep.Completed) { HUD.Notify("ჯერ შესავალი დაასრულე (ხალათი და მასწავლებელი), მერე გადადი თავებზე."); return; }
+            for (int k = 0; k < 10 && LabUI.AnyOpen; k++) LabUI.CloseTop();
+            Curriculum.SkipTo(target);
+            HUD.Notify("სატესტო გადასვლა • " + Curriculum.NextAction);
         }
         public void OpenMenu(int menu)
         {

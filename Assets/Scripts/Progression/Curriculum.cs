@@ -264,6 +264,16 @@ namespace ChemistryGame
             return rewards;
         }
 
+        /// <summary>Playtest shortcut: finishes every lesson before the target, with their normal rewards.</summary>
+        public static void SkipTo(Lesson target)
+        {
+            foreach (var lesson in Lessons)
+            {
+                if (lesson == target) break;
+                if (!Done(lesson.ID)) Finish(lesson, new string[0], new string[0]);
+            }
+        }
+
         // ------------------------------------------------------------------ content helpers
 
         // A property, not a field: Lessons is built during static initialization, before later fields are set.
