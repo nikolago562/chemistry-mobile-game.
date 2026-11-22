@@ -72,6 +72,7 @@ namespace ChemistryGame
             Challenges = gameObject.AddComponent<ChemChallengeUI>(); Challenges.Initialize(this);
             HUD = gameObject.AddComponent<GameHUD>(); HUD.Initialize(this);
             TouchControls.Create();
+            Coach.Create(this);
             Visuals = gameObject.AddComponent<VisualExperiment>();
             Visuals.Initialize(classroom.TransformPoint(new Vector3(36.9f, 11.15f, 0)));
             var furnishings = GetComponent<ChemistryClassroom>();

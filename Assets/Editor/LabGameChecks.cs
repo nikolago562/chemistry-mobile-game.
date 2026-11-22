@@ -306,7 +306,18 @@ public static class LabGameChecks
         MoveTo(bench.transform.position + Vector3.down * 0.75f);
         game.Interact(bench);
         Ensure(game.Lessons.Bench.IsOpen && !game.Lessons.IsOpen, "The reaction table opens the mixing bench, not a lesson");
-        game.Lessons.Bench.Pick("vinegar"); game.Lessons.Bench.Pick("soda"); game.Lessons.Bench.Guess(MixSign.Gas); game.Lessons.Bench.Mix();
+        game.Lessons.Bench.Pick("salt");
+        Ensure(game.Lessons.Bench.Picked.Count == 0, "During the tutorial the bench only takes vinegar and soda");
+        game.Lessons.Bench.Pick("vinegar");
+        Schedule(FirstMixCoach, 0.4);
+    }
+    private static void FirstMixCoach()
+    {
+        var data = GameSaveManager.Instance.Data;
+        var coach = UnityEngine.Object.FindFirstObjectByType<Coach>();
+        Ensure(coach != null && coach.Caption.Contains("სოდა"), "The tutorial points at the next jar (" + coach?.Caption + ")");
+        Snapshot("01b-coach");
+        game.Lessons.Bench.Pick("soda"); game.Lessons.Bench.Guess(MixSign.Gas); game.Lessons.Bench.Mix();
         Ensure(LabProgress.Owns(Mixing.Key("vinegar", "soda")) && LabProgress.Has("vinegar") == 2 && LabProgress.Has("soda") == 2, "Mixing uses up one of each ingredient");
         Ensure(Missions.IsDone("first_mix") && Missions.Current == ActOne.Safety, "The first mix finishes the first mission");
         Snapshot("01c-first-mix");

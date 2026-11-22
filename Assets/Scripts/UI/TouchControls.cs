@@ -32,6 +32,10 @@ namespace ChemistryGame
         private const float Radius = 70, Dead = 0.25f;
         private static readonly Vector2 Home = new Vector2(150, 150);
         private RectTransform zone, pad, knob, action;
+        public static TouchControls Instance { get; private set; }
+        /// <summary>The joystick and the action button, for the tutorial pointer.</summary>
+        public RectTransform Pad => pad;
+        public RectTransform Action => actionGroup != null && actionGroup.alpha > 0.5f ? action : null;
         private CanvasGroup padGroup, actionGroup;
         private int pointer = int.MinValue;
 
@@ -40,6 +44,7 @@ namespace ChemistryGame
             var zone = LabUI.Object(LabUI.Root, "ჯოისტიკის არე", typeof(Image));
             var controls = zone.AddComponent<TouchControls>();
             controls.Build((RectTransform)zone.transform);
+            Instance = controls;
             return controls;
         }
 

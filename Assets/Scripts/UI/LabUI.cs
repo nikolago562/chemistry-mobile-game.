@@ -35,7 +35,7 @@ namespace ChemistryGame
         private static void Prewarm(TMP_FontAsset font)
         {
             if (font == null) return;
-            var glyphs = new System.Text.StringBuilder("აბგდევზთიკლმნოპჟრსტუფქღყშჩცძწჭხჯჰ„“”–—•…→←↑↓★×÷±°·✓");
+            var glyphs = new System.Text.StringBuilder("აბგდევზთიკლმნოპჟრსტუფქღყშჩცძწჭხჯჰ„“”–—•…→←↑↓★×÷±°·✓∞");
             for (char c = ' '; c <= '~'; c++) glyphs.Append(c);
             var assets = new HashSet<TMP_FontAsset> { font };
             foreach (var weight in font.fontWeightTable) { assets.Add(weight.regularTypeface); assets.Add(weight.italicTypeface); }
@@ -67,6 +67,43 @@ namespace ChemistryGame
             foreach (var component in components) go.AddComponent(component);
             return go;
         }
+        /// <summary>Each sprite pixel covers this many UI units, so frames read as chunky pixel art.</summary>
+        public const float PixelScale = 2;
+        private static Sprite frame, chunky;
+
+        /// <summary>Builds a point-filtered 9-slice sprite from a pixel function (1 = full tint, lower = shade).</summary>
+        private static Sprite Pixel9(int w, int h, Vector4 border, Func<int, int, float> shade)
+        {
+            var texture = new Texture2D(w, h, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
+            for (int y = 0; y < h; y++)
+            for (int x = 0; x < w; x++)
+            {
+                float v = shade(x, y);
+                texture.SetPixel(x, y, v < 0 ? Color.clear : new Color(v, v, v, 1));
+            }
+            texture.Apply();
+            return Sprite.Create(texture, new Rect(0, 0, w, h), Vector2.one * 0.5f, 100, 0, SpriteMeshType.FullRect, border);
+        }
+
+        /// <summary>Panels and cards: a 1px dark outline with notched corners and a darker bottom edge.</summary>
+        public static Sprite Frame() => frame ??= Pixel9(10, 10, Vector4.one * 3, (x, y) =>
+        {
+            bool corner = (x == 0 || x == 9) && (y == 0 || y == 9);
+            if (corner) return -1;
+            if (x == 0 || x == 9 || y == 0 || y == 9) return 0.42f;
+            return y == 1 ? 0.84f : 1;
+        });
+
+        /// <summary>Buttons: the same outline plus a thick darker lip underneath, so they look pressable.</summary>
+        public static Sprite Chunky() => chunky ??= Pixel9(10, 13, new Vector4(3, 5, 3, 3), (x, y) =>
+        {
+            bool corner = (x == 0 || x == 9) && (y == 0 || y == 12);
+            if (corner) return -1;
+            if (x == 0 || x == 9 || y == 0 || y == 12) return 0.32f;
+            if (y <= 3) return 0.68f;
+            return y == 11 ? 1 : 0.96f;
+        });
+
         public static Sprite Rounded()
         {
             if (rounded != null) return rounded;
@@ -87,8 +124,9 @@ namespace ChemistryGame
         public static Image Panel(Transform parent, string name, Color color)
         {
             var image = Object(parent, name, typeof(Image)).GetComponent<Image>();
-            image.sprite = Rounded();
+            image.sprite = Frame();
             image.type = Image.Type.Sliced;
+            image.pixelsPerUnitMultiplier = 1 / PixelScale;
             image.color = color;
             image.raycastTarget = false;
             return image;
@@ -198,6 +236,7 @@ namespace ChemistryGame
         public static Button Button(Transform parent, string text, Action pressed, float height = 46)
         {
             var image = Panel(parent, text, Green);
+            image.sprite = Chunky();
             image.raycastTarget = true;
             var button = image.gameObject.AddComponent<Button>();
             button.targetGraphic = image;
@@ -210,11 +249,12 @@ namespace ChemistryGame
             button.colors = colors;
             var label = Text(image.transform, text, 18, Color.white);
             label.alignment = TextAlignmentOptions.Center;
-            label.fontWeight = FontWeight.Medium;
+            label.fontStyle = FontStyles.Bold;
             label.enableAutoSizing = true;
-            label.fontSizeMin = 14;
-            label.fontSizeMax = 18;
+            label.fontSizeMin = 13;
+            label.fontSizeMax = 19;
             Fill(label.rectTransform, 9);
+            label.rectTransform.offsetMin = new Vector2(9, 12); // the lip takes the bottom 8 units
             Size(image.gameObject, height, -1, 1);
             image.gameObject.AddComponent<ButtonMotion>();
             button.onClick.AddListener(() => { AudioManager.Instance?.Click(); pressed(); });
@@ -274,6 +314,7 @@ namespace ChemistryGame
             Fill(backdrop.rectTransform);
             var card = Panel(backdrop.transform, "ფანჯარა", Paper);
             card.raycastTarget = true;
+            card.pixelsPerUnitMultiplier = 1 / (PixelScale * 1.5f);
             card.rectTransform.sizeDelta = new Vector2(width, height);
             Shadow(card, 12);
             var stack = card.gameObject.AddComponent<VerticalLayoutGroup>();
@@ -287,17 +328,27 @@ namespace ChemistryGame
             window.Card = card.rectTransform;
             window.Fade = card.gameObject.AddComponent<CanvasGroup>();
             windows.Add(window);
-            var header = Row(card.transform, "სათაური", 14);
-            var mark = Panel(header.transform, "ლაბორატორიის ნიშანი", Green);
-            Size(mark.gameObject, 42, 42);
+            var banner = Panel(card.transform, "სათაური", Green);
+            Size(banner.gameObject, 56);
+            var header = banner.gameObject.AddComponent<HorizontalLayoutGroup>();
+            header.padding = new RectOffset(10, 8, 6, 8);
+            header.spacing = 12;
+            header.childAlignment = TextAnchor.MiddleLeft;
+            header.childControlWidth = header.childControlHeight = true;
+            header.childForceExpandWidth = header.childForceExpandHeight = false;
+            var mark = Panel(header.transform, "ლაბორატორიის ნიშანი", Gold);
+            Size(mark.gameObject, 40, 40);
             var atom = Icon(mark.transform, LabIcon.Atom, Color.white);
-            Fill(atom.rectTransform, 7);
-            var label = Text(header.transform, title, 27);
+            Fill(atom.rectTransform, 6);
+            var label = Text(header.transform, title, 26, Color.white);
             label.fontStyle = FontStyles.Bold;
-            Size(label.gameObject, 48, -1, 1);
-            var close = Secondary(header.transform, "×", window.Close);
+            label.textWrappingMode = TextWrappingModes.NoWrap;
+            label.enableAutoSizing = true; label.fontSizeMin = 16; label.fontSizeMax = 26;
+            Size(label.gameObject, 40, -1, 1);
+            var close = Button(header.transform, "×", window.Close, 40);
+            close.GetComponent<Image>().color = Coral;
             close.gameObject.SetActive(closable);
-            Size(close.gameObject, 40, 40, 0);
+            Size(close.gameObject, 40, 44, 0);
             var body = Column(card.transform, "შიგთავსი", 14);
             FlexibleHeight(body.gameObject);
             window.Body = (RectTransform)body.transform;
