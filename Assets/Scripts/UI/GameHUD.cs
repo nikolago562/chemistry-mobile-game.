@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Globalization;
 using TMPro;
 using UnityEngine;
@@ -7,7 +8,9 @@ namespace ChemistryGame
 {
     public sealed class GameHUD : MonoBehaviour
     {
-        private TMP_Text coins, streak, combo, title, objective, taskTitle, toast, waypoint;
+        private TMP_Text coins, streak, combo, title, objective, taskTitle, toast, waypoint, xp;
+        private Image ring;
+        private int seenXP = -1;
         private Image progress;
         private Image toastCard;
         private Image waypointCard;
@@ -48,6 +51,8 @@ namespace ChemistryGame
             Anchor((RectTransform)stats.transform, new Vector2(1, 1), new Vector2(-16, -14), new Vector2(570, 68));
             stats.childForceExpandWidth = true;
             coins = Stat(stats.transform, LabIcon.Coin, LabUI.Gold, "ქიმქოინები");
+            xp = Stat(stats.transform, LabIcon.Quest, LabUI.Mint, "დღის მიზანი");
+            GoalRing((Image)xp.transform.parent.GetComponent<Image>());
             streak = Stat(stats.transform, LabIcon.Flame, LabUI.Coral, "დღიური სერია");
             combo = Stat(stats.transform, LabIcon.Flask, LabUI.Mint, "სწორი პასუხების სერია");
 
@@ -133,6 +138,46 @@ namespace ChemistryGame
             PlaceText(value.rectTransform, new Vector2(50, -32), new Vector2(125, 28));
             value.fontStyle = FontStyles.Bold;
             return value;
+        }
+
+        /// <summary>A ring around the goal icon fills with today's XP; clicking the card picks the goal.</summary>
+        private void GoalRing(Image card)
+        {
+            var badge = card.transform.GetChild(0);
+            var sprite = PixelArt.Make(48, 48, (x, y) =>
+            {
+                float d = Vector2.Distance(new Vector2(x, y), new Vector2(23.5f, 23.5f));
+                return d <= 23.5f && d >= 19.5f ? Color.white : Color.clear;
+            });
+            foreach (bool track in new[] { true, false })
+            {
+                var image = LabUI.Panel(badge, track ? "რგოლის ფონი" : "მიზნის რგოლი", track ? new Color(1, 1, 1, 0.15f) : LabUI.Mint);
+                image.sprite = sprite; image.raycastTarget = false;
+                Anchor(image.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(42, 42));
+                if (track) continue;
+                image.type = Image.Type.Filled; image.fillMethod = Image.FillMethod.Radial360;
+                image.fillOrigin = (int)Image.Origin360.Top; image.fillClockwise = true;
+                ring = image;
+            }
+            card.raycastTarget = true;
+            card.gameObject.AddComponent<Button>().onClick.AddListener(PickGoal);
+        }
+
+        public void PickGoal()
+        {
+            if (LabUI.AnyOpen) return;
+            var save = GameSaveManager.Instance;
+            var window = LabUI.Window("დღის მიზანი", 600, 400);
+            var intro = LabUI.Text(window.Body, "რამდენი XP გინდა ყოველდღე? XP-ს იღებ გაკვეთილებით, ვარჯიშით, ტესტებითა და აღმოჩენებით.", 17, LabUI.Ink);
+            LabUI.Size(intro.gameObject, 56);
+            string[] names = { "მსუბუქი", "ჩვეულებრივი", "სერიოზული" };
+            for (int i = 0; i < names.Length; i++)
+            {
+                int goal = GameSaveManager.XpGoals[i];
+                string label = names[i] + "  •  " + goal + " XP დღეში";
+                System.Action pick = () => { save.Data.xpGoal = goal; save.Commit(); Refresh(); window.Close(); Notify("დღის მიზანი: " + goal + " XP."); };
+                if (goal == save.Data.xpGoal) LabUI.Button(window.Body, label, pick, 54); else LabUI.Secondary(window.Body, label, pick, 54);
+            }
         }
 
         private void Update()
@@ -270,19 +315,28 @@ namespace ChemistryGame
             var save = GameSaveManager.Instance;
             targetCoins = save.Data.chemCoins;
             streak.text = save.Data.currentDailyStreak + " დღე";
+            int daily = save.Data.dailyXP, goal = Mathf.Max(1, save.Data.xpGoal);
+            xp.text = daily + " / " + goal + " XP";
+            ring.fillAmount = Mathf.Clamp01(daily / (float)goal);
+            ring.color = daily >= goal ? LabUI.Gold : LabUI.Mint;
+            if (seenXP >= 0 && seenXP < goal && daily >= goal)
+            {
+                Notify("დღის მიზანი შესრულდა! " + goal + " XP • სერია: " + save.Data.currentDailyStreak + " დღე");
+                AudioManager.Instance?.Milestone();
+            }
+            seenXP = daily;
             combo.text = save.Combo >= 3 ? "×" + save.ComboMultiplier.ToString("0.0", CultureInfo.InvariantCulture) : save.Combo.ToString();
             title.text = game.Rankings.Title;
             // Streak and combo only matter on the advanced floor; a beginner sees just the coins.
             bool advanced = Curriculum.Complete;
             streak.transform.parent.gameObject.SetActive(advanced);
             combo.transform.parent.gameObject.SetActive(advanced);
-            statsRect.sizeDelta = new Vector2(advanced ? 570 : 186, statsRect.sizeDelta.y);
+            statsRect.sizeDelta = new Vector2(advanced ? 760 : 380, statsRect.sizeDelta.y);
             bool tutorial = game.Tutorial.Step != TutorialManager.TutorialStep.Completed;
-            bool learning = !tutorial && !Curriculum.Complete;
-            taskTitle.text = tutorial ? "პირველი დღე ლაბორატორიაში" : learning ? "სწავლის გზა • " + Curriculum.Percent + "%" : "დღის მიზანი";
-            objective.text = tutorial ? game.Tutorial.Objective : learning ? Curriculum.NextAction : "ამოხსენი 3 დავალება და მიიღე 10 ქიმქოინი.";
-            float amount = tutorial ? (game.Tutorial.Step == TutorialManager.TutorialStep.ReadNotebook ? 0.5f : 0.1f)
-                : learning ? Curriculum.Percent / 100f : Mathf.Clamp01(save.Data.dailyQuizzesSolved / 3f);
+            int found = Mixing.Results.Count(r => LabProgress.Owns(r.ID));
+            taskTitle.text = tutorial ? "პირველი დღე ლაბორატორიაში" : "შეკვეთები " + (Orders.PerDay - Orders.Left) + "/" + Orders.PerDay + " • აღმოჩენები " + found + "/" + Mixing.Results.Length;
+            objective.text = game.Tutorial.Objective;
+            float amount = tutorial ? 0.1f : (Orders.PerDay - Orders.Left) / (float)Orders.PerDay;
             if (Missions.Steering)
             {
                 taskTitle.text = "მისია • " + Missions.Current.Title;

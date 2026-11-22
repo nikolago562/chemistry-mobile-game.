@@ -8,19 +8,18 @@ using UnityEngine.UI;
 namespace ChemistryGame
 {
     /// <summary>
-    /// Free mixing bench at the reaction table: pick any two substances, predict the sign, mix.
-    /// Every pair answers from <see cref="Mixing"/>; new listed results fill the reaction collection.
+    /// The heart of the game, at the reaction table: pick two ingredients, predict the sign, mix.
+    /// Mixing uses up ingredients, new results fill the discovery book, and any mix that shows
+    /// the sign a classmate ordered fills that order.
     /// </summary>
     public sealed class MixBenchUI : MonoBehaviour
     {
-        /// <summary>The bench opens once the signs of a reaction have been taught.</summary>
-        public const string Lesson = "c6_signs";
-        public const int Pay = 5, PayGuess = 3;
+        public const int Pay = 5, PayGuess = 3, DiscoveryXP = 5;
 
         private LabWindow window;
         private Transform shelf, guesses;
         private RectTransform stage;
-        private TMP_Text readout, count;
+        private TMP_Text readout, count, orders;
         private readonly List<string> picked = new List<string>();
         private MixSign? guess;
         private Coroutine show;
@@ -31,18 +30,17 @@ namespace ChemistryGame
 
         public void Open()
         {
-            if (!Curriculum.Done(Lesson)) { LabGame.Instance?.HUD.Notify(Curriculum.LockedText + " საჭიროა გაკვეთილი: „" + Curriculum.Get(Lesson).Title + "“."); return; }
             if (window != null) { LabUI.BringToFront(window); return; }
             picked.Clear(); guess = null;
-            window = LabUI.Window("შერევის მაგიდა", 1100, 660);
+            window = LabUI.Window("შერევის მაგიდა", 1100, 696);
             window.Closed = () => { window = null; show = null; };
-            Ui.Line(window.Body, "აირჩიე ორი ნივთიერება, გამოიცანი რა მოხდება და შეურიე. ზოგი წყვილი არ რეაგირებს — ესეც აღმოჩენაა!", 17, LabUI.Muted, 30);
+            count = Ui.Line(window.Body, "", 16, LabUI.Muted, 28);
             var split = LabUI.Row(window.Body, "მაგიდა", 18); LabUI.FlexibleHeight(split.gameObject);
             var left = LabUI.Row(split.transform, "თარო", 8); LabUI.Size(left.gameObject, -1, 440, 0); shelf = left.transform;
             var panel = LabUI.Panel(split.transform, "ჭიქა", LabUI.Navy); LabUI.Size(panel.gameObject, 400, 260, 0); stage = panel.rectTransform;
             var right = LabUI.Column(split.transform, "ვარაუდი", 6); LabUI.Size(right.gameObject, -1, -1, 1); guesses = right.transform;
-            readout = Ui.Line(window.Body, "ჯერ აირჩიე ორი ნივთიერება თაროდან.", 18, LabUI.Ink, 70);
-            count = Ui.Line(window.Body, "", 15, LabUI.Muted, 22);
+            readout = Ui.Line(window.Body, "ჯერ აირჩიე ორი ნივთიერება თაროდან.", 17, LabUI.Ink, 92);
+            orders = Ui.Line(window.Body, "", 15, LabUI.Green, 24);
             Refresh();
             Beaker(null, null);
         }
@@ -51,9 +49,25 @@ namespace ChemistryGame
         {
             if (window == null || Mixing.Get(id) == null) return;
             if (picked.Remove(id)) { Refresh(); return; }
+            if (Mixing.Stock(id) == 0 && !Buy(id)) return;
             if (picked.Count == 2) picked.RemoveAt(1);
             picked.Add(id);
             Refresh();
+        }
+
+        /// <summary>An empty jar buys one more from the storage shop on tap; greenhouse plants are picked there.</summary>
+        private bool Buy(string id)
+        {
+            var material = LabProgress.Material(id);
+            var data = GameSaveManager.Instance.Data;
+            if (material == null || material.Price == 0) { readout.text = Mixing.Get(id).Name + " გამოგელია. ის სათბურში იზრდება — მოკრიფე იქ."; return false; }
+            if (data.chemCoins < material.Price) { readout.text = "ქიმქოინები არ გყოფნის: " + Mixing.Get(id).Name + " " + material.Price + " ღირს. შეასრულე შეკვეთა!"; return false; }
+            data.chemCoins -= material.Price;
+            LabProgress.Give(id, 1);
+            GameSaveManager.Instance.Commit();
+            AudioManager.Instance?.Coin();
+            readout.text = "იყიდე: " + Mixing.Get(id).Name + " (−" + material.Price + " ქიმქოინი).";
+            return true;
         }
 
         public void Guess(MixSign sign) { if (window == null) return; guess = sign; Refresh(); }
@@ -63,6 +77,8 @@ namespace ChemistryGame
             if (window == null) return;
             if (picked.Count < 2) { readout.text = "აირჩიე ორი ნივთიერება."; return; }
             if (guess == null) { readout.text = "ჯერ გამოიცანი, რა მოხდება — მერე შეურიე. ვარაუდი მეცნიერების პირველი ნაბიჯია."; return; }
+            if (picked.Any(p => Mixing.Stock(p) == 0)) { readout.text = "ერთ-ერთი ინგრედიენტი გამოგელია. შეეხე მას, რომ იყიდო."; return; }
+            foreach (string p in picked) if (!Mixing.Free(p)) LabProgress.Take(p, 1);
             var a = Mixing.Get(picked[0]); var b = Mixing.Get(picked[1]);
             var result = Mixing.Find(a.ID, b.ID);
             var sign = result?.Sign ?? MixSign.Nothing;
@@ -74,18 +90,23 @@ namespace ChemistryGame
                 paid = Pay + (right ? PayGuess : 0);
                 GameSaveManager.Instance.Data.chemCoins += paid;
                 LabProgress.AddReputation(1);
+                GameSaveManager.Instance.AddXP(DiscoveryXP);
             }
+            var order = Orders.Deliver(sign);
             GameSaveManager.Instance.Commit();
+            Missions.Refresh(); // a mix can finish a story step (the first mission is a mix)
 
             // The teacher answers the prediction first, then explains what actually happened.
             string head = right
                 ? (sign == MixSign.Nothing ? "სწორად გამოიცანი: არაფერი მოხდა. " : "ზუსტად ასე! წინასწარ გამოიცანი — ეს უკვე ნამდვილი მეცნიერებაა. ")
                 : "შენ ფიქრობდი: „" + Mixing.SignName(guess) + "“, სინამდვილეში — „" + Mixing.SignName(sign) + "“. ვარაუდი, ცდა, დასკვნა — ასე სწავლობენ. ";
             string body = (result != null && result.Equation != "" ? result.Equation + "\n" : "") + (result != null ? result.Why : Mixing.NoReaction(a, b));
-            string tail = fresh ? "\nახალი აღმოჩენა! +" + paid + " მონეტა" : result != null ? "\nეს წყვილი უკვე გამოცდილი გაქვს — სცადე ახალი!" : "";
+            string tail = fresh ? "\nახალი აღმოჩენა! +" + paid + " მონეტა, +" + DiscoveryXP + " XP" : result != null ? "\nეს წყვილი უკვე გამოცდილი გაქვს — სცადე ახალი!" : "";
+            if (order != null) tail += (tail == "" ? "\n" : "  •  ") + order.Name + ": შეკვეთა შესრულდა! +" + Orders.Pay + " ქიმქოინი";
             readout.text = head + body + tail;
             readout.color = right ? LabUI.Green : LabUI.Ink;
-            if (fresh) AmbientAudio.Instance?.Sparkle(); else if (right) AudioManager.Instance?.Correct();
+            if (fresh || order != null) AmbientAudio.Instance?.Sparkle(); else if (right) AudioManager.Instance?.Correct();
+            if (order != null) LabGame.Instance?.HUD.Refresh();
             guess = null;
             Refresh();
             Beaker(a, b, result);
@@ -100,9 +121,11 @@ namespace ChemistryGame
                 foreach (var r in Mixing.Reagents.Skip(c * 8).Take(8))
                 {
                     var id = r.ID;
-                    string label = r.Name + "  <size=13>" + r.Formula + "</size>";
-                    var button = picked.Contains(id) ? LabUI.Button(column.transform, label, () => Pick(id), 40) : LabUI.Secondary(column.transform, label, () => Pick(id), 40);
-                    LabUI.Size(button.gameObject, 40);
+                    int stock = Mixing.Stock(id);
+                    var material = LabProgress.Material(id);
+                    string label = r.Name + "  <size=13>" + (Mixing.Free(id) ? "უფასო" : stock > 0 ? "×" + stock : material != null && material.Price > 0 ? "იყიდე " + material.Price : "სათბურში") + "</size>";
+                    var button = picked.Contains(id) ? LabUI.Button(column.transform, label, () => Pick(id), 36) : LabUI.Secondary(column.transform, label, () => Pick(id), 36);
+                    LabUI.Size(button.gameObject, 36);
                 }
             }
             Ui.Clear(guesses);
@@ -115,8 +138,30 @@ namespace ChemistryGame
             }
             string pair = picked.Count == 0 ? "" : string.Join(" + ", picked.Select(p => Mixing.Get(p).Name));
             Ui.Line(guesses, pair, 15, LabUI.Muted, 40);
-            LabUI.Size(LabUI.Button(guesses, "შერევა", Mix, 46).gameObject, 46);
-            count.text = "აღმოჩენილი შედეგები: " + Mixing.Results.Count(r => LabProgress.Owns(r.ID)) + " / " + Mixing.Results.Length + "  •  ყველა აღმოჩენა კოლექციის „რეაქციების“ ჩანართშია [C]";
+            var buttons = LabUI.Row(guesses, "ღილაკები", 8); LabUI.Size(buttons.gameObject, 46);
+            LabUI.Size(LabUI.Button(buttons.transform, "შერევა", Mix, 46).gameObject, 46, -1, 1);
+            LabUI.Size(LabUI.Secondary(buttons.transform, "წიგნი", Book, 46).gameObject, 46, 110, 0);
+            orders.text = "დღის შეკვეთები:  " + string.Join("   •   ", Orders.Today.Select(o => o.Name + " — " + Mixing.SignName(o.Wants) + (Orders.Done(o) ? " (შესრულდა)" : "")));
+            count.text = "აღმოჩენები: " + Mixing.Results.Count(r => LabProgress.Owns(r.ID)) + " / " + Mixing.Results.Length + "  •  ქიმქოინები: " + GameSaveManager.Instance.Data.chemCoins + "  •  აირჩიე ორი ნივთიერება, გამოიცანი რა მოხდება და შეურიე.";
+        }
+
+        /// <summary>The discovery book: found results in full, the rest as "ingredient + ???" hints.</summary>
+        public void Book()
+        {
+            var book = LabUI.Window("აღმოჩენების წიგნი", 900, 620);
+            Ui.Line(book.Body, "აღმოჩენილია " + Mixing.Results.Count(r => LabProgress.Owns(r.ID)) + " / " + Mixing.Results.Length + ". მინიშნება: ერთი ინგრედიენტი უკვე იცი — მეორე შენ იპოვე!", 17, LabUI.Muted, 28);
+            var scroll = LabUI.Scroll(book.Body);
+            foreach (var r in Mixing.Results)
+            {
+                bool owned = LabProgress.Owns(r.ID);
+                var card = LabUI.Card(scroll, r.ID, owned ? LabUI.Soft : new Color(0.9f, 0.9f, 0.88f), 10);
+                var row = LabUI.Row(card.transform, "ჩანაწერი", 12); LabUI.Size(row.gameObject, 52);
+                LabUI.Size(LabUI.Panel(row.transform, "ფერი", owned ? r.Color : new Color(0.75f, 0.75f, 0.75f)).gameObject, 44, 44, 0);
+                var text = LabUI.Text(row.transform, owned ? "<b>" + r.Title + "</b>  •  " + Mixing.SignName(r.Sign) + "\n<size=14>" + r.Why + "</size>"
+                    : "<b>" + Mixing.Get(r.A).Name + " + ???</b>\n<size=14>ჯერ არ გიცდია. რას შეურევდი?</size>", 17, owned ? LabUI.Ink : LabUI.Muted);
+                text.enableAutoSizing = true; text.fontSizeMin = 11; text.fontSizeMax = 17;
+                LabUI.Size(text.gameObject, 52, -1, 1);
+            }
         }
 
         // ------------------------------------------------------------ the beaker

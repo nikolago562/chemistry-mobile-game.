@@ -71,6 +71,7 @@ namespace ChemistryGame
             Quiz = gameObject.AddComponent<ChemMinigameUI>(); Quiz.Initialize(this);
             Challenges = gameObject.AddComponent<ChemChallengeUI>(); Challenges.Initialize(this);
             HUD = gameObject.AddComponent<GameHUD>(); HUD.Initialize(this);
+            TouchControls.Create();
             Visuals = gameObject.AddComponent<VisualExperiment>();
             Visuals.Initialize(classroom.TransformPoint(new Vector3(36.9f, 11.15f, 0)));
             var furnishings = GetComponent<ChemistryClassroom>();
@@ -136,10 +137,10 @@ namespace ChemistryGame
             if (kind != StationType.CosmeticShopStation && kind != StationType.TutorialStation)
             {
                 station.stationPrompt = "[E] " + name;
-                station.promptText = () => "[E] " + name + (Curriculum.LessonAt(kind) ? " • ახალი ცდა!" : !Curriculum.StationOpen(kind) ? " • დაკეტილია" : kind == StationType.QuizDesk ? " ★ არჩევითი" : "");
+                station.promptText = () => "[E] " + (kind == StationType.ReactionTable ? "შერევის მაგიდა" : name) + (!Curriculum.StationOpen(kind) ? " • დაკეტილია" : kind == StationType.QuizDesk ? " ★ არჩევითი" : "");
             }
             else if (kind == StationType.TutorialStation)
-                station.promptText = () => Curriculum.LessonAt(kind) || Tutorial.Step == TutorialManager.TutorialStep.ReadNotebook ? "[E] ახალი ცდა!" : "[E] სასწავლო რუკა";
+                station.promptText = () => "[E] გაკვეთილები (არჩევითი)";
             if (closet)
             {
                 var art = new GameObject("კარადა", typeof(SpriteRenderer));
@@ -348,20 +349,17 @@ namespace ChemistryGame
             switch (station.stationType)
             {
                 case StationType.TutorialStation:
-                    if (Tutorial.Step == TutorialManager.TutorialStep.ReadNotebook) { Tutorial.CompleteIntro(); Lessons.Begin(Curriculum.Next); }
-                    else if (Curriculum.LessonAt(StationType.TutorialStation)) Lessons.Begin(Curriculum.Next);
-                    else Lessons.OpenMap();
+                    Lessons.OpenMap();
                     break;
                 case StationType.QuizDesk:
                 case StationType.VisualExperimentDesk: Challenges.Open(); break;
+                case StationType.ReactionTable: Lessons.Bench.Open(); break;
                 case StationType.AtomTable:
                 case StationType.ElementStation:
                 case StationType.MoleculeTable:
-                case StationType.ReactionTable:
                 case StationType.SolutionStation:
                 case StationType.AcidBaseStation:
-                    if (Curriculum.LessonAt(station.stationType)) Lessons.Begin(Curriculum.Next);
-                    else Lessons.OpenStation(station.stationType, station.name);
+                    Lessons.OpenStation(station.stationType, station.name);
                     break;
                 case StationType.CosmeticShopStation: OpenMenu(2); break;
                 case StationType.LeaderboardBoard: OpenMenu(3); break;

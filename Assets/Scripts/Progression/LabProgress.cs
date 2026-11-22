@@ -110,6 +110,14 @@ namespace ChemistryGame
             new MaterialDef("copper", "სპილენძის ფირფიტა", "სათავსო", 9, new Color32(201, 118, 72, 255)),
             new MaterialDef("wire", "სადენი", "სათავსო", 5, new Color32(210, 90, 80, 255)),
             new MaterialDef("tapwater", "ონკანის წყალი", "სათავსო", 3, new Color32(160, 200, 225, 255)),
+            new MaterialDef("chalk", "ცარცი", "სათავსო", 4, new Color32(236, 232, 222, 255)),
+            new MaterialDef("sugar", "შაქარი", "სათავსო", 3, new Color32(252, 246, 232, 255)),
+            new MaterialDef("hcl", "მარილმჟავა (განზავებული)", "სათავსო", 9, new Color32(220, 236, 226, 255)),
+            new MaterialDef("naoh", "ნატრიუმის ტუტე (განზავებული)", "სათავსო", 9, new Color32(214, 226, 240, 255)),
+            new MaterialDef("nail", "რკინის ლურსმნები", "სათავსო", 4, new Color32(120, 124, 132, 255)),
+            new MaterialDef("cuso4", "სპილენძის სულფატი", "სათავსო", 10, new Color32(60, 140, 220, 255)),
+            new MaterialDef("peroxide", "წყალბადის ზეჟანგი", "სათავსო", 7, new Color32(230, 240, 246, 255)),
+            new MaterialDef("yeast", "საფუარი", "სათავსო", 4, new Color32(214, 186, 140, 255)),
             new MaterialDef("sample", "უცნობი ნიმუში", "ლაბორანტი ქეთევანი", 12, new Color32(190, 170, 140, 255)),
         };
         public static MaterialDef Material(string id) => Materials.FirstOrDefault(m => m.ID == id);

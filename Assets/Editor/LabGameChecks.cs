@@ -292,24 +292,30 @@ public static class LabGameChecks
     }
     private static void CoatCollected()
     {
-        Ensure(game.Tutorial.Step == TutorialManager.TutorialStep.ReadNotebook, "Supply closet trigger progression");
-        Ensure(GameSaveManager.Instance.Data.equippedLabCoatID == "coat_white", "Starter coat equipped");
-        LabUI.CloseTop();
-        Snapshot("09-locker");
-        var station = UnityEngine.Object.FindObjectsByType<InteractableStation>(FindObjectsSortMode.None)
-            .Single(s => s.stationType == StationType.TutorialStation);
-        MoveTo(station.transform.position + Vector3.down * 0.75f);
-        game.Interact(station);
-        Schedule(IntroNotebook, 0.5);
-    }
-    private static void IntroNotebook()
-    {
         var data = GameSaveManager.Instance.Data;
-        Ensure(game.Lessons.IsOpen && !game.Dialogue.IsOpen && !game.Quiz.IsOpen, "The teacher's desk opens the first hands-on activity directly, no dialogue or quiz");
-        Ensure(data.tutorialCompleted && data.chemCoins == 10 && data.currentDailyStreak == 1, "The desk completes the tutorial and pays once");
+        Ensure(game.Tutorial.Step == TutorialManager.TutorialStep.Completed && data.tutorialCompleted, "The coat finishes the intro");
+        Ensure(data.equippedLabCoatID == "coat_white", "Starter coat equipped");
+        Ensure(data.chemCoins == 10 && data.currentDailyStreak == 1 && LabProgress.Has("vinegar") == 3 && LabProgress.Has("soda") == 3, "The coat pays once and brings the starter kit");
         game.Tutorial.CompleteIntro();
         Ensure(data.chemCoins == 10, "No duplicate tutorial payout");
-        Snapshot("01c-notebook-intro");
+        LabUI.CloseTop();
+        Snapshot("09-locker");
+        var bench = Station(StationType.ReactionTable);
+        Ensure(Missions.Current == ActOne.FirstMix && Missions.IsTarget(bench.transform.position), "The first mission points at the mixing bench");
+        Ensure(Orders.Today.Length == Orders.PerDay && Orders.Today.Select(o => o.Npc).Distinct().Count() == Orders.PerDay && Orders.Today.Select(o => o.Wants).Distinct().Count() == Orders.PerDay, "Three different classmates order three different signs");
+        MoveTo(bench.transform.position + Vector3.down * 0.75f);
+        game.Interact(bench);
+        Ensure(game.Lessons.Bench.IsOpen && !game.Lessons.IsOpen, "The reaction table opens the mixing bench, not a lesson");
+        game.Lessons.Bench.Pick("vinegar"); game.Lessons.Bench.Pick("soda"); game.Lessons.Bench.Guess(MixSign.Gas); game.Lessons.Bench.Mix();
+        Ensure(LabProgress.Owns(Mixing.Key("vinegar", "soda")) && LabProgress.Has("vinegar") == 2 && LabProgress.Has("soda") == 2, "Mixing uses up one of each ingredient");
+        Ensure(Missions.IsDone("first_mix") && Missions.Current == ActOne.Safety, "The first mix finishes the first mission");
+        Snapshot("01c-first-mix");
+        Ensure(TouchControls.Snap(new Vector2(0.7f, 0.7f)) == new Vector2(1, 1).normalized && TouchControls.Snap(new Vector2(0.95f, 0.2f)) == Vector2.right
+            && TouchControls.Snap(new Vector2(-0.6f, -0.7f)) == new Vector2(-1, -1).normalized && TouchControls.Snap(new Vector2(0.1f, 0.1f)) == Vector2.zero, "The joystick snaps to 8 directions with a dead zone");
+        var open = Orders.Next;
+        int wallet = data.chemCoins, bond = Classmates.State(open.Npc).friendship;
+        Ensure(Orders.Deliver(open.Wants) == open && Orders.Done(open) && data.chemCoins == wallet + Orders.Pay && Classmates.State(open.Npc).friendship == bond + Orders.Friendship, "A matching mix fills an order and pays once");
+        Ensure(Orders.Deliver(open.Wants) == null, "An order is filled only once");
         for (int k = 0; k < 10 && LabUI.AnyOpen; k++) LabUI.CloseTop();
         Schedule(AfterTutorial, 0.8);
     }
@@ -335,13 +341,13 @@ public static class LabGameChecks
         Ensure(Missions.Current == ActOne.Safety && Missions.Step.Text().Contains("2/3"), "Hazards count up one by one");
         Prop("[E] ეტიკეტის დაწერა").Use();
         Ensure(Missions.IsDone("safety") && data.chemCoins == coins + 10, "Fixing three hazards completes the safety mission and pays once");
-        Ensure(Missions.Current == ActOne.Matter && Missions.IsTarget(Station(StationType.TutorialStation).transform.position), "Next mission points at the teacher's desk");
-        Snapshot("61-mission-matter");
+        Ensure(Missions.Current == ActOne.States, "Next mission is the states of matter");
     }
     private static void MissionStates()
     {
         Missions.Refresh();
-        Ensure(Missions.IsDone("matter") && Missions.Current == ActOne.States, "Sorting matter at the desk finishes the second mission");
+        Ensure(Missions.Current == ActOne.States, "The states mission is running");
+        Snapshot("62-touch-controls");
         coinsBefore = GameSaveManager.Instance.Data.chemCoins;
         game.ActOne.UseCart();
         Schedule(MissionBoil, 3.0);
@@ -403,9 +409,9 @@ public static class LabGameChecks
         var atom = Station(StationType.AtomTable).GetComponent<Focus>();
         var shop = UnityEngine.Object.FindObjectsByType<InteractableStation>(FindObjectsSortMode.None)
             .First(s => s.stationType == StationType.CosmeticShopStation && !s.supplyCloset).GetComponent<Focus>();
-        Ensure(desk.IsObjective && desk.Kind() == Glow.Teacher && atom.Kind() == Glow.Hidden && shop.Kind() == Glow.Reward, "Highlight colours follow the interaction type");
+        Ensure(desk.Kind() == Glow.Teacher && atom.Kind() == Glow.Equipment && shop.Kind() == Glow.Reward, "Highlight colours follow the interaction type");
         desk.Near = shop.Near = true;
-        Ensure(Focus.Current == desk && desk.IsFocused && !shop.IsFocused, "The objective wins the [E] prompt over other objects");
+        Ensure(!(desk.IsFocused && shop.IsFocused), "Only one object takes the [E] prompt");
         var door = UnityEngine.Object.FindObjectsByType<Focus>(FindObjectsSortMode.None).First(f => f.Kind() == Glow.Door);
         door.Near = true; desk.Near = false;
         Ensure(Focus.Current != door, "Doors glow but never take the [E] prompt");
@@ -446,15 +452,13 @@ public static class LabGameChecks
 
         // Advanced content and stations stay locked for a beginner.
         int coins = save.Data.chemCoins;
+        int xpBefore = save.Data.totalXP;
         game.Challenges.Open();
         Ensure(!game.Challenges.IsOpen && !Curriculum.TierOpen(1), "The advanced floor is locked right after the tutorial");
-        Ensure(!Curriculum.StationOpen(StationType.AtomTable) && !Curriculum.ActivityOpen("solution") && !Curriculum.ActivityOpen("balance"), "Stations and lab activities wait for their theory");
-        game.Interact(Station(StationType.AtomTable));
+        Ensure(Curriculum.StationOpen(StationType.AtomTable) && Curriculum.ActivityOpen("solution"), "Lessons are optional: stations and lab activities are open from the start");
         game.Interact(Station(StationType.QuizDesk));
-        game.Personal.Activities.Open("solution");
         game.OpenMenu(3);
-        Ensure(!LabUI.AnyOpen && !lessons.HubOpen, "Locked stations, activities and rankings only show a message");
-        Ensure(Station(StationType.AtomTable).promptText().Contains("დაკეტილია"), "Locked stations say so in their prompt");
+        Ensure(!LabUI.AnyOpen, "The advanced floor and rankings still only show a message");
         CheckFocus();
 
         // Lesson 1: demo, guided and free sorting, the small test and the reward.
@@ -468,13 +472,13 @@ public static class LabGameChecks
         Ensure(!lessons.Advance(), "Guided practice must be finished first");
         for (int i = 0; i < lesson.Items.Length; i++) lessons.Sort(i, lesson.Items[i].Bin);
         Ensure(lessons.Solved && lessons.Advance() && lessons.Current == CurriculumUI.Step.Free, "Guided practice leads to free practice");
-        Ensure(Curriculum.LessonAt(StationType.TutorialStation) && !Curriculum.LessonAt(StationType.AtomTable), "Chapter one is played at the teacher's desk");
         var atomLesson = Curriculum.Lessons.First(l => l.Chapter == 2);
         Ensure(Curriculum.ChapterOf(atomLesson).Station == StationType.AtomTable && game.StationPoint(StationType.AtomTable) != game.StationPoint(StationType.TutorialStation), "Later chapters are played at their own stations");
         for (int i = 0; i < lesson.Items.Length; i++) lessons.Sort(i, lesson.Items[i].Bin);
         Snapshot("54-lesson-sort");
         Ensure(lessons.Solved && lessons.Advance() && lessons.Current == CurriculumUI.Step.Reward, "Free practice leads straight to the reward, no quiz");
         Ensure(Curriculum.Done("c1_matter") && save.Data.chemCoins == coins + 10, "Lesson reward is paid once (" + (save.Data.chemCoins - coins) + ")");
+        Ensure(save.Data.totalXP == xpBefore + Curriculum.LessonXP && save.Data.dailyXP >= Curriculum.LessonXP && save.Data.xpGoal == 20, "A lesson with a mistake gives base XP toward the daily goal (" + (save.Data.totalXP - xpBefore) + ")");
         Ensure(save.Data.notebookPages.Contains("c1_matter") && save.Data.lessonMistakes.Count == 0, "Notebook page is saved");
         Snapshot("56-lesson-reward");
         save.Load();
@@ -559,12 +563,14 @@ public static class LabGameChecks
             }
         var bench = lessons.Bench;
         int purse = save.Data.chemCoins;
+        LabProgress.Give("lemon", 5);
         bench.Open();
         Ensure(bench.IsOpen, "Mixing bench opens after the reaction lessons");
-        bench.Pick("vinegar"); bench.Pick("soda"); bench.Mix();
-        Ensure(!LabProgress.Owns(Mixing.Key("vinegar", "soda")) && bench.Feedback.Contains("გამოიცანი"), "Mixing asks for a prediction first");
+        bench.Pick("lemon"); bench.Pick("soda"); bench.Mix();
+        Ensure(!LabProgress.Owns(Mixing.Key("lemon", "soda")) && bench.Feedback.Contains("გამოიცანი"), "Mixing asks for a prediction first");
         bench.Guess(MixSign.Gas); bench.Mix();
-        Ensure(LabProgress.Owns(Mixing.Key("vinegar", "soda")) && save.Data.chemCoins == purse + MixBenchUI.Pay + MixBenchUI.PayGuess, "A new, predicted result is collected and paid");
+        purse += bench.Feedback.Contains("შეკვეთა შესრულდა") ? Orders.Pay : 0;
+        Ensure(LabProgress.Owns(Mixing.Key("lemon", "soda")) && save.Data.chemCoins == purse + MixBenchUI.Pay + MixBenchUI.PayGuess, "A new, predicted result is collected and paid");
         Snapshot("61-mix-bench");
         bench.Guess(MixSign.Nothing); bench.Mix();
         Ensure(save.Data.chemCoins == purse + MixBenchUI.Pay + MixBenchUI.PayGuess && bench.Feedback.Contains("სინამდვილეში"), "A repeat pays nothing and a wrong guess is explained");

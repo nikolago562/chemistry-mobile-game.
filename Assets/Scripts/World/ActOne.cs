@@ -16,7 +16,7 @@ namespace ChemistryGame
         // Classroom-local positions, in open floor so nothing blocks walking.
         public static readonly Vector2 CartPoint = new Vector2(44.6f, 5.0f), SpillPoint = new Vector2(44.6f, -3f),
             BottlePoint = new Vector2(59.5f, 3f), KettlePoint = new Vector2(56.3f, 10.55f);
-        public static Mission Safety, Matter, States, Steam;
+        public static Mission FirstMix, Safety, States, Steam;
 
         private LabGame game;
         private Transform room;
@@ -45,6 +45,17 @@ namespace ChemistryGame
         private void DefineMissions()
         {
             int hazards() => new[] { "hz_flame", "hz_spill", "hz_bottle" }.Count(F);
+            FirstMix = new Mission
+            {
+                ID = "first_mix", Title = "პირველი რეაქცია", Coins = 10,
+                Steps = new[]
+                {
+                    new MissionStep { Text = () => "აიღე ხალათი მბზინავ კარადაში.", Done = () => Data.starterCoatCollected,
+                        Target = () => World(game.lockerPosition + new Vector2(0, -1f)) },
+                    new MissionStep { Text = () => "რეაქციების მაგიდასთან შეურიე ძმარი და სოდა.", Done = () => LabProgress.Owns(Mixing.Key("vinegar", "soda")),
+                        Target = () => game.StationPoint(StationType.ReactionTable) },
+                },
+            };
             Safety = new Mission
             {
                 ID = "safety", Title = "უსაფრთხოება პირველ ადგილზე", Coins = 10,
@@ -54,15 +65,6 @@ namespace ChemistryGame
                         Target = () => World(game.lockerPosition + new Vector2(0, -1f)) },
                     new MissionStep { Text = () => "იპოვე და გამოასწორე საფრთხეები: " + hazards() + "/3", Done = () => hazards() == 3,
                         Target = () => !F("hz_flame") ? World(CartPoint) : !F("hz_spill") ? World(SpillPoint) : World(BottlePoint) },
-                },
-            };
-            Matter = new Mission
-            {
-                ID = "matter", Title = "რა არის მატერია?",
-                Steps = new[]
-                {
-                    new MissionStep { Text = () => "მასწავლებლის მაგიდასთან დაალაგე, რა არის მატერია.", Done = () => Curriculum.Done("c1_matter"),
-                        Target = () => game.StationPoint(StationType.TutorialStation) },
                 },
             };
             States = new Mission
@@ -85,7 +87,7 @@ namespace ChemistryGame
                     new MissionStep { Text = () => "აანთე სანთურა და ნახე, რა მოხდება.", Done = () => F("wheel_spun"), Target = () => World(CartPoint) },
                 },
             };
-            Missions.All = new[] { Safety, Matter, States, Steam };
+            Missions.All = new[] { FirstMix, Safety, States, Steam };
         }
 
         // ---------------------------------------------------------------- props

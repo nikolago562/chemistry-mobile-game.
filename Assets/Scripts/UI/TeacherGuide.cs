@@ -54,7 +54,7 @@ namespace ChemistryGame
                 ID = "welcome", Title = "პირველი ნაბიჯები", Ready = () => true,
                 Steps = new[]
                 {
-                    S("გამარჯობა, {name}! WASD ან ისრებით იარე. რასაც მბზინავი ჩარჩო აქვს, იმას [E]-ით გამოიყენებ.", g => g.player.transform.position),
+                    S("გამარჯობა, {name}! ქვედა მარცხენა ჯოისტიკით (ან WASD-ით) იარე. რასაც მბზინავი ჩარჩო აქვს, იმას „გამოყენების“ ღილაკით (ან [E]-ით) გამოიყენებ.", g => g.player.transform.position),
                     S("ჯერ უსაფრთხოება: იმ მბზინავ კარადაში დამცავი ხალათი გელოდება.", g => Class(g, g.lockerPosition.x, g.lockerPosition.y + 1), "", 5),
                 }
             },
@@ -63,7 +63,7 @@ namespace ChemistryGame
                 ID = "coat", Title = "პირველი ცდა", Ready = () => Data.starterCoatCollected,
                 Steps = new[]
                 {
-                    S("ხალათი გიხდება! მაგრამ ვიღაცამ კლასში სამი სახიფათო რამ დატოვა. იპოვე და გამოასწორე!", g => Class(g, ActOne.CartPoint.x, ActOne.CartPoint.y + 1), "", 5),
+                    S("ხალათი გიხდება! ახლა რამე შევურიოთ: რეაქციების მაგიდაზე ძმარი და სოდა გელოდება. ჯერ გამოიცანი, რა მოხდება!", g => g.StationPoint(StationType.ReactionTable), "", 5),
                 }
             },
             new GuideLesson
@@ -84,7 +84,7 @@ namespace ChemistryGame
                 {
                     S("ამ კარიდან შენს პირად ლაბორატორიაში შედიხარ. იქ საკუთარი აღჭურვილობა და ოთახი გექნება.", g => Class(g, 46.5f, 12.5f), "", 4.6f),
                     Shot("კედელთან გეგმის დაფაა: იქ ხელსაწყოს იყიდი და ოთახში დადგამ.", "პირადი ლაბორატორია", g => g.Personal.RoomOrigin + new Vector2(0, 3)),
-                    Shot("დადგმულ ხელსაწყოსთან [E] ცდას იწყებს. თუ ქაფი ამოვა, არაუშავს — დაასუფთავე და კიდევ სცადე.", "ხელსაწყოები", g => g.Personal.RoomOrigin + new Vector2(-2, 1)),
+                    Shot("დადგმული ხელსაწყოს გამოყენება ცდას იწყებს. თუ ქაფი ამოვა, არაუშავს — დაასუფთავე და კიდევ სცადე.", "ხელსაწყოები", g => g.Personal.RoomOrigin + new Vector2(-2, 1)),
                 }
             },
             new GuideLesson

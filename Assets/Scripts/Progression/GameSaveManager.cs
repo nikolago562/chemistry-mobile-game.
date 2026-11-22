@@ -33,6 +33,8 @@ namespace ChemistryGame
         public bool starterCoatCollected;
         public int dailyQuizzesSolved;
         public string dailyCounterDate = "";
+        /// <summary>Duolingo-style experience: today's amount fills the goal ring, the total never resets.</summary>
+        public int dailyXP, totalXP, xpGoal = 20;
         public List<string> claimedDailyQuests = new List<string>();
         public int bestCombo;
         public string lastWeeklyReward = "";
@@ -190,6 +192,7 @@ namespace ChemistryGame
             Data.chemCoins = Mathf.Max(0, Data.chemCoins);
             Data.totalQuizzesSolved = Mathf.Max(0, Data.totalQuizzesSolved);
             Data.currentDailyStreak = Mathf.Max(0, Data.currentDailyStreak);
+            if (Array.IndexOf(XpGoals, Data.xpGoal) < 0) Data.xpGoal = 20;
         }
 
         private static GameSaveData Read(string path)
@@ -231,6 +234,7 @@ namespace ChemistryGame
             {
                 Data.dailyCounterDate = lastCheckedDay;
                 Data.dailyQuizzesSolved = 0;
+                Data.dailyXP = 0;
                 Data.claimedDailyQuests.Clear();
             }
 
@@ -263,6 +267,7 @@ namespace ChemistryGame
             Data.totalQuizzesSolved++;
             Data.dailyQuizzesSolved++;
             Data.weeklyQuizzesSolved++;
+            Data.dailyXP += QuizXP; Data.totalXP += QuizXP;
             foreach (string symbol in question.involvedElements)
                 if (!Data.unlockedElements.Contains(symbol)) Data.unlockedElements.Add(symbol);
             LabProgress.OnReactionSolved(question);
@@ -272,12 +277,25 @@ namespace ChemistryGame
         }
 
         /// <summary>Beginner lessons pay small rewards and count toward the daily goal and streak, but not toward combos or rankings.</summary>
-        public void RecordLesson(int coins)
+        public void RecordLesson(int coins, int xp = 0)
         {
             var today = DateTime.UtcNow.Date;
             RefreshCalendar(today);
             Data.chemCoins += Mathf.Max(0, coins);
+            Data.dailyXP += xp; Data.totalXP += xp;
             Data.dailyQuizzesSolved++;
+            TouchStreak(today);
+            Commit();
+        }
+
+        public static readonly int[] XpGoals = { 10, 20, 50 };
+        public const int QuizXP = 2;
+        /// <summary>XP from anything outside lessons and quizzes (practice, discoveries); also keeps the streak.</summary>
+        public void AddXP(int xp)
+        {
+            var today = DateTime.UtcNow.Date;
+            RefreshCalendar(today);
+            Data.dailyXP += xp; Data.totalXP += xp;
             TouchStreak(today);
             Commit();
         }

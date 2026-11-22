@@ -58,7 +58,7 @@ namespace ChemistryGame
                 game.Tutorial.CollectCoat();
                 return;
             }
-            if (focused && !LabUI.AnyOpen && Input.GetKeyDown(KeyCode.E))
+            if (focused && !LabUI.AnyOpen && TouchControls.Interact)
                 game.Interact(this);
         }
         private Glow Kind()
@@ -73,7 +73,7 @@ namespace ChemistryGame
                 case StationType.LeaderboardBoard: return Curriculum.Complete ? Glow.Reward : Glow.Hidden;
                 case StationType.QuizDesk:
                 case StationType.VisualExperimentDesk: return Curriculum.TierOpen(1) ? Glow.Reward : Glow.Hidden;
-                default: return Curriculum.StationOpen(stationType) || Curriculum.LessonAt(stationType) ? Glow.Equipment : Glow.Hidden;
+                default: return Curriculum.StationOpen(stationType) ? Glow.Equipment : Glow.Hidden;
             }
         }
         /// <summary>The closet during the coat step, the desk for the first experiment, then whichever station holds the next lesson.</summary>
@@ -84,8 +84,7 @@ namespace ChemistryGame
             if (Missions.Steering) return stationType != StationType.TeacherNPC && Missions.IsTarget(transform.position);
             var step = game.Tutorial.Step;
             if (supplyCloset) return step == TutorialManager.TutorialStep.CollectCoat;
-            if (stationType == StationType.TutorialStation && step == TutorialManager.TutorialStep.ReadNotebook) return true;
-            return stationType != StationType.TeacherNPC && Curriculum.LessonAt(stationType);
+            return step == TutorialManager.TutorialStep.Completed && stationType == StationType.ReactionTable;
         }
         private void OnTriggerEnter2D(Collider2D other)
         {

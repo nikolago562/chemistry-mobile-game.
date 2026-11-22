@@ -390,7 +390,7 @@ namespace ChemistryGame
             focus.Near = near && lab.Inside;
             bool focused = focus.IsFocused && !LabUI.AnyOpen;
             prompt.SetActive(focused);
-            if (!focused || !Input.GetKeyDown(KeyCode.E)) return;
+            if (!focused || !TouchControls.Interact) return;
             var game = lab.Game;
             if (item.Decor) { PersonalDecor.Use(game, item.ID); return; }
             var waiting = Waiting();

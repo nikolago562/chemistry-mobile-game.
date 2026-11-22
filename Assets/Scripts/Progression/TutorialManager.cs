@@ -12,18 +12,16 @@ namespace ChemistryGame
         private LabGame game;
         private bool welcomeShown;
         public Vector3 Target => Step == TutorialStep.CollectCoat ? game.classroom.TransformPoint(game.lockerPosition + new Vector2(0, -1f))
-            : Step == TutorialStep.ReadNotebook || Curriculum.Next == null ? game.classroom.TransformPoint(game.teacherDeskPosition)
-            : game.StationPoint(Curriculum.ChapterOf(Curriculum.Next).Station);
-        public string Objective => Step == TutorialStep.CollectCoat ? "აიღე ხალათი მბზინავ კარადაში."
-            : Step == TutorialStep.ReadNotebook ? "მასწავლებლის მაგიდასთან პირველი ცდა გელოდება."
-            : Curriculum.NextAction;
+            : game.StationPoint(StationType.ReactionTable);
+        public string Objective => Step == TutorialStep.CollectCoat ? "აიღე ხალათი მბზინავ კარადაში." : Orders.Objective;
 
         public void Initialize(LabGame lab)
         {
             game = lab;
             var data = GameSaveManager.Instance.Data;
-            Step = data.tutorialCompleted ? TutorialStep.Completed
-                : data.starterCoatCollected ? TutorialStep.ReadNotebook : TutorialStep.CollectCoat;
+            // The coat is the whole intro now; older saves that stopped after it count as finished.
+            if (data.starterCoatCollected) data.tutorialCompleted = true;
+            Step = data.tutorialCompleted ? TutorialStep.Completed : TutorialStep.CollectCoat;
         }
 
         private void Start()
@@ -57,10 +55,9 @@ namespace ChemistryGame
             save.Data.starterCoatCollected = true;
             save.UnlockCosmetic("coat_white");
             save.Data.equippedLabCoatID = "coat_white";
-            save.Commit();
+            foreach (var (id, count) in Mixing.StarterKit) LabProgress.Give(id, count);
             Step = TutorialStep.ReadNotebook;
-            Changed?.Invoke();
-            AudioManager.Instance?.Milestone();
+            CompleteIntro();
             game.Guide.Queue("coat");
             return;
             Dialogue("ხალათი მოირგე!\n\nახლა მიდი მასწავლებლის მაგიდასთან და დააჭირე [E]. " +
@@ -76,7 +73,7 @@ namespace ChemistryGame
             Step = TutorialStep.Completed;
             Changed?.Invoke();
             AudioManager.Instance?.Milestone();
-            game.HUD.Notify("+10 ქიმქოინი • ლაბორატორია შენია!");
+            game.HUD.Notify("+10 ქიმქოინი და საწყისი ნაკრები • რეაქციების მაგიდა გელოდება!");
         }
 #pragma warning restore CS0162
         public void Dialogue(string message)

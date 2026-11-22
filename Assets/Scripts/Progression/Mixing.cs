@@ -102,6 +102,11 @@ namespace ChemistryGame
         };
 
         public static Reagent Get(string id) => Reagents.FirstOrDefault(r => r.ID == id);
+        /// <summary>Tap water is free and endless; everything else is a material that a mix uses up.</summary>
+        public static bool Free(string id) => id == "water";
+        public static int Stock(string id) => Free(id) ? 99 : LabProgress.Has(id);
+        /// <summary>Given with the lab coat, enough for the first few discoveries.</summary>
+        public static readonly (string id, int count)[] StarterKit = { ("vinegar", 3), ("soda", 3), ("lemon", 2), ("salt", 2), ("sugar", 2), ("cabbage", 2) };
         public static string Key(string a, string b) => string.CompareOrdinal(a, b) <= 0 ? "mix:" + a + "+" + b : "mix:" + b + "+" + a;
         public static MixResult Find(string a, string b) { string key = Key(a, b); return Results.FirstOrDefault(r => r.ID == key); }
 

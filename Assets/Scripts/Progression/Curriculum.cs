@@ -62,6 +62,8 @@ namespace ChemistryGame
     {
         public const string LockedText = "ეს დავალება ჯერ არ გახსნილა. ჯერ დაასრულე საჭირო თეორიის გაკვეთილები.";
         public const int TierGoal = 8;
+        /// <summary>XP: a new lesson, a bonus for no mistakes, and a smaller amount for repeats and practice.</summary>
+        public const int LessonXP = 10, PerfectXP = 5, RepeatXP = 5;
         public static readonly string[] PathNames =
             { "ქიმიის დასაწყისი", "ატომები", "ელემენტები", "მოლეკულები", "ბმები", "რეაქციები", "ხსნარები", "მჟავები და ფუძეები", "რთული გამოწვევები" };
         public static readonly string[] StepNames = { "ახსნა", "ჩვენება", "ვარჯიში მინიშნებით", "დამოუკიდებლად", "ტესტი", "ჯილდო" };
@@ -98,8 +100,7 @@ namespace ChemistryGame
         public static Lesson Next => Lessons.FirstOrDefault(l => !Done(l.ID));
         public static bool Complete => Next == null;
         /// <summary>True when the next lesson is played at this station (each chapter lives at its own bench).</summary>
-        public static bool LessonAt(StationType station) =>
-            Data.tutorialCompleted && Next != null && ChapterOf(Next).Station == station;
+        public static bool LessonAt(StationType station) => false;
         public static int Percent => Lessons.Count(l => Done(l.ID)) * 100 / Lessons.Length;
         public static Lesson[] Of(int chapter) => Lessons.Where(l => l.Chapter == chapter).ToArray();
         public static Chapter ChapterOf(Lesson lesson) => Chapters[lesson.Chapter - 1];
@@ -147,17 +148,12 @@ namespace ChemistryGame
                 case StationType.QuizDesk:
                 case StationType.LeaderboardBoard: return Complete;
                 case StationType.ScienceFairDesk: return TierOpen(4);
-                case StationType.AtomTable:
-                case StationType.ElementStation:
-                case StationType.MoleculeTable:
-                case StationType.ReactionTable:
-                case StationType.SolutionStation:
-                case StationType.AcidBaseStation: return Done(StationLesson(type).ID);
+                // Lessons are optional: every bench is a toy from the first minute.
                 default: return true;
             }
         }
 
-        public static bool ActivityOpen(string id) => !ActivityLessons.TryGetValue(id ?? "", out var lesson) || Done(lesson);
+        public static bool ActivityOpen(string id) => true;
         public static string Requirement(string activity) =>
             ActivityLessons.TryGetValue(activity ?? "", out var lesson) ? "საჭიროა გაკვეთილი: „" + Get(lesson).Title + "“." : "";
         public static string Requirement(Lesson lesson)
@@ -216,7 +212,7 @@ namespace ChemistryGame
         // ------------------------------------------------------------------ completion
 
         /// <summary>Saves the result, pays the beginner rewards and returns what the player received.</summary>
-        public static List<string> Finish(Lesson lesson, string[] keys, ICollection<string> wrong)
+        public static List<string> Finish(Lesson lesson, string[] keys, ICollection<string> wrong, bool perfect = false)
         {
             var save = GameSaveManager.Instance;
             var record = Record(lesson.ID);
@@ -260,7 +256,9 @@ namespace ChemistryGame
             }
             else if (first && ChapterOf(lesson).Station != StationType.TutorialStation && StationLesson(ChapterOf(lesson).Station) == lesson)
                 rewards.Add("გაიხსნა კლასის მაგიდა: " + ChapterOf(lesson).StationName);
-            save.RecordLesson(coins);
+            int xp = first ? LessonXP + (perfect ? PerfectXP : 0) : RepeatXP;
+            rewards.Insert(0, "+" + xp + " XP" + (first && perfect ? " (უშეცდომოდ!)" : ""));
+            save.RecordLesson(coins, xp);
             return rewards;
         }
 

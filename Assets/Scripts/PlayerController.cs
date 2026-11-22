@@ -59,6 +59,7 @@ namespace ChemistryGame
         }
         public static Vector2 ReadMovement()
         {
+            if (TouchControls.Move != Vector2.zero) return TouchControls.Move;
             float x = (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) ? 1 : 0)
                 - (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) ? 1 : 0);
             float y = (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) ? 1 : 0)
