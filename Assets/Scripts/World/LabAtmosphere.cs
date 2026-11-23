@@ -287,7 +287,8 @@ namespace ChemistryGame
     {
         public static AmbientAudio Instance { get; private set; }
         public static readonly string[] Stations = { "ლაბ-ლოფაი", "წყნარი ფორტეპიანო", "ქიმიური ჩიპტიუნი" };
-        private AudioSource rain, tone, birds, radio, oneShots, crowd, playful;
+        private AudioSource rain, tone, birds, radio, oneShots, crowd, playful, drops;
+        private AudioClip plop;
         private AudioClip door, splash, sparkle, bell;
         /// <summary>School rhythm in play time: a bell ends each lesson and each break.</summary>
         public const float LessonSeconds = 360, BreakSeconds = 90;
@@ -310,6 +311,7 @@ namespace ChemistryGame
             playful = Loop(Playful(), 0);
             radio = Source(); radio.loop = true; radio.volume = 0;
             oneShots = Source(); oneShots.volume = 0.3f;
+            drops = Source(); drops.volume = 0.35f; plop = Plop();
             door = DoorClip(); splash = Noise(0.35f, 0.2f, 0.9f, true); sparkle = Chime(); bell = Bell();
             Break = false;
             phaseEnds = Time.unscaledTime + LessonSeconds;
@@ -339,6 +341,8 @@ namespace ChemistryGame
         public void Door() => oneShots.PlayOneShot(door, 0.8f);
         public void Splash() => oneShots.PlayOneShot(splash, 0.7f);
         public void Sparkle() => oneShots.PlayOneShot(sparkle, 0.6f);
+        /// <summary>A drop landing in liquid; <paramref name="pitch"/> 1 is the base note.</summary>
+        public void Drop(float pitch = 1) { if (drops == null) return; drops.pitch = pitch; drops.PlayOneShot(plop); }
 
         private void Update()
         {
@@ -534,6 +538,20 @@ namespace ChemistryGame
         // ---------- synthesis ----------
         private const int Rate = 22050;
         private static AudioClip Make(string name, float[] data) { var clip = AudioClip.Create(name, data.Length, 1, Rate, false); clip.SetData(data, 0); return clip; }
+
+        private static AudioClip Plop()
+        {
+            int n = (int)(Rate * 0.14f);
+            var data = new float[n];
+            double phase = 0;
+            for (int i = 0; i < n; i++)
+            {
+                float t = i / (float)n;
+                phase += 2 * System.Math.PI * Mathf.Lerp(380, 1100, Mathf.Pow(t, 0.5f)) / Rate; // a drop rises in pitch
+                data[i] = (float)System.Math.Sin(phase) * Mathf.Exp(-t * 7) * Mathf.Min(1, t * 60) * 0.8f;
+            }
+            return Make("წვეთი", data);
+        }
 
         private static AudioClip Noise(float seconds, float smooth, float gain, bool decay = false)
         {

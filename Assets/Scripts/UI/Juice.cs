@@ -22,6 +22,69 @@ namespace ChemistryGame
             UIFx.Burst(root, point, Party[Random.Range(0, Party.Length)], count);
         }
 
+        /// <summary>A quick squash-and-stretch on whatever was just tapped.</summary>
+        public static void Bounce(Transform target)
+        {
+            if (target == null) return;
+            var squash = target.GetComponent<Squash>() ?? target.gameObject.AddComponent<Squash>();
+            squash.Restart();
+        }
+
+        /// <summary>
+        /// A coloured drop flies in an arc from one UI element to another, splashes and plops, then
+        /// calls <paramref name="landed"/>. Drawn on the top canvas so rebuilt tiles don't cut it short.
+        /// </summary>
+        public static void Fly(Transform from, Transform to, Color color, System.Action landed = null, float pitch = 1)
+        {
+            if (LabUI.Root == null || from == null || to == null) { landed?.Invoke(); return; }
+            var root = (RectTransform)LabUI.Root;
+            var drop = LabUI.Object(root, "წვეთი", typeof(UnityEngine.UI.Image)).GetComponent<UnityEngine.UI.Image>();
+            drop.sprite = DropSprite; drop.color = color; drop.raycastTarget = false;
+            drop.rectTransform.sizeDelta = Vector2.one * 30;
+            drop.gameObject.AddComponent<Flyer>().Begin(root.InverseTransformPoint(from.position), to, color, landed, pitch);
+        }
+
+        private static Sprite drop;
+        private static Sprite DropSprite => drop ??= PixelArt.Make(12, 12, (x, y) =>
+        {
+            float d = Vector2.Distance(new Vector2(x, y), new Vector2(5.5f, 5.5f));
+            return d < 5.5f ? (d < 3 && x < 6 && y > 5 ? new Color(1, 1, 1, 1) : new Color(0.92f, 0.92f, 0.92f, 1)) : Color.clear;
+        });
+
+        private sealed class Squash : MonoBehaviour
+        {
+            private float t = 1;
+            public void Restart() => t = 0;
+            private void Update()
+            {
+                if (t >= 1) return;
+                t = Mathf.Min(1, t + Time.unscaledDeltaTime / 0.28f);
+                float wobble = Mathf.Sin(t * Mathf.PI * 3) * (1 - t) * 0.12f;
+                transform.localScale = new Vector3(1 + wobble, 1 - wobble, 1);
+            }
+        }
+
+        private sealed class Flyer : MonoBehaviour
+        {
+            private Vector2 from; private Transform to; private Color color; private System.Action landed; private float t, pitch;
+            public void Begin(Vector2 start, Transform target, Color tint, System.Action done, float note) { from = start; to = target; color = tint; landed = done; pitch = note; }
+            private void Update()
+            {
+                var root = (RectTransform)transform.parent;
+                if (to == null) { Destroy(gameObject); return; }
+                Vector2 end = root.InverseTransformPoint(to.position);
+                t += Time.unscaledDeltaTime / 0.32f;
+                float k = Mathf.Clamp01(t);
+                ((RectTransform)transform).anchoredPosition = Vector2.Lerp(from, end, k) + Vector2.up * Mathf.Sin(k * Mathf.PI) * 120;
+                transform.localScale = Vector3.one * (1 - 0.35f * k);
+                if (t < 1) return;
+                UIFx.Burst(root, end, color, 10);
+                AmbientAudio.Instance?.Drop(pitch);
+                landed?.Invoke();
+                Destroy(gameObject);
+            }
+        }
+
         /// <summary>Multi-coloured confetti bursts across a card.</summary>
         public static void Confetti(Transform at, int bursts = 5, float spread = 380)
         {

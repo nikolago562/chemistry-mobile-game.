@@ -91,11 +91,11 @@ namespace ChemistryGame
             CreateStation("მასწავლებლის მაგიდა", teacherDeskPosition.x, teacherDeskPosition.y, StationType.TutorialStation);
             // Each bench teaches one part of the curriculum; the advanced desk opens last.
             CreateStation("ატომების მაგიდა", 37.5f, 1, StationType.AtomTable);
-            CreateStation("ელემენტების სადგური", 52, 1, StationType.ElementStation);
+            CreateStation("ელემენტების სადგური", 52, -15, StationType.ElementStation);
             CreateStation("რეაქციების მაგიდა", 37.5f, -7, StationType.ReactionTable);
             CreateStation("მოლეკულების მაგიდა", 52, -7, StationType.MoleculeTable);
             CreateStation("ხსნარების სადგური", 37.5f, -15, StationType.SolutionStation);
-            CreateStation("მჟავა-ფუძის მაგიდა", 52, -15, StationType.AcidBaseStation);
+            CreateStation("მჟავა-ფუძის მაგიდა", 52, 1, StationType.AcidBaseStation);
             CreateStation("რთული გამოწვევების მაგიდა", 37.5f, -22, StationType.QuizDesk);
             CreateStation("კოსმეტიკის თარო", 63, -10, StationType.CosmeticShopStation, "[E] ლაბორატორიის მაღაზია");
             CreateStation("კვირის რეიტინგის დაფა", 55, 8.5f, StationType.LeaderboardBoard, "[E] კვირის რეიტინგი");

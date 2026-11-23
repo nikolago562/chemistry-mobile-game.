@@ -52,6 +52,8 @@ namespace ChemistryGame
                 {
                     new MissionStep { Text = () => "აიღე ხალათი მბზინავ კარადაში.", Done = () => Data.starterCoatCollected,
                         Target = () => World(game.lockerPosition + new Vector2(0, -1f)) },
+                    new MissionStep { Text = () => "pH ნაყენების მაგიდაზე ფერადი ნაყენი გააკეთე.", Done = () => Kits.PotionMade,
+                        Target = () => game.StationPoint(StationType.AcidBaseStation) },
                     new MissionStep { Text = () => "რეაქციების მაგიდასთან შეურიე ძმარი და სოდა.", Done = () => LabProgress.Owns(Mixing.Key("vinegar", "soda")),
                         Target = () => game.StationPoint(StationType.ReactionTable) },
                 },

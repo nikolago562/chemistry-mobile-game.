@@ -26,6 +26,7 @@ namespace ChemistryGame
         private TMP_Text headline, detail, pairText;
         private Button mixButton, book;
         private NextGlow next;
+        private Image beakerLiquid;
         private readonly List<string> picked = new List<string>();
         private readonly Dictionary<string, RectTransform> spots = new Dictionary<string, RectTransform>();
         private MixSign? guess;
@@ -94,14 +95,16 @@ namespace ChemistryGame
 
         public void Pick(string id)
         {
-            if (window == null || Mixing.Get(id) == null) return;
-            if (picked.Remove(id)) { Refresh(); return; }
+            if (window == null || Mixing.Get(id) == null || !Mixing.Known(Mixing.Get(id))) return;
+            if (picked.Remove(id)) { Refresh(); Preview(); return; }
             if (Teaching && !FirstPair.Contains(id)) { Say("ჯერ ძმარი და სოდა!", "პირველ ცდას მასწავლებელი გვთავაზობს — დანარჩენს მერე სცდი."); return; }
             if (Mixing.Stock(id) == 0 && !Buy(id)) return;
             if (picked.Count == 2) picked.RemoveAt(1);
             picked.Add(id);
             AudioManager.Instance?.Click();
             Refresh();
+            Juice.Bounce(spots[id]);
+            Juice.Fly(spots[id], stage, Mixing.Get(id).Color, Preview, picked.Count == 1 ? 1 : 1.25f);
         }
 
         /// <summary>An empty jar buys one more from the storage shop on tap; greenhouse plants are picked there.</summary>
@@ -121,7 +124,25 @@ namespace ChemistryGame
             return true;
         }
 
-        public void Guess(MixSign sign) { if (window == null) return; guess = sign; AudioManager.Instance?.Click(); Refresh(); }
+        public void Guess(MixSign sign)
+        {
+            if (window == null) return;
+            guess = sign; AudioManager.Instance?.Click(); Refresh();
+            // The old tiles are still children until the end of the frame, so count from the end.
+            int tile = guesses.childCount - Mixing.SignNames.Length + (int)sign;
+            if (tile >= 0 && tile < guesses.childCount) Juice.Bounce(guesses.GetChild(tile));
+        }
+
+        /// <summary>The beaker shows what is in it before mixing: one jar's colour, or the two blended.</summary>
+        private void Preview()
+        {
+            if (window == null) return;
+            Beaker(null, null);
+            if (picked.Count == 0 || beakerLiquid == null) return;
+            var a = Mixing.Get(picked[0]).Color;
+            beakerLiquid.color = picked.Count == 1 ? a : Color.Lerp(a, Mixing.Get(picked[1]).Color, 0.5f);
+            Juice.Bounce(beakerLiquid.transform);
+        }
 
         public void Mix()
         {
@@ -157,13 +178,16 @@ namespace ChemistryGame
                 + (result != null ? result.Why : Mixing.NoReaction(a, b))
                 + (result != null && !fresh ? " (ეს წყვილი უკვე გამოცდილი გაქვს.)" : "")
                 + (made != null ? "  თაროზე: +1 " + made.Name + (newJar ? " — ახალი ქილა!" : "") : "")
+                + (fresh && Mixing.UnlockedAt(Mixing.Discovered).Length > 0 ? "  ახალი ქილები თაროზე: " + string.Join(", ", Mixing.UnlockedAt(Mixing.Discovered).Select(r => r.Name)) + "!" : "")
                 + (order != null ? "  " + order.Name + ": შეკვეთა შესრულდა! +" + Orders.Pay + " ქიმქოინი" : "");
             Say(head, why, right ? LabUI.Green : LabUI.Ink);
             if (fresh || order != null) AmbientAudio.Instance?.Sparkle(); else if (right) AudioManager.Instance?.Correct();
             guess = null;
             Refresh();
             Beaker(a, b, result);
-            if (fresh) StartCoroutine(NewCard(result, paid, newJar ? made : null));
+            Juice.Bounce(stage);
+            UIFx.Burst(stage, Vector2.zero, result?.Color ?? a.Color, 16);
+            if (fresh) StartCoroutine(NewCard(result, paid, newJar ? made : Mixing.UnlockedAt(Mixing.Discovered).FirstOrDefault()));
             if (order != null) LabGame.Instance?.HUD.Refresh();
         }
 
@@ -308,6 +332,7 @@ namespace ChemistryGame
             Shape("შუქი", new Vector2(0, -40), new Vector2(210, 270), new Color(1, 1, 1, 0.12f));
             var start = a == null ? new Color(0.6f, 0.75f, 0.85f, 0.5f) : Color.Lerp(a.Color, b.Color, 0.5f);
             var liquid = Shape("სითხე", new Vector2(0, -100), new Vector2(194, 140), start);
+            beakerLiquid = liquid;
             if (a == null) return;
             var label = LabUI.Text(stage, "", 20, Color.white);
             label.alignment = TextAlignmentOptions.Center; label.fontStyle = FontStyles.Bold;

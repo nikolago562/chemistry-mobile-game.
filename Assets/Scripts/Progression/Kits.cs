@@ -140,6 +140,9 @@ namespace ChemistryGame
 
         // ------------------------------------------------------------ pH potions: acid, base and cabbage indicator
 
+        /// <summary>The first thing a new player makes: any potion colour.</summary>
+        public static bool PotionMade => Potions.Finds.Any(f => LabProgress.Owns(Potions.Key(f)));
+
         public static readonly Kit Potions = new Kit
         {
             ID = "ph", Title = "pH ნაყენები", Station = StationType.AcidBaseStation, Ask = "დაამატე წვეთები", Action = "მორევა!",

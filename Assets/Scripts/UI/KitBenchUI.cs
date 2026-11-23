@@ -32,6 +32,11 @@ namespace ChemistryGame
         private KitResult shown;
 
         public bool IsOpen => window != null;
+        private readonly Dictionary<int, RectTransform> tiles = new Dictionary<int, RectTransform>();
+        /// <summary>Where part <paramref name="i"/> and the action button are, for the tutorial pointer.</summary>
+        public RectTransform PartSpot(int i) => window != null && tiles.TryGetValue(i, out var t) && t != null ? t : null;
+        public RectTransform BuildSpot => window != null && build != null ? (RectTransform)build.transform : null;
+        public int Count(int i) => window != null && i >= 0 && i < counts.Length ? counts[i] : 0;
         public Kit Current => window != null ? kit : null;
         public string Feedback => last;
         public void Initialize(LabGame lab) => game = lab;
@@ -87,10 +92,14 @@ namespace ChemistryGame
         public void Add(int part, int delta)
         {
             if (window == null || part < 0 || part >= counts.Length) return;
+            int before = counts[part];
             counts[part] = Mathf.Clamp(counts[part] + delta, 0, kit.Parts[part].Max);
             shown = null;
             AudioManager.Instance?.Click();
             Refresh();
+            if (counts[part] <= before) return;
+            Juice.Bounce(PartSpot(part));
+            Juice.Fly(PartSpot(part), stage, kit.Parts[part].Color, () => { if (stage != null) Juice.Bounce(stage); }, 1 + 0.08f * Mathf.Min(counts.Sum(), 8));
         }
 
         public void Clear() { if (window == null) return; counts = new int[kit.Parts.Length]; shown = null; Refresh(); }
@@ -132,6 +141,7 @@ namespace ChemistryGame
             else if (result.Find != null) { if (fresh) AmbientAudio.Instance?.Sparkle(); else AudioManager.Instance?.Correct(); Play(Glow(result.Find.Color)); }
             if (fresh) { StartCoroutine(NewCard(result.Find)); Juice.Confetti(stage, 4, 160); }
             else if (result.Find != null) Juice.Sparkle(stage, 12);
+            if (fresh) Missions.Refresh(); // the first potion is a story step
             Refresh(false);
         }
 
@@ -172,6 +182,7 @@ namespace ChemistryGame
         {
             var part = kit.Parts[i];
             var tile = LabUI.Button(parts, "", () => Add(i, 1), 128);
+            tiles[i] = (RectTransform)tile.transform;
             tile.GetComponent<Image>().color = counts[i] > 0 ? LabUI.Mint : LabUI.Paper;
             var ball = LabUI.Panel(tile.transform, "ნიშანი", part.Color); ball.sprite = Disc;
             bool narrow = kit.Parts.Length > 6;

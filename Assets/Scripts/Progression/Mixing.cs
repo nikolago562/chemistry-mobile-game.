@@ -124,8 +124,23 @@ namespace ChemistryGame
         public static Reagent Get(string id) => Reagents.FirstOrDefault(r => r.ID == id);
         /// <summary>Tap water is free and endless; everything else is a material that a mix uses up.</summary>
         public static bool Free(string id) => id == "water";
-        /// <summary>Products stay hidden until a mix first makes them; everything else is always on the shelf.</summary>
-        public static bool Known(Reagent r) => !r.Product || LabProgress.Has(r.ID) > 0 || Results.Any(x => x.Makes == r.ID && LabProgress.Owns(x.ID));
+        /// <summary>
+        /// The shelf grows with you: the starter jars first, then a few more after every couple of
+        /// discoveries, so a new player sees 7 jars, not 16. Owning a jar always shows it.
+        /// </summary>
+        public static readonly (string id, int after)[] Unlocks =
+            { ("chalk", 2), ("cuso4", 2), ("naoh", 4), ("nail", 4), ("hcl", 6), ("zinc", 6), ("peroxide", 8), ("yeast", 8), ("copper", 10) };
+        public static int Discovered => Results.Count(x => LabProgress.Owns(x.ID));
+        /// <summary>Products stay hidden until a mix first makes them; other jars wait for their unlock.</summary>
+        public static bool Known(Reagent r)
+        {
+            if (Free(r.ID) || LabProgress.Has(r.ID) > 0) return true;
+            if (r.Product) return Results.Any(x => x.Makes == r.ID && LabProgress.Owns(x.ID));
+            int at = Array.FindIndex(Unlocks, u => u.id == r.ID);
+            return at < 0 || Discovered >= Unlocks[at].after;
+        }
+        /// <summary>Jars that a discovery count of exactly <paramref name="count"/> puts on the shelf.</summary>
+        public static Reagent[] UnlockedAt(int count) => Unlocks.Where(u => u.after == count).Select(u => Get(u.id)).ToArray();
         /// <summary>The first known recipe for a product, for the "make it again" hint.</summary>
         public static MixResult Recipe(string id) => Results.FirstOrDefault(x => x.Makes == id);
         public static int Stock(string id) => Free(id) ? 99 : LabProgress.Has(id);

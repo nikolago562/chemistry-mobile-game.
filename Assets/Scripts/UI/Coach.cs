@@ -7,7 +7,8 @@ namespace ChemistryGame
 {
     /// <summary>
     /// The first-minute tutorial: a pulsing ring, a bouncing arrow and one caption that point at
-    /// exactly one thing at a time (joystick → closet → use button → vinegar → soda → guess → mix).
+    /// exactly one thing at a time (joystick → closet → pH table: cabbage, acid, stir → mixing
+    /// bench: vinegar → soda → guess → mix). The easy, colourful table comes first.
     /// The bench only accepts vinegar and soda until that first mix, so the path can't be skipped.
     /// Removes itself once the first discovery is made.
     /// </summary>
@@ -73,6 +74,19 @@ namespace ChemistryGame
                 return (null, "მიჰყევი ყვითელ ისრებს — კარადაში ხალათი გელოდება");
             }
             var bench = game.Lessons.Bench;
+            var kit = game.Lessons.Tables;
+            if (!Kits.PotionMade && !bench.IsOpen)
+            {
+                if (kit.Current != Kits.Potions)
+                {
+                    if (LabUI.AnyOpen) return (null, null);
+                    bool atTable = Focus.Current != null && Focus.Current.IsFocused && Focus.Current.GetComponent<InteractableStation>()?.stationType == StationType.AcidBaseStation;
+                    return atTable ? (touch != null ? touch.Action : null, "შეეხე „გამოყენებას“") : (null, "მიდი მბზინავ pH ნაყენების მაგიდასთან");
+                }
+                if (kit.Count(2) == 0) return (kit.PartSpot(2), "შეეხე კომბოსტოს წვენს");
+                if (kit.Count(0) == 0) return (kit.PartSpot(0), "ახლა — ერთი წვეთი მჟავა");
+                return (kit.BuildSpot, "მორიე და ნახე ფერი!");
+            }
             if (!MixBenchUI.Teaching)
             {
                 if (LabUI.AnyOpen) return (null, null);
@@ -86,7 +100,7 @@ namespace ChemistryGame
             {
                 if (LabUI.AnyOpen) return (null, null);
                 bool atBench = Focus.Current != null && Focus.Current.IsFocused && Focus.Current.GetComponent<InteractableStation>()?.stationType == StationType.ReactionTable;
-                return atBench ? (touch != null ? touch.Action : null, "შეეხე „გამოყენებას“") : (null, "მიდი მბზინავ რეაქციების მაგიდასთან");
+                return atBench ? (touch != null ? touch.Action : null, "შეეხე „გამოყენებას“") : (null, "ლამაზია! ახლა მიდი მბზინავ რეაქციების მაგიდასთან");
             }
             if (!bench.Picked.Contains("vinegar")) return (bench.Spot("vinegar"), "შეეხე ძმარს");
             if (!bench.Picked.Contains("soda")) return (bench.Spot("soda"), "ახლა — სოდას");

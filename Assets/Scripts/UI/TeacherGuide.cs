@@ -77,7 +77,7 @@ namespace ChemistryGame
                 ID = "coat", Title = "პირველი ცდა", Ready = () => Data.starterCoatCollected,
                 Steps = new[]
                 {
-                    S("ხალათი გიხდება! ახლა რამე შევურიოთ: რეაქციების მაგიდაზე ძმარი და სოდა გელოდება. ჯერ გამოიცანი, რა მოხდება!", g => g.StationPoint(StationType.ReactionTable), "", 5),
+                    S("ხალათი გიხდება! დავიწყოთ ყველაზე ლამაზით: pH ნაყენების მაგიდაზე კომბოსტოს წვენს წვეთები დაამატე და უყურე, როგორ იცვლის ფერს.", g => g.StationPoint(StationType.AcidBaseStation), "", 5),
                 }
             },
             new GuideLesson

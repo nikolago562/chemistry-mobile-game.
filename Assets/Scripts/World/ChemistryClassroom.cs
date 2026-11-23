@@ -43,11 +43,11 @@ namespace ChemistryGame
         private static readonly (Vector2 at, Color32 color, string name, int prop)[] Tables =
         {
             (new Vector2(37.5f, 2), new Color32(70, 140, 210, 255), "ატომის სამჭედლო", 0),
-            (new Vector2(52, 2), new Color32(150, 100, 200, 255), "ელემენტები", 1),
+            (new Vector2(52, -14), new Color32(150, 100, 200, 255), "ელემენტები", 1),
             (new Vector2(37.5f, -6), new Color32(220, 90, 90, 255), "შერევის მაგიდა", 2),
             (new Vector2(52, -6), new Color32(40, 160, 160, 255), "მოლეკულები", 3),
             (new Vector2(37.5f, -14), new Color32(60, 170, 220, 255), "ხსნარები", 4),
-            (new Vector2(52, -14), new Color32(210, 90, 160, 255), "pH ნაყენები", 5),
+            (new Vector2(52, 2), new Color32(210, 90, 160, 255), "pH ნაყენები", 5),
         };
         private static readonly Sprite[] props = new Sprite[6];
         private static Sprite matSprite, signSprite;

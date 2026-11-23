@@ -36,6 +36,7 @@ namespace ChemistryGame
         private static GameSaveData Data => GameSaveManager.Instance.Data;
         private static string day;
         private static Order[] today;
+        private static bool wasEarly;
 
         /// <summary>Today's orders: three different classmates wanting three different signs.</summary>
         public static Order[] Today
@@ -43,7 +44,9 @@ namespace ChemistryGame
             get
             {
                 string key = SchoolCalendar.DayKey;
-                if (today != null && day == key) return today;
+                bool early = Mixing.Discovered < 4;
+                if (today != null && day == key && early == wasEarly) return today;
+                wasEarly = early;
                 int seed = key.Aggregate(17, (h, c) => h * 31 + c) & int.MaxValue;
                 var picked = new System.Collections.Generic.List<Order>();
                 for (int i = 0; i < Wishes.Length && picked.Count < PerDay; i++)
@@ -51,6 +54,7 @@ namespace ChemistryGame
                     int w = (seed + i * 5) % Wishes.Length;
                     var (npc, wants, text) = Wishes[w];
                     if (picked.Any(o => o.Npc == npc || o.Wants == wants)) continue;
+                    if (early && (wants == MixSign.Heat || wants == MixSign.Solid) && !Data.claimedEvents.Contains("order:" + key + ":" + w)) continue;
                     picked.Add(new Order { Key = "order:" + key + ":" + w, Npc = npc, Wants = wants, Text = text });
                 }
                 day = key; today = picked.ToArray();

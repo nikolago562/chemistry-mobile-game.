@@ -319,8 +319,27 @@ public static class LabGameChecks
         Ensure(data.chemCoins == 10, "No duplicate tutorial payout");
         LabUI.CloseTop();
         Snapshot("09-locker");
+        // The first table is the easy, colourful one: cabbage juice + a drop of acid turns red.
+        var potions = Station(StationType.AcidBaseStation);
+        Ensure(Missions.Current == ActOne.FirstMix && Missions.IsTarget(potions.transform.position), "The first mission points at the pH potion table");
+        Ensure(Vector2.Distance(potions.transform.position, game.player.transform.position) < Vector2.Distance(Station(StationType.ReactionTable).transform.position, game.player.transform.position),
+            "The first table is nearer than the mixing bench");
+        Ensure(Mixing.Reagents.Count(Mixing.Known) == 7 && !Mixing.Known(Mixing.Get("hcl")), "A new player's shelf holds only the starter jars (" + Mixing.Reagents.Count(Mixing.Known) + ")");
+        Ensure(Orders.Today.All(o => o.Wants != MixSign.Heat && o.Wants != MixSign.Solid), "Early orders only ask for what the starter jars can do");
+        MoveTo(potions.transform.position + Vector3.down * 0.75f);
+        game.Interact(potions);
+        var kit = game.Lessons.Tables;
+        Ensure(kit.Current == Kits.Potions, "The pH table opens the potion kit");
+        kit.Add(2, 1);
+        var guide = UnityEngine.Object.FindFirstObjectByType<Coach>();
+        guide?.SendMessage("LateUpdate");
+        Ensure(guide != null && guide.Caption.Contains("მჟავა"), "The tutorial points at the acid drop (" + guide?.Caption + ")");
+        kit.Add(0, 1); kit.Build();
+        Ensure(Kits.PotionMade && Missions.Current == ActOne.FirstMix && Missions.StepIndex == 2, "The first potion moves the mission on to the mixing bench");
+        Snapshot("01c-first-potion");
+        LabUI.CloseTop();
         var bench = Station(StationType.ReactionTable);
-        Ensure(Missions.Current == ActOne.FirstMix && Missions.IsTarget(bench.transform.position), "The first mission points at the mixing bench");
+        Ensure(Missions.IsTarget(bench.transform.position), "Then the mission points at the mixing bench");
         Ensure(Orders.Today.Length == Orders.PerDay && Orders.Today.Select(o => o.Npc).Distinct().Count() == Orders.PerDay && Orders.Today.Select(o => o.Wants).Distinct().Count() == Orders.PerDay, "Three different classmates order three different signs");
         MoveTo(bench.transform.position + Vector3.down * 0.75f);
         game.Interact(bench);
@@ -678,6 +697,7 @@ public static class LabGameChecks
         Snapshot("61-mix-bench");
         bench.Guess(MixSign.Nothing); bench.Mix();
         Ensure(save.Data.chemCoins == purse + MixBenchUI.Pay + MixBenchUI.PayGuess && bench.Feedback.Contains("სინამდვილეში"), "A repeat pays nothing and a wrong guess is explained");
+        LabProgress.Give("copper", 1); // owning a jar shows it before its unlock
         bench.Pick("soda"); bench.Pick("copper"); bench.Guess(MixSign.Nothing); bench.Mix();
         Ensure(bench.Feedback.Contains("სპილენძი") && bench.Feedback.Contains("სწორად"), "Unlisted pairs explain why nothing happens");
         // Results become ingredients: salt water appears on the shelf and mixes again.
@@ -1045,9 +1065,10 @@ public static class LabGameChecks
         var nika = game.Classmates.Single(n => n.Def.ID == "nika");
         Ensure(nika.transform.GetChild(0).gameObject.activeSelf, "Nika is in the classroom in the morning");
         MoveTo((Vector2)nika.transform.position + new Vector2(0, -1.6f));
+        int bond = Classmates.State("nika").friendship; // orders filled earlier may already have raised it
         nika.Talk();
         Ensure(game.Dialogue.IsOpen, "Classmates talk through the dialogue box");
-        Ensure(Classmates.State("nika").friendship == 2, "Daily chat raises friendship once");
+        Ensure(Classmates.State("nika").friendship == bond + 2, "Daily chat raises friendship once");
         typeof(Classmates).GetMethod("Chat", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, new object[] { game, nika });
         Ensure(Classmates.State("nika").story == 1 && !Classmates.StoryReady(nika.Def, Classmates.State("nika")), "Story advances once per day");
         Schedule(ClassmateSnapshot, 1.5);
