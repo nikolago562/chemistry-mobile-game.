@@ -131,7 +131,15 @@ namespace ChemistryGame
         /// </summary>
         private void ShowCurrentRoom()
         {
-            foreach (var room in roots) room.Value.gameObject.SetActive(room.Key == Current);
+            foreach (var room in roots) room.Value.gameObject.SetActive(room.Key == Current || room.Key == peeked);
+        }
+
+        private string peeked;
+        /// <summary>Wakes the room around <paramref name="at"/> for the teacher's picture-in-picture; null puts it back to sleep.</summary>
+        public void Peek(Vector3? at)
+        {
+            peeked = at == null ? null : Defs.Where(d => Vector2.Distance(d.Origin, at.Value) < 30).OrderBy(d => Vector2.Distance(d.Origin, at.Value)).FirstOrDefault()?.ID;
+            ShowCurrentRoom();
         }
 
         // ---------------- travel ----------------

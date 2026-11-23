@@ -122,6 +122,8 @@ namespace ChemistryGame
         {
             if (snapFrame == null) return;
             snapFrame.SetActive(world != null);
+            // Far rooms sleep for speed; wake the one in the picture while it shows.
+            game?.Areas?.Peek(world); game?.Personal?.Peek(world);
             if (snapCamera == null)
             {
                 var go = new GameObject("სურათის კამერა", typeof(Camera));
@@ -667,6 +669,7 @@ namespace ChemistryGame
             pendingChain = false;
             pageHook = pendingHook = null;
             if (snapCamera != null) snapCamera.enabled = false;
+            game.Areas?.Peek(null); game.Personal?.Peek(null);
             game.HUD?.Highlight("");
             if (speaker != null) speaker.Talking = false;
             speaker = null;

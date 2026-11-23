@@ -16,7 +16,7 @@ namespace ChemistryGame
     public sealed class CurriculumUI : MonoBehaviour
     {
         /// <summary>The exercise kinds a lesson mixes, so consecutive cards ask for different actions.</summary>
-        public enum Ex { Pick, TrueFalse, Choice, SelectAll, Drag, Build, Reward }
+        public enum Ex { Pick, TrueFalse, Choice, SelectAll, Drag, Build, Blank, Reward }
 
         /// <summary>One exercise card in a lesson's deck.</summary>
         private sealed class Card
@@ -32,6 +32,8 @@ namespace ChemistryGame
             /// <summary>Build: index into the lesson's practices (1 = guided with live hints, 2 = free with a check).</summary>
             public int Step;
             public int[] Order;
+            /// <summary>Blank: the sentence with its gap; Order shuffles the word bank.</summary>
+            public Curriculum.Gap Gap;
             public Card Copy() => (Card)MemberwiseClone();
         }
 
@@ -131,36 +133,49 @@ namespace ChemistryGame
 
         public void Close() { if (window != null) window.Close(); }
 
-        /// <summary>Builds the deck from the lesson's data, alternating kinds so no two cards in a row feel alike.</summary>
+        /// <summary>Cards per lesson: short, like Duolingo's, so a lesson takes a minute or two.</summary>
+        public const int DeckSize = 4;
+
+        /// <summary>
+        /// Builds a short deck from the lesson's data. Each lesson starts its style rotation at a different
+        /// place, so two lessons in a row never feel alike, and no two cards in a row share a style.
+        /// </summary>
         private void Deal()
         {
             deck.Clear();
             var l = Lesson;
+            int n = Array.IndexOf(Curriculum.Lessons, l);
             var keys = l.IsReview ? Curriculum.ReviewKeys(l) : Enumerable.Range(0, l.Questions.Length).Select(i => Curriculum.Key(l, i)).ToArray();
-            void Ask(int i, bool truth) { if (i < keys.Length) deck.Add(truth ? TruthCard(keys[i]) : new Card { Kind = Ex.Choice, Key = keys[i] }); }
-            if (l.IsReview) { for (int i = 0; i < keys.Length; i++) Ask(i, i % 2 == 1); return; }
+            int asked = 0;
+            Card Ask(bool truth) { if (asked >= keys.Length) return null; string k = keys[asked++]; return truth ? TruthCard(k) : new Card { Kind = Ex.Choice, Key = k }; }
+            Card Gap() { var gap = Curriculum.MakeGap(l, n + deck.Count); return gap == null ? null : new Card { Kind = Ex.Blank, Gap = gap, Order = Enumerable.Range(0, gap.Words.Length).OrderBy(_ => UnityEngine.Random.value).ToArray() }; }
+            void Add(Card c) { if (c != null && deck.Count < DeckSize && (deck.Count == 0 || deck[deck.Count - 1].Kind != c.Kind)) deck.Add(c); }
+            if (l.IsReview) { for (int i = 0; i < keys.Length; i++) Add(i == 2 ? Gap() ?? Ask(false) : Ask(i % 2 == 1)); return; }
             if (l.Kind == PracticeKind.Sort)
             {
                 var order = Enumerable.Range(0, l.Items.Length).OrderBy(_ => UnityEngine.Random.value).ToArray();
                 if (practiceOnly) { deck.Add(new Card { Kind = Ex.Drag, Items = order.Take(6).ToArray() }); return; }
                 int b = l.Items[order[1]].Bin;
-                deck.Add(new Card { Kind = Ex.Pick, Items = new[] { order[0] } });
-                deck.Add(new Card { Kind = Ex.TrueFalse, Items = new[] { order[1] }, Bin = UnityEngine.Random.value < 0.5f ? b : (b + UnityEngine.Random.Range(1, l.Bins.Length)) % l.Bins.Length });
-                Ask(0, false);
-                var marked = order.Skip(2).Take(6).ToArray();
-                if (marked.Length > 0) deck.Add(new Card { Kind = Ex.SelectAll, Items = marked, Bin = l.Items[marked[0]].Bin });
-                Ask(1, true);
-                deck.Add(new Card { Kind = Ex.Drag, Items = order.Skip(6).Concat(order).Distinct().Take(5).ToArray() });
-                Ask(2, false);
+                var styles = new Func<Card>[]
+                {
+                    () => new Card { Kind = Ex.Pick, Items = new[] { order[0] } },
+                    Gap,
+                    () => { var marked = order.Skip(2).Take(6).ToArray(); return marked.Length > 1 ? new Card { Kind = Ex.SelectAll, Items = marked, Bin = l.Items[marked[0]].Bin } : null; },
+                    () => Ask(false),
+                    () => n % 2 == 0 ? new Card { Kind = Ex.TrueFalse, Items = new[] { order[1] }, Bin = UnityEngine.Random.value < 0.5f ? b : (b + UnityEngine.Random.Range(1, l.Bins.Length)) % l.Bins.Length } : Ask(true),
+                    () => new Card { Kind = Ex.Drag, Items = order.Skip(6).Concat(order).Distinct().Take(5).ToArray() },
+                };
+                for (int i = 0; i < styles.Length && deck.Count < DeckSize; i++) Add(styles[(n + i) % styles.Length]());
                 return;
             }
             int free = Mathf.Max(0, l.Steps.Length - 1), guided = Mathf.Min(1, free);
             if (practiceOnly) { deck.Add(new Card { Kind = Ex.Build, Step = free }); return; }
+            // Builders open and close the lesson; the two cards between them rotate through the styles.
             deck.Add(new Card { Kind = Ex.Build, Step = guided });
-            Ask(0, true);
-            Ask(1, false);
+            var middle = new Func<Card>[] { Gap, () => Ask(true), () => Ask(false) };
+            for (int i = 0; i < middle.Length && deck.Count < 3; i++) Add(middle[(n + i) % middle.Length]());
             if (free != guided) deck.Add(new Card { Kind = Ex.Build, Step = free });
-            Ask(2, false);
+            else Add(Ask(false));
         }
 
         private static Card TruthCard(string key)
@@ -230,7 +245,8 @@ namespace ChemistryGame
         private string Instruction()
         {
             // The lesson's key facts arrive one per card at the start, next to the task they help with.
-            string lead = !Lesson.IsReview && !practiceOnly && cardIndex < Lesson.Teach.Length ? Lesson.Teach[cardIndex] + "\n" : "";
+            // A gap card shows no fact: the fact could be the very sentence with the gap.
+            string lead = !Lesson.IsReview && !practiceOnly && Current != Ex.Blank && cardIndex < Lesson.Teach.Length ? Lesson.Teach[cardIndex] + "\n" : "";
             string ask = Current switch
             {
                 Ex.Pick => "რომელ ჯგუფს ეკუთვნის?",
@@ -238,6 +254,7 @@ namespace ChemistryGame
                 Ex.Choice => "აირჩიე სწორი პასუხი.",
                 Ex.SelectAll => "მონიშნე ყველაფერი ჯგუფიდან „" + Lesson.Bins[Now.Bin] + "“.",
                 Ex.Drag => "გადაათრიე თითოეული ბარათი თავის ჯგუფში.",
+                Ex.Blank => "რომელი სიტყვა აკლია წინადადებას?",
                 _ => "",
             };
             return lead + "<b>" + ask + "</b>";
@@ -283,10 +300,11 @@ namespace ChemistryGame
                     case Ex.Choice: ShowChoice(); break;
                     case Ex.SelectAll: ShowMarks(); break;
                     case Ex.Drag: ShowDrag(); break;
+                    case Ex.Blank: ShowGap(); break;
                 }
             }
             if (primary == null) return;
-            primary.interactable = Solved || Current == Ex.Choice && selected >= 0 || Current == Ex.SelectAll && picked.Count > 0 || Current == Ex.Build && !Guided;
+            primary.interactable = Solved || Current == Ex.Choice && selected >= 0 || Current == Ex.SelectAll && picked.Count > 0 || Current == Ex.Blank && selected >= 0 || Current == Ex.Build && !Guided;
             primaryLabel.text = Solved ? "გაგრძელება →" : "შემოწმება";
             primary.GetComponent<Image>().color = Solved && !Correct ? LabUI.Coral : LabUI.Green;
         }
@@ -391,6 +409,7 @@ namespace ChemistryGame
             {
                 case Ex.Choice: if (selected >= 0) Answer(selected); break;
                 case Ex.SelectAll: if (picked.Count > 0) CommitMarks(); break;
+                case Ex.Blank: if (selected >= 0) CommitGap(); break;
                 case Ex.Build:
                     if (Guided || practice == null) return;
                     string problem = Problem();
@@ -516,6 +535,48 @@ namespace ChemistryGame
             if (window == null || Current != Ex.Choice || Solved || q == null || choice < 0 || choice >= q.Choices.Length) return;
             selected = choice;
             Settle(choice == 0, choice == 0 ? q.Why[0] : "სწორი პასუხი: „" + q.Choices[0] + "“. " + q.Why[choice]);
+        }
+
+        // ------------------------------------------------------------ fill the gap
+
+        /// <summary>Index of the right word in the gap's word bank (it is always word 0 before shuffling).</summary>
+        public int GapAnswer => 0;
+        public string GapSentence => Now?.Gap != null ? Now.Gap.Before + "___" + Now.Gap.After : "";
+
+        private void ShowGap()
+        {
+            var gap = Now.Gap;
+            string fill = selected >= 0 ? gap.Words[selected] : "<color=#A0A89C>________</color>";
+            string color = !Solved ? "#2878A0" : Correct ? "#2E8B57" : "#D0604A";
+            BigCard(gap.Before + "<u><color=" + color + ">" + fill + "</color></u>" + gap.After + (Solved && !Correct ? "\n<size=70%>სწორია: <b>" + gap.Answer + "</b></size>" : ""), 190, 32);
+            var row = LabUI.Row(play, "სიტყვები", 16);
+            LabUI.Size(row.gameObject, 76);
+            foreach (int index in Now.Order)
+            {
+                int i = index;
+                var button = LabUI.Secondary(row.transform, gap.Words[i], () => Fill(i), 76);
+                var label = Big(button, 28);
+                var image = button.GetComponent<Image>();
+                if (Solved && i == 0) { image.color = LabUI.Green; label.color = Color.white; }
+                else if (Solved && i == selected) { image.color = LabUI.Coral; label.color = Color.white; }
+                else if (i == selected) { image.color = Chosen; label.color = ChosenText; }
+            }
+        }
+
+        /// <summary>Puts a word from the bank into the gap; the bottom button then checks it.</summary>
+        public void Fill(int word)
+        {
+            if (window == null || Current != Ex.Blank || Solved || word < 0 || word >= Now.Gap.Words.Length) return;
+            selected = word;
+            AudioManager.Instance?.Click();
+            Refresh();
+        }
+
+        private void CommitGap()
+        {
+            var gap = Now.Gap;
+            string whole = gap.Before + gap.Answer + gap.After;
+            Settle(selected == 0, selected == 0 ? whole : "აქ ჯდება „" + gap.Answer + "“: " + whole);
         }
 
         // ------------------------------------------------------------ mark all of one group
@@ -986,6 +1047,8 @@ namespace ChemistryGame
 
         // ================================================================== reward
 
+        /// <summary>How many lesson questions this deck asks (each pays 2 coins on the first finish).</summary>
+        public int Asked => AskedKeys.Length;
         private string[] AskedKeys => deck.Where(c => c.Key != null).Select(c => c.Key).Distinct().ToArray();
 
         /// <summary>The lesson chest: usually a few coins, sometimes a bench ingredient, rarely two precious jars.</summary>

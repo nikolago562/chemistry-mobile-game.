@@ -94,9 +94,28 @@ public static class LabGameChecks
     {
         var dialogueType = typeof(TeacherDialogueUI);
         var pages = (string[])dialogueType.GetField("pages", Hidden).GetValue(game.Dialogue);
-        Ensure(pages.Length >= 2 && pages.Length <= 3, "Welcome is short: movement, then the closet");
-        dialogueType.GetField("page", Hidden).SetValue(game.Dialogue, 1);
+        Ensure(pages.Length >= 8 && pages.Length <= 14 && pages.Any(p => p.Contains("დღესვე")) && pages.Any(p => p.Contains("მომავალში")), "Welcome shows what you can do today and what opens later, then the closet");
+        ShowPage(1);
+        Schedule(TutorialToday, 1.6);
+    }
+    private static void ShowPage(int page)
+    {
+        var dialogueType = typeof(TeacherDialogueUI);
+        var pages = (string[])dialogueType.GetField("pages", Hidden).GetValue(game.Dialogue);
+        dialogueType.GetField("page", Hidden).SetValue(game.Dialogue, page < 0 ? pages.Length + page : page);
         dialogueType.GetMethod("BeginPage", Hidden).Invoke(game.Dialogue, null);
+    }
+    private static void TutorialToday()
+    {
+        Snapshot("01a-welcome-today");
+        ShowPage(6);
+        Schedule(TutorialFuture, 1.6);
+    }
+    private static void TutorialFuture()
+    {
+        Ensure(game.Personal.Room.gameObject.activeSelf, "The teacher's picture of the lab wakes the lab room");
+        Snapshot("01b-welcome-future");
+        ShowPage(-1);
         Schedule(TutorialPanView, 1.6);
     }
     private static void TutorialPanView()
@@ -438,7 +457,7 @@ public static class LabGameChecks
         foreach (var l in Curriculum.Lessons)
         {
             Ensure(l.Why.Length > 0 && l.Teach.Length > 0, "Lesson explains why: " + l.ID);
-            if (l.IsReview) { Ensure(Curriculum.ReviewKeys(l).Length == 5, "Chapter review has five questions: " + l.ID); continue; }
+            if (l.IsReview) { Ensure(Curriculum.ReviewKeys(l).Length == 4, "Chapter review has four questions: " + l.ID); continue; }
             Ensure(l.Questions.Length == 3 && l.Questions.All(q => q.Choices.Length == 3 && q.Why.Length == 3 && q.Choices.Distinct().Count() == 3 && q.Hint.Length > 0), "Lesson questions: " + l.ID);
             Ensure(l.Note.Length > 0, "Notebook entry: " + l.ID);
             if (l.Collect != "") Ensure(LabProgress.Catalog.Any(c => c.ID == l.Collect), "Collection reward exists: " + l.ID);
@@ -490,8 +509,11 @@ public static class LabGameChecks
             SolveCard(lesson);
             Ensure(lessons.Solved && lessons.Correct, "Card solved: " + lessons.Current);
         }
-        Ensure(lessons.Current == CurriculumUI.Ex.Reward && kinds.Distinct().Count() >= 5 && kinds.Zip(kinds.Skip(1), (a, b) => a != b).All(x => x), "A lesson mixes at least five card kinds, never the same twice in a row (" + string.Join(",", kinds) + ")");
-        int paid = lesson.Coins + 2 * lesson.Questions.Length;
+        Ensure(lessons.Current == CurriculumUI.Ex.Reward && kinds.Count <= CurriculumUI.DeckSize + 1 && kinds.Distinct().Count() >= 3 && kinds.Zip(kinds.Skip(1), (a, b) => a != b).All(x => x), "A short lesson mixes at least three card kinds, never the same twice in a row (" + string.Join(",", kinds) + ")");
+        var gaps = Curriculum.Lessons.Where(x => !x.IsReview).Select(x => (x.ID, gap: Curriculum.MakeGap(x, 0))).ToList();
+        foreach (var (id, gap) in gaps) Debug.Log("GAP " + id + ": " + (gap == null ? "-" : gap.Before + "[" + gap.Answer + "]" + gap.After + " | " + string.Join(", ", gap.Words)));
+        Ensure(gaps.Count(g => g.gap != null) * 10 >= gaps.Count * 8 && gaps.Where(g => g.gap != null).All(g => g.gap.Words.Distinct().Count() == 3), "Most lessons get a fill-the-gap card (" + gaps.Count(g => g.gap != null) + "/" + gaps.Count + ")");
+        int paid = lesson.Coins + 2 * lessons.Asked;
         Ensure(Curriculum.Done("c1_matter") && save.Data.chemCoins == coins + paid, "Lesson reward is paid once (" + (save.Data.chemCoins - coins) + ")");
         Ensure(save.Data.totalXP == xpBefore + Curriculum.LessonXP && save.Data.dailyXP >= Curriculum.LessonXP && save.Data.xpGoal == 20, "A lesson with a mistake gives base XP toward the daily goal (" + (save.Data.totalXP - xpBefore) + ")");
         Ensure(save.Data.notebookPages.Contains("c1_matter") && save.Data.lessonMistakes.Count == 0, "Notebook page is saved");
@@ -658,6 +680,18 @@ public static class LabGameChecks
         Ensure(save.Data.chemCoins == purse + MixBenchUI.Pay + MixBenchUI.PayGuess && bench.Feedback.Contains("სინამდვილეში"), "A repeat pays nothing and a wrong guess is explained");
         bench.Pick("soda"); bench.Pick("copper"); bench.Guess(MixSign.Nothing); bench.Mix();
         Ensure(bench.Feedback.Contains("სპილენძი") && bench.Feedback.Contains("სწორად"), "Unlisted pairs explain why nothing happens");
+        // Results become ingredients: salt water appears on the shelf and mixes again.
+        foreach (var r in Mixing.Reagents.Where(x => x.Product)) Ensure(Mixing.Recipe(r.ID) != null && Mixing.Results.Any(x => x.A == r.ID || x.B == r.ID), "Product has a recipe and a use: " + r.ID);
+        foreach (var r in Mixing.Results.Where(x => x.Makes != null)) Ensure(Mixing.Get(r.Makes) != null, "Mix makes a real jar: " + r.ID);
+        LabProgress.Give("salt", 1); LabProgress.Give("cabbage", 1);
+        bool hiddenJar = !Mixing.Known(Mixing.Get("brine"));
+        LabUI.CloseTop(); bench.Open();
+        bench.Pick("water"); bench.Pick("salt"); bench.Guess(MixSign.Dissolves); bench.Mix();
+        Ensure(hiddenJar && Mixing.Known(Mixing.Get("brine")) && LabProgress.Has("brine") == 1 && bench.Feedback.Contains("ახალი ქილა"), "A mix puts its product on the shelf as a new jar");
+        Snapshot("61b-mix-new-jar");
+        LabUI.CloseTop(); bench.Open();
+        bench.Pick("brine"); bench.Pick("cabbage"); bench.Guess(MixSign.Nothing); bench.Mix();
+        Ensure(LabProgress.Owns(Mixing.Key("brine", "cabbage")) && LabProgress.Has("brine") == 0, "A product mixes again and is used up");
         for (int k = 0; k < 10 && LabUI.AnyOpen; k++) LabUI.CloseTop();
         Debug.Log("CURRICULUM_CHECKS_PASSED");
     }
@@ -1228,6 +1262,7 @@ public static class LabGameChecks
             case CurriculumUI.Ex.Choice: l.Select(0); l.Check(); break;
             case CurriculumUI.Ex.SelectAll: foreach (int i in items) if (lesson.Items[i].Bin == l.CardBin) l.Toggle(i); l.Check(); break;
             case CurriculumUI.Ex.Drag: foreach (int i in items) l.Drop(i, lesson.Items[i].Bin); break;
+            case CurriculumUI.Ex.Blank: l.Fill(l.GapAnswer); l.Check(); break;
         }
     }
 
@@ -1251,6 +1286,7 @@ public static class LabGameChecks
             window.SendMessage("LateUpdate");
         }
         foreach (var glow in UnityEngine.Object.FindObjectsByType<NextGlow>(FindObjectsSortMode.None)) glow.SendMessage("LateUpdate");
+        foreach (var picture in Camera.allCameras) if (picture != camera && picture.targetTexture != null) picture.Render(); // the teacher's picture-in-picture
         camera.Render();
         var previous = RenderTexture.active;
         RenderTexture.active = target;

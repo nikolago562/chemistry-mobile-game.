@@ -199,13 +199,66 @@ namespace ChemistryGame
             return (lesson, lesson != null && index >= 0 && index < lesson.Questions.Length ? lesson.Questions[index] : null);
         }
 
-        /// <summary>Five chapter questions for a review, earlier mistakes first.</summary>
+        /// <summary>A fill-the-gap card: one of the lesson's own sentences with a key word cut out.</summary>
+        public sealed class Gap { public string Before, After, Answer; public string[] Words; }
+
+        private static IEnumerable<string> Tokens(string text) =>
+            System.Text.RegularExpressions.Regex.Matches(text ?? "", @"[\p{L}]+").Cast<System.Text.RegularExpressions.Match>().Select(m => m.Value);
+
+        /// <summary>
+        /// Builds a gap from the lesson's teach facts, item notes and answers. The cut word is a key word
+        /// (title, groups, right answers, items); the two wrong words come from the same lesson, so they
+        /// look plausible. <paramref name="seed"/> picks which sentence; null when the lesson has no fit.
+        /// </summary>
+        private static readonly HashSet<string> Filler = new HashSet<string>
+        {
+            "რასაც", "რომლის", "რომელიც", "რომელშიც", "რომელსაც", "როგორ", "როგორც", "მაგალითად", "ერთმანეთთან", "ერთმანეთს", "თითოეული",
+            "მხოლოდ", "ყველა", "ყველაფერი", "ასევე", "მაგრამ", "ამიტომ", "როცა", "სადაც", "მისი", "მათი", "ისინი", "არის", "ეს", "იგივე", "უფრო", "ძალიან",
+        };
+        private static bool Keyword(string w) => w.Length >= 4 && !Filler.Contains(w);
+
+        public static Gap MakeGap(Lesson l, int seed)
+        {
+            // Key words: titles, groups and items first; right answers only when those find no sentence.
+            var main = new HashSet<string>(Tokens(l.Title + " " + string.Join(" ", l.Bins) + " " + string.Join(" ", l.Items.Select(i => i.Label))).Where(Keyword));
+            var answers = new HashSet<string>(Tokens(string.Join(" ", l.Questions.Select(q => q.Choices[0]))).Where(Keyword));
+            var sentences = l.Teach.Concat(l.Items.Select(i => i.Why)).Concat(l.Questions.Select(q => q.Why[0])).Where(s => !string.IsNullOrEmpty(s)).ToList();
+            var pool = sentences.SelectMany(Tokens).Where(Keyword).Distinct().ToList();
+            List<(string sentence, System.Text.RegularExpressions.Match word)> Options(HashSet<string> keys)
+            {
+                var found = new List<(string, System.Text.RegularExpressions.Match)>();
+                foreach (string s in sentences)
+                {
+                    var words = System.Text.RegularExpressions.Regex.Matches(s, @"[\p{L}]+").Cast<System.Text.RegularExpressions.Match>().ToList();
+                    foreach (var w in words.Skip(1))
+                        if (keys.Contains(w.Value) && words.Count(x => x.Value == w.Value) == 1) found.Add((s, w));
+                }
+                return found;
+            }
+            var options = Options(main);
+            if (options.Count == 0) options = Options(answers);
+            if (options.Count == 0) return null;
+            var (text, cut) = options[Math.Abs(seed) % options.Count];
+            string answer = cut.Value, ending = answer.Length >= 2 ? answer.Substring(answer.Length - 2) : answer;
+            // Wrong words come from the same lesson and, where possible, share the answer's ending (its
+            // grammatical case), so each one fits the sentence and only the meaning tells them apart.
+            // An item from the answer's own group would also be right ("water, stone, steam" are all matter).
+            int Group(string w) => l.Items.FirstOrDefault(i => Tokens(i.Label).Contains(w))?.Bin ?? -1;
+            int group = Group(answer);
+            var wrong = main.Concat(answers).Concat(pool).Where(w => w != answer && !Tokens(text).Contains(w) && (group < 0 || Group(w) != group)).Distinct()
+                .OrderBy(w => w.EndsWith(ending) ? 0 : 1).ThenBy(w => main.Contains(w) || answers.Contains(w) ? 0 : 1)
+                .ThenBy(w => Math.Abs(w.Length - answer.Length)).Take(2).ToArray();
+            if (wrong.Length < 2) return null;
+            return new Gap { Before = text.Substring(0, cut.Index), After = text.Substring(cut.Index + cut.Length), Answer = cut.Value, Words = wrong.Prepend(answer).ToArray() };
+        }
+
+        /// <summary>Four chapter questions for a review, earlier mistakes first.</summary>
         public static string[] ReviewKeys(Lesson review)
         {
             var all = Of(review.Chapter).Where(l => !l.IsReview).SelectMany(l => l.Questions.Select((q, i) => Key(l, i))).ToList();
             var missed = all.Where(Data.lessonMistakes.Contains).ToList();
             var rest = all.Except(missed).OrderBy(_ => UnityEngine.Random.value);
-            return missed.Concat(rest).Take(5).ToArray();
+            return missed.Concat(rest).Take(4).ToArray();
         }
 
         // ------------------------------------------------------------------ completion

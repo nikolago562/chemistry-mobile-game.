@@ -22,7 +22,7 @@ namespace ChemistryGame
 
         private LabWindow window;
         private Transform shelf, guesses, ordersRow;
-        private RectTransform stage;
+        private RectTransform stage, shelfView;
         private TMP_Text headline, detail, pairText;
         private Button mixButton, book;
         private NextGlow next;
@@ -57,11 +57,14 @@ namespace ChemistryGame
             // Middle: jars | beaker | guesses and the mix button.
             var middle = LabUI.Row(window.Body, "მაგიდა", 14); LabUI.FlexibleHeight(middle.gameObject);
             middle.childForceExpandHeight = true;
-            var jars = LabUI.Object(middle.transform, "თარო", typeof(GridLayoutGroup));
+            // The shelf scrolls: jars the bench makes are added at the end.
+            var view = LabUI.Scroll(middle.transform);
+            shelfView = (RectTransform)view.parent.parent; LabUI.Size(shelfView.gameObject, 418, 464, 0);
+            var jars = LabUI.Object(view, "თარო", typeof(GridLayoutGroup));
             var grid = jars.GetComponent<GridLayoutGroup>();
             grid.cellSize = new Vector2(108, 100); grid.spacing = new Vector2(6, 6);
             grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount; grid.constraintCount = 4;
-            LabUI.Size(jars, 418, 450, 0); shelf = jars.transform;
+            shelf = jars.transform;
 
             var panel = LabUI.Panel(middle.transform, "ჭიქა", LabUI.Navy); LabUI.Size(panel.gameObject, 418, 290, 0); stage = panel.rectTransform;
             pairText = LabUI.Text(panel.transform, "", 24, LabUI.Gold); pairText.alignment = TextAlignmentOptions.Center; pairText.fontStyle = FontStyles.Bold;
@@ -107,6 +110,7 @@ namespace ChemistryGame
             var material = LabProgress.Material(id);
             var data = GameSaveManager.Instance.Data;
             string name = Mixing.Get(id).Name;
+            if (Mixing.Get(id).Product) { var again = Mixing.Recipe(id); Say(name + " გამოგელია.", "ისევ გააკეთე: " + Mixing.Get(again.A).Name + " + " + Mixing.Get(again.B).Name + "."); return false; }
             if (material == null || material.Price == 0) { Say(name + " გამოგელია.", "ის სათბურში იზრდება — მოკრიფე იქ."); return false; }
             if (data.chemCoins < material.Price) { Say("ქიმქოინები არ გყოფნის.", name + " " + material.Price + " ღირს. შეასრულე შეკვეთა!"); return false; }
             data.chemCoins -= material.Price;
@@ -129,6 +133,8 @@ namespace ChemistryGame
             var a = Mixing.Get(picked[0]); var b = Mixing.Get(picked[1]);
             var result = Mixing.Find(a.ID, b.ID);
             var sign = result?.Sign ?? MixSign.Nothing;
+            var made = result?.Makes != null ? Mixing.Get(result.Makes) : null;
+            bool newJar = made != null && made.Product && !Mixing.Known(made); // before the result is collected
             bool right = guess == sign, fresh = result != null && LabProgress.Collect(result.ID);
             LabProgress.CountStat("mix");
             int paid = 0;
@@ -139,6 +145,8 @@ namespace ChemistryGame
                 LabProgress.AddReputation(1);
                 GameSaveManager.Instance.AddXP(DiscoveryXP);
             }
+            // What the mix made goes on the shelf as a jar you can mix again.
+            if (made != null) LabProgress.Give(made.ID, 1);
             var order = Orders.Deliver(sign);
             GameSaveManager.Instance.Commit();
             Missions.Refresh(); // a mix can finish a story step (the first mission is a mix)
@@ -148,13 +156,14 @@ namespace ChemistryGame
             string why = (right ? "" : "შენ ფიქრობდი: „" + Mixing.SignName(guess) + "“, სინამდვილეში — „" + Mixing.SignName(sign) + "“. ")
                 + (result != null ? result.Why : Mixing.NoReaction(a, b))
                 + (result != null && !fresh ? " (ეს წყვილი უკვე გამოცდილი გაქვს.)" : "")
+                + (made != null ? "  თაროზე: +1 " + made.Name + (newJar ? " — ახალი ქილა!" : "") : "")
                 + (order != null ? "  " + order.Name + ": შეკვეთა შესრულდა! +" + Orders.Pay + " ქიმქოინი" : "");
             Say(head, why, right ? LabUI.Green : LabUI.Ink);
             if (fresh || order != null) AmbientAudio.Instance?.Sparkle(); else if (right) AudioManager.Instance?.Correct();
             guess = null;
             Refresh();
             Beaker(a, b, result);
-            if (fresh) StartCoroutine(NewCard(result, paid));
+            if (fresh) StartCoroutine(NewCard(result, paid, newJar ? made : null));
             if (order != null) LabGame.Instance?.HUD.Refresh();
         }
 
@@ -171,7 +180,7 @@ namespace ChemistryGame
         private void Refresh()
         {
             Ui.Clear(shelf);
-            foreach (var r in Mixing.Reagents) Jar(r);
+            foreach (var r in Mixing.Reagents) if (Mixing.Known(r)) Jar(r);
             Ui.Clear(guesses);
             for (int i = 0; i < Mixing.SignNames.Length; i++) GuessTile((MixSign)i);
             Ui.Clear(ordersRow);
@@ -195,7 +204,7 @@ namespace ChemistryGame
             bool ready = picked.Count == 2 && guess != null;
             mixButton.interactable = ready;
             mixButton.GetComponentInChildren<TMP_Text>().text = picked.Count < 2 ? "აირჩიე 2 ქილა" : guess == null ? "რა მოხდება? გამოიცანი" : "შეურიე!";
-            next.Target = picked.Count < 2 ? (RectTransform)shelf : guess == null ? (RectTransform)guesses : (RectTransform)mixButton.transform;
+            next.Target = picked.Count < 2 ? shelfView : guess == null ? (RectTransform)guesses : (RectTransform)mixButton.transform;
         }
 
         /// <summary>One jar on the shelf: its colour in a glass, the name and how many are left (or the price).</summary>
@@ -218,7 +227,7 @@ namespace ChemistryGame
             label.rectTransform.offsetMin = new Vector2(4, 11); label.rectTransform.offsetMax = new Vector2(-4, -54);
             int stock = Mixing.Stock(id);
             var material = LabProgress.Material(id);
-            string badgeText = Mixing.Free(id) ? "∞" : stock > 0 ? "×" + stock : material != null && material.Price > 0 ? material.Price.ToString() : "სათბ.";
+            string badgeText = Mixing.Free(id) ? "∞" : stock > 0 ? "×" + stock : r.Product ? "×0" : material != null && material.Price > 0 ? material.Price.ToString() : "სათბ.";
             var badge = LabUI.Panel(tile.transform, "რაოდენობა", stock > 0 ? LabUI.Navy : LabUI.Coral);
             Place(badge.rectTransform, Vector2.one, new Vector2(-22, -16), new Vector2(42, 26));
             var count = LabUI.Text(badge.transform, badgeText, 12, Color.white); count.alignment = TextAlignmentOptions.Center; count.fontStyle = FontStyles.Bold;
@@ -266,15 +275,17 @@ namespace ChemistryGame
         }
 
         /// <summary>A gold card pops over the bench for every first discovery, then fades away.</summary>
-        private IEnumerator NewCard(MixResult result, int paid)
+        private IEnumerator NewCard(MixResult result, int paid, Reagent jar)
         {
+            // Show the new jar at the end of the shelf once the layout has it.
+            if (jar != null) { yield return null; if (window == null) yield break; if (shelfView != null) shelfView.GetComponent<ScrollRect>().verticalNormalizedPosition = 0; }
             var card = LabUI.Panel(window.Card, "ახალი აღმოჩენა", LabUI.Gold);
             card.gameObject.AddComponent<LayoutElement>().ignoreLayout = true;
             Place(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0, 30), new Vector2(460, 210));
             var group = card.gameObject.AddComponent<CanvasGroup>(); group.blocksRaycasts = false;
             var swatch = LabUI.Panel(card.transform, "ფერი", result.Color);
             Place(swatch.rectTransform, new Vector2(0, 0.5f), new Vector2(70, 0), new Vector2(92, 92));
-            var text = LabUI.Text(card.transform, "<size=30><b>ახალი აღმოჩენა!</b></size>\n<b>" + result.Title + "</b>\n" + Mixing.SignName(result.Sign) + "\n<size=17>+" + paid + " ქიმქოინი  •  +" + DiscoveryXP + " XP</size>", 21, LabUI.Ink);
+            var text = LabUI.Text(card.transform, "<size=30><b>ახალი აღმოჩენა!</b></size>\n<b>" + result.Title + "</b>\n" + Mixing.SignName(result.Sign) + "\n<size=17>" + (jar != null ? "<b>ახალი ქილა თაროზე: " + jar.Name + "!</b>" : "+" + paid + " ქიმქოინი  •  +" + DiscoveryXP + " XP") + "</size>", 21, LabUI.Ink);
             text.enableAutoSizing = true; text.fontSizeMin = 12; text.fontSizeMax = 21;
             LabUI.Fill(text.rectTransform, 14); text.rectTransform.offsetMin = new Vector2(132, 14);
             for (float t = 0; t < 2.6f && card != null; t += Time.unscaledDeltaTime)

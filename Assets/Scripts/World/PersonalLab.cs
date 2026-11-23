@@ -125,6 +125,12 @@ namespace ChemistryGame
                 (x, y) => x < 2 || x > 37 || y == 0 || y == 5 ? new Color32(105, 81, 53, 255) : new Color32(182, 155, 105, 255)), exit ? -295 : 3);
             return go;
         }
+        /// <summary>Wakes the lab room for the teacher's picture-in-picture while the player is elsewhere.</summary>
+        public void Peek(Vector3? at)
+        {
+            if (Room != null) Room.gameObject.SetActive(Inside || at != null && Vector2.Distance(RoomOrigin, at.Value) < 30);
+        }
+
         public bool Travel(bool exit)
         {
             if (Time.unscaledTime < travelAfter || LabUI.AnyOpen || !GameSaveManager.Instance.Data.profileCompleted) return false;

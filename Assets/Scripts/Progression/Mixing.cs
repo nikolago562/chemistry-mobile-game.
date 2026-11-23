@@ -11,17 +11,21 @@ namespace ChemistryGame
     {
         public readonly string ID, Name, Formula, Tag;
         public readonly Color Color;
-        public Reagent(string id, string name, string formula, string tag, Color32 color) { ID = id; Name = name; Formula = formula; Tag = tag; Color = color; }
+        /// <summary>Made at the bench, never bought: the jar appears once a mix first makes it.</summary>
+        public readonly bool Product;
+        public Reagent(string id, string name, string formula, string tag, Color32 color, bool product = false) { ID = id; Name = name; Formula = formula; Tag = tag; Color = color; Product = product; }
     }
 
     public sealed class MixResult
     {
         public readonly string ID, A, B, Equation, Why;
+        /// <summary>The jar this mix puts on the shelf (a product, or a starting jar like copper), or null.</summary>
+        public readonly string Makes;
         public readonly MixSign Sign;
         public readonly Color Color;
-        public MixResult(string a, string b, MixSign sign, Color32 color, string equation, string why)
+        public MixResult(string a, string b, MixSign sign, Color32 color, string equation, string why, string makes = null)
         {
-            A = a; B = b; Sign = sign; Color = color; Equation = equation; Why = why;
+            A = a; B = b; Sign = sign; Color = color; Equation = equation; Why = why; Makes = makes;
             ID = Mixing.Key(a, b);
         }
         public string Title => Mixing.Get(A).Name + " + " + Mixing.Get(B).Name;
@@ -55,6 +59,13 @@ namespace ChemistryGame
             new Reagent("peroxide", "წყალბადის ზეჟანგი", "H2O2", "peroxide", new Color32(230, 240, 246, 255)),
             new Reagent("yeast", "საფუარი", "", "catalyst", new Color32(214, 186, 140, 255)),
             new Reagent("cabbage", "კომბოსტოს ინდიკატორი", "ანთოციანი", "indicator", new Color32(120, 70, 160, 255)),
+            // Products: what the bench makes becomes a jar you can mix again.
+            new Reagent("brine", "მარილიანი წყალი", "NaCl (aq)", "made", new Color32(196, 226, 240, 255), true),
+            new Reagent("syrup", "შაქრის სიროფი", "C12H22O11 (aq)", "made", new Color32(240, 222, 170, 255), true),
+            new Reagent("cuoh2", "ცისფერი ნალექი", "Cu(OH)2", "made", new Color32(110, 170, 230, 255), true),
+            new Reagent("zncl2", "თუთიის ქლორიდი", "ZnCl2", "made", new Color32(222, 228, 232, 255), true),
+            new Reagent("fecl2", "რკინის ქლორიდი", "FeCl2", "made", new Color32(176, 214, 170, 255), true),
+            new Reagent("cacl2", "კალციუმის ქლორიდი", "CaCl2", "made", new Color32(236, 238, 230, 255), true),
         };
 
         public static readonly MixResult[] Results =
@@ -63,24 +74,24 @@ namespace ChemistryGame
             new MixResult("vinegar", "soda", MixSign.Gas, new Color32(236, 232, 214, 255), "CH3COOH + NaHCO3 → CO2↑ + H2O + მარილი", "მჟავა კარბონატს შლის და ნახშირორჟანგი გამოიყოფა — აქედანაა ბუშტუკები."),
             new MixResult("lemon", "soda", MixSign.Gas, new Color32(246, 236, 160, 255), "ლიმონმჟავა + NaHCO3 → CO2↑ + H2O + მარილი", "ლიმონის წვენიც მჟავაა, ამიტომ სოდასთან იგივე ნახშირორჟანგი გამოიყოფა."),
             new MixResult("hcl", "soda", MixSign.Gas, new Color32(226, 238, 230, 255), "HCl + NaHCO3 → NaCl + H2O + CO2↑", "ძლიერი მჟავა სოდას სწრაფად შლის: ბევრი ბუშტუკი ერთბაშად."),
-            new MixResult("hcl", "chalk", MixSign.Gas, new Color32(232, 236, 226, 255), "CaCO3 + 2HCl → CaCl2 + H2O + CO2↑", "ასე შიშინებს კალციტი და მარმარილო მჟავაში: კარბონატიდან ნახშირორჟანგი გამოდის."),
+            new MixResult("hcl", "chalk", MixSign.Gas, new Color32(232, 236, 226, 255), "CaCO3 + 2HCl → CaCl2 + H2O + CO2↑", "ასე შიშინებს კალციტი და მარმარილო მჟავაში: კარბონატიდან ნახშირორჟანგი გამოდის.", "cacl2"),
             new MixResult("vinegar", "chalk", MixSign.Gas, new Color32(236, 232, 214, 255), "CaCO3 + მჟავა → CO2↑ + ...", "ძმარი სუსტი მჟავაა, ამიტომ ცარცი ნელა, მაგრამ მაინც შიშინებს."),
             new MixResult("lemon", "chalk", MixSign.Gas, new Color32(246, 236, 170, 255), "CaCO3 + ლიმონმჟავა → CO2↑ + ...", "ლიმონის წვენი ცარცს ნელ-ნელა ხსნის — ამიტომ აზიანებს მჟავე სასმელი კბილის მინანქარს."),
             // Neutralisation: the warmth is the sign.
-            new MixResult("hcl", "naoh", MixSign.Heat, new Color32(214, 232, 236, 255), "HCl + NaOH → NaCl + H2O", "ნეიტრალიზაცია: მჟავა და ფუძე ერთმანეთს აბათილებს, სითბო გამოიყოფა და მარილიანი წყალი რჩება."),
+            new MixResult("hcl", "naoh", MixSign.Heat, new Color32(214, 232, 236, 255), "HCl + NaOH → NaCl + H2O", "ნეიტრალიზაცია: მჟავა და ფუძე ერთმანეთს აბათილებს, სითბო გამოიყოფა და მარილიანი წყალი რჩება.", "brine"),
             new MixResult("lemon", "naoh", MixSign.Heat, new Color32(236, 232, 200, 255), "ლიმონმჟავა + NaOH → მარილი + H2O", "ნეიტრალიზაცია: ლიმონის მჟავე გემო ქრება და ხსნარი ოდნავ თბება."),
             new MixResult("vinegar", "naoh", MixSign.Heat, new Color32(226, 230, 226, 255), "CH3COOH + NaOH → CH3COONa + H2O", "ესეც ნეიტრალიზაციაა, ოღონდ სუსტი მჟავით — ხსნარი მხოლოდ ოდნავ თბება."),
             // Metals and acids: hydrogen bubbles.
-            new MixResult("hcl", "zinc", MixSign.Gas, new Color32(214, 222, 226, 255), "Zn + 2HCl → ZnCl2 + H2↑", "თუთია წყალბადზე აქტიურია, ამიტომ მჟავიდან წყალბადს გამოაძევებს."),
-            new MixResult("hcl", "nail", MixSign.Gas, new Color32(190, 220, 190, 255), "Fe + 2HCl → FeCl2 + H2↑", "რკინაც წყალბადზე აქტიურია: ნელა იხსნება, ხსნარი კი მომწვანო ხდება."),
+            new MixResult("hcl", "zinc", MixSign.Gas, new Color32(214, 222, 226, 255), "Zn + 2HCl → ZnCl2 + H2↑", "თუთია წყალბადზე აქტიურია, ამიტომ მჟავიდან წყალბადს გამოაძევებს.", "zncl2"),
+            new MixResult("hcl", "nail", MixSign.Gas, new Color32(190, 220, 190, 255), "Fe + 2HCl → FeCl2 + H2↑", "რკინაც წყალბადზე აქტიურია: ნელა იხსნება, ხსნარი კი მომწვანო ხდება.", "fecl2"),
             new MixResult("vinegar", "zinc", MixSign.Gas, new Color32(226, 226, 214, 255), "Zn + მჟავა → H2↑ + მარილი", "სუსტ მჟავაში თუთია ნელა, წვრილი ბუშტუკებით რეაგირებს."),
             new MixResult("hcl", "copper", MixSign.Nothing, new Color32(220, 236, 226, 255), "", "სპილენძი წყალბადზე ნაკლებად აქტიურია, ამიტომ განზავებული მარილმჟავა მას ვერ ხსნის. „არაფერიც“ შედეგია!"),
             // A more active metal pushes copper out of its salt.
-            new MixResult("cuso4", "nail", MixSign.Colour, new Color32(150, 196, 170, 255), "Fe + CuSO4 → FeSO4 + Cu", "ლურსმანზე წითელი სპილენძი ილექება და ლურჯი ფერი ქრება: რკინა სპილენძზე აქტიურია."),
-            new MixResult("cuso4", "zinc", MixSign.Colour, new Color32(200, 210, 214, 255), "Zn + CuSO4 → ZnSO4 + Cu", "თუთია სპილენძს ხსნარიდან გამოაძევებს: ლურჯი ფერი ფერმკრთალდება, ფსკერზე კი მოწითალო სპილენძი ჩნდება."),
+            new MixResult("cuso4", "nail", MixSign.Colour, new Color32(150, 196, 170, 255), "Fe + CuSO4 → FeSO4 + Cu", "ლურსმანზე წითელი სპილენძი ილექება და ლურჯი ფერი ქრება: რკინა სპილენძზე აქტიურია.", "copper"),
+            new MixResult("cuso4", "zinc", MixSign.Colour, new Color32(200, 210, 214, 255), "Zn + CuSO4 → ZnSO4 + Cu", "თუთია სპილენძს ხსნარიდან გამოაძევებს: ლურჯი ფერი ფერმკრთალდება, ფსკერზე კი მოწითალო სპილენძი ჩნდება.", "copper"),
             new MixResult("cuso4", "copper", MixSign.Nothing, new Color32(60, 140, 220, 255), "", "სპილენძი საკუთარ მარილთან ვერაფერს „გაცვლის“ — ერთნაირი ლითონია. ხსნარი ისევ ლურჯია."),
             // Two liquids make a solid.
-            new MixResult("cuso4", "naoh", MixSign.Solid, new Color32(110, 170, 230, 255), "CuSO4 + 2NaOH → Cu(OH)2↓ + Na2SO4", "ორი სითხიდან მყარი ნივთიერება წარმოიქმნა — ცისფერი ნალექი. ესეც რეაქციის ნიშანია."),
+            new MixResult("cuso4", "naoh", MixSign.Solid, new Color32(110, 170, 230, 255), "CuSO4 + 2NaOH → Cu(OH)2↓ + Na2SO4", "ორი სითხიდან მყარი ნივთიერება წარმოიქმნა — ცისფერი ნალექი. ესეც რეაქციის ნიშანია.", "cuoh2"),
             new MixResult("cuso4", "soda", MixSign.Solid, new Color32(110, 190, 170, 255), "CuSO4 + NaHCO3 → სპილენძის კარბონატი↓ + CO2↑ + ...", "მომწვანო-ცისფერი ნალექი და ცოტა ბუშტუკი: ერთ რეაქციას ორი ნიშანიც შეიძლება ჰქონდეს."),
             new MixResult("cabbage", "cuso4", MixSign.Nothing, new Color32(80, 100, 200, 255), "", "ლურჯი და იისფერი უბრალოდ შეერია. ფერის შეცვლა ყოველთვის რეაქციას არ ნიშნავს — ახალი ნივთიერება აქ არ წარმოქმნილა."),
             // A catalyst speeds things up without being used up.
@@ -94,16 +105,29 @@ namespace ChemistryGame
             new MixResult("cabbage", "naoh", MixSign.Colour, new Color32(170, 200, 60, 255), "", "ყვითელ-მწვანე: ძლიერი ფუძე, pH მაღალია."),
             new MixResult("cabbage", "water", MixSign.Nothing, new Color32(120, 70, 160, 255), "", "ფერი იისფერი რჩება: წყალი ნეიტრალურია. ასე ვამოწმებთ, რომ ინდიკატორი თავისთავად არ იცვლება."),
             // Dissolving is a physical change, not a reaction.
-            new MixResult("water", "salt", MixSign.Dissolves, new Color32(180, 218, 236, 255), "", "მარილი იხსნება — ეს ფიზიკური ცვლილებაა: წყალს თუ აორთქლებ, მარილი ისევ დარჩება."),
-            new MixResult("water", "sugar", MixSign.Dissolves, new Color32(186, 218, 232, 255), "", "შაქარი იხსნება და ქრება თვალიდან, მაგრამ არსად წასულა — წყალი ტკბილია."),
+            new MixResult("water", "salt", MixSign.Dissolves, new Color32(180, 218, 236, 255), "", "მარილი იხსნება — ეს ფიზიკური ცვლილებაა: წყალს თუ აორთქლებ, მარილი ისევ დარჩება.", "brine"),
+            new MixResult("water", "sugar", MixSign.Dissolves, new Color32(186, 218, 232, 255), "", "შაქარი იხსნება და ქრება თვალიდან, მაგრამ არსად წასულა — წყალი ტკბილია.", "syrup"),
             new MixResult("water", "cuso4", MixSign.Dissolves, new Color32(70, 150, 225, 255), "", "ლურჯი ხსნარი! ფერი ჩნდება, მაგრამ ეს გახსნაა, არა რეაქცია: ახალი ნივთიერება არ წარმოიქმნა."),
             new MixResult("water", "soda", MixSign.Dissolves, new Color32(190, 222, 238, 255), "", "სოდა წყალში იხსნება ბუშტუკების გარეშე. ბუშტუკებს მჟავა სჭირდება."),
+            // Second-generation mixes: jars the bench made react again.
+            new MixResult("brine", "cabbage", MixSign.Nothing, new Color32(120, 70, 160, 255), "", "ინდიკატორი იისფერი რჩება: მარილიანი წყალი ნეიტრალურია. მჟავა და ფუძე მართლა გააბათილეს ერთმანეთი!"),
+            new MixResult("syrup", "yeast", MixSign.Gas, new Color32(226, 206, 160, 255), "C6H12O6 → 2C2H5OH + 2CO2↑", "დუღილი: საფუარი შაქარს ჭამს და ნახშირორჟანგს გამოყოფს. ასე ფუვდება ცომი!"),
+            new MixResult("cuoh2", "hcl", MixSign.Dissolves, new Color32(90, 190, 170, 255), "Cu(OH)2 + 2HCl → CuCl2 + 2H2O", "მყარი ნალექი მჟავაში გაქრა და მწვანე-ცისფერი ხსნარი დარჩა: ნალექი ფუძეა, მჟავა მას ხსნის."),
+            new MixResult("cuoh2", "vinegar", MixSign.Dissolves, new Color32(100, 170, 210, 255), "Cu(OH)2 + 2CH3COOH → Cu(CH3COO)2 + 2H2O", "სუსტი მჟავაც ხსნის ცისფერ ნალექს, ოღონდ ნელა — ხსნარი ლურჯდება."),
+            new MixResult("zncl2", "naoh", MixSign.Solid, new Color32(236, 236, 236, 255), "ZnCl2 + 2NaOH → Zn(OH)2↓ + 2NaCl", "თეთრი ნალექი! ორი გამჭვირვალე სითხიდან მყარი თუთიის ჰიდროქსიდი წარმოიქმნა."),
+            new MixResult("fecl2", "naoh", MixSign.Solid, new Color32(120, 150, 110, 255), "FeCl2 + 2NaOH → Fe(OH)2↓ + 2NaCl", "მომწვანო ნალექი — ასე ცნობენ რკინას ხსნარში. ჰაერზე ნელ-ნელა ჟანგისფერი გახდება."),
+            new MixResult("fecl2", "peroxide", MixSign.Colour, new Color32(200, 150, 70, 255), "2Fe²⁺ + H2O2 → 2Fe³⁺ + ...", "მწვანე ხსნარი ყვითელ-ყავისფერი გახდა: ზეჟანგმა რკინა დაჟანგა, როგორც ჟანგი ლურსმანზე."),
+            new MixResult("cacl2", "soda", MixSign.Solid, new Color32(240, 240, 234, 255), "CaCl2 + NaHCO3 → CaCO3↓ + ...", "თეთრი ნალექი — ეს ცარცია! ცარციდან დაიწყე და ისევ ცარცამდე მიხვედი.", "chalk"),
             new MixResult("water", "chalk", MixSign.Nothing, new Color32(200, 216, 222, 255), "", "ცარცი წყალში თითქმის არ იხსნება — ამიტომაც არ ქრება ქვა წვიმაში."),
         };
 
         public static Reagent Get(string id) => Reagents.FirstOrDefault(r => r.ID == id);
         /// <summary>Tap water is free and endless; everything else is a material that a mix uses up.</summary>
         public static bool Free(string id) => id == "water";
+        /// <summary>Products stay hidden until a mix first makes them; everything else is always on the shelf.</summary>
+        public static bool Known(Reagent r) => !r.Product || LabProgress.Has(r.ID) > 0 || Results.Any(x => x.Makes == r.ID && LabProgress.Owns(x.ID));
+        /// <summary>The first known recipe for a product, for the "make it again" hint.</summary>
+        public static MixResult Recipe(string id) => Results.FirstOrDefault(x => x.Makes == id);
         public static int Stock(string id) => Free(id) ? 99 : LabProgress.Has(id);
         /// <summary>Given with the lab coat, enough for the first few discoveries.</summary>
         public static readonly (string id, int count)[] StarterKit = { ("vinegar", 3), ("soda", 3), ("lemon", 2), ("salt", 2), ("sugar", 2), ("cabbage", 2) };
