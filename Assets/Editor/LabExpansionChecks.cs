@@ -13,7 +13,6 @@ using UnityEngine.UI;
 public static class LabExpansionChecks
 {
     private static LabGame game;
-    private static LabResearchUI research;
     private static Action next;
     private static double due;
     private static EnterPlayModeOptions oldOptions;
@@ -46,7 +45,6 @@ public static class LabExpansionChecks
     private static void Ensure(bool value,string message){if(!value)throw new Exception(message);}
     private static object Field(object owner,string name)=>owner.GetType().GetField(name,Hidden).GetValue(owner);
     private static void Set(object owner,string name,object value)=>owner.GetType().GetField(name,Hidden).SetValue(owner,value);
-    private static void UpdateResearch()=>typeof(LabResearchUI).GetMethod("Update",Hidden).Invoke(research,null);
     private static void Snapshot(string name)
     {
         // Capture the settled layout even when the first Editor frame is delayed.
@@ -106,43 +104,9 @@ public static class LabExpansionChecks
         }
         for(int i=0;i<3;i++)Ensure(game.Personal.Place(new[]{"membrane","chromatography","gas"}[i],i,0),"New table placement");
         save.Load();Ensure(save.Data.ownedLabItems.Contains("membrane") && save.Data.labPlacements.Count==3,"Equipment persistence");
-        game.Personal.Activities.Open("membrane");research=game.GetComponent<LabResearchUI>();before=save.Data.chemCoins;
-        Ensure(research.RightCount==6,"Membrane initial distribution");Schedule(Membrane,0.5);
-    }
-    private static void Membrane()
-    {
-        Ensure(research.RightCount==6,"Closed channel blocks crossing");Snapshot("23-membrane");
-        for(int i=0;i<6;i++)Ensure(research.Pump(),"ATP pump step");
-        Ensure(research.Pumped==6 && GameSaveManager.Instance.Data.chemCoins==before+20,"Six ATP pump reward");
-        Ensure(!research.Pump(),"ATP cannot go negative");research.ResetMembrane();
-        for(int i=0;i<6;i++)research.Pump();Ensure(GameSaveManager.Instance.Data.chemCoins==before+20,"Reset cannot duplicate research payout");
-        research.ResetMembrane();Set(research,"channel",true);
-        var particles=(IList)Field(research,"particles");
-        // Force a small controlled crossing through the open channel, then exercise the real update.
-        for(int i=0;i<11;i++){var p=particles[i];p.GetType().GetField("Position").SetValue(p,new Vector2(60+i,0));}
-        UpdateResearch();Ensure(GameSaveManager.Instance.Data.chemCoins==before+40,"Diffusion milestone reward");
-        research.Close();game.Personal.Activities.Open("chromatography");research.Predict(1);research.StartSeparation();Set(research,"runTime",7.99999f);UpdateResearch();
-        Ensure(!GameSaveManager.Instance.Data.researchClaims.Contains("chromatography"),"Wrong chromatography prediction cannot pay");
-        research.Predict(2);research.StartSeparation();Schedule(Chromatography,3.0);
-    }
-    private static void Chromatography()
-    {
-        Snapshot("24-chromatography");
-        var bands=(List<RectTransform>)Field(research,"bands");Ensure(bands[2].anchoredPosition.y>bands[0].anchoredPosition.y,"Animated band separation");
-        Set(research,"runTime",7.99999f);UpdateResearch();Ensure(GameSaveManager.Instance.Data.researchClaims.Contains("chromatography"),"Correct prediction reward");
-        research.Close();game.Personal.Activities.Open("gas");
-        var slider=UnityEngine.Object.FindObjectsByType<Slider>().Single(s=>s.name=="მოცულობა V");slider.value=1;
-        Ensure(Mathf.Abs(research.RelativePressure-2)<0.001f,"Boyle law ratio");Schedule(Gas,2.4);
-    }
-    private static void Gas()
-    {
-        Snapshot("25-gas-piston");Ensure(GameSaveManager.Instance.Data.researchClaims.Contains("gas_compression"),"Stable pressure goal reward");
-        var save=GameSaveManager.Instance;int coins=save.Data.chemCoins;save.Load();
-        Ensure(save.Data.researchClaims.Count==4 && !save.ClaimResearch("gas_compression") && save.Data.chemCoins==coins,"Persistent once-daily rewards");
-        save.Data.researchDay=GameSaveManager.Iso(DateTime.UtcNow.Date.AddDays(-1));
-        Ensure(save.ClaimResearch("gas_compression") && save.Data.chemCoins==coins+20,"UTC research reset");
+        foreach(var id in new[]{"membrane","chromatography","gas"}){game.Lessons.Tables.Open(LabKits.For(id));Ensure(game.Lessons.Tables.Current==LabKits.For(id),"New table opens its bench "+id);}
+        Snapshot("25-gas-bench");LabUI.CloseTop();
         Ensure(errors.Count==0,"Runtime errors: "+string.Join(";",errors));
-        research.Close();
         Ensure(game.Personal.Travel(false),"Enter personal lab before door cooldown check");
         game.player.GetComponent<Rigidbody2D>().position=game.Personal.ExitPosition-game.player.GetComponent<BoxCollider2D>().offset;
         Schedule(DoorCooldown,1.3);

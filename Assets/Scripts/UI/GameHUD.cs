@@ -251,6 +251,8 @@ namespace ChemistryGame
         private Image highlight;
         private RectTransform highlighted;
         public const float Scale = 0.78f;
+        /// <summary>The objective card, for the tutorial pointer.</summary>
+        public RectTransform Tracker => panels.TryGetValue("tracker", out var rect) ? rect : null;
 
         /// <summary>Shrinks a HUD panel toward its corner and lets it fade when the player walks behind it.</summary>
         private RectTransform Compact(RectTransform rect)

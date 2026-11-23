@@ -350,18 +350,6 @@ namespace ChemistryGame
             return true;
         }
 
-        public bool ClaimResearch(string id)
-        {
-            if (id != "membrane_diffusion" && id != "membrane_pump" && id != "chromatography" && id != "gas_compression") return false;
-            string day = Iso(DateTime.UtcNow.Date);
-            if (Data.researchDay != day) { Data.researchDay = day; Data.researchClaims.Clear(); }
-            if (Data.researchClaims.Contains(id)) return false;
-            Data.researchClaims.Add(id);
-            Data.chemCoins += 20;
-            Commit();
-            return true;
-        }
-
         public void Commit()
         {
             try

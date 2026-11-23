@@ -23,8 +23,9 @@ namespace ChemistryGame
         private LabWindow window;
         private Transform shelf, guesses, ordersRow;
         private RectTransform stage;
-        private TMP_Text headline, detail, pairText, coins, bookLabel;
-        private Button mixButton;
+        private TMP_Text headline, detail, pairText;
+        private Button mixButton, book;
+        private NextGlow next;
         private readonly List<string> picked = new List<string>();
         private readonly Dictionary<string, RectTransform> spots = new Dictionary<string, RectTransform>();
         private MixSign? guess;
@@ -43,49 +44,47 @@ namespace ChemistryGame
         {
             if (window != null) { LabUI.BringToFront(window); return; }
             picked.Clear(); guess = null; last = "";
-            window = LabUI.Window("შერევის მაგიდა", 1220, 700);
+            window = LabUI.Window("შერევის მაგიდა", 1260, 712);
             window.Closed = () => { window = null; show = null; spots.Clear(); };
+            next = NextGlow.On(window);
 
-            // Top strip: today's orders, the book and the purse.
-            var top = LabUI.Row(window.Body, "ზედა ზოლი", 10); LabUI.Size(top.gameObject, 62);
+            // Top strip: today's orders and the book, whose fill is the bench's goal.
+            var top = LabUI.Row(window.Body, "ზედა ზოლი", 10); LabUI.Size(top.gameObject, 58);
             var orderBox = LabUI.Row(top.transform, "შეკვეთები", 8); LabUI.Size(orderBox.gameObject, 62, -1, 1); ordersRow = orderBox.transform;
-            var book = LabUI.Button(top.transform, "", Book, 62); book.GetComponent<Image>().color = new Color32(120, 86, 160, 255);
-            LabUI.Size(book.gameObject, 62, 150, 0); bookLabel = book.GetComponentInChildren<TMP_Text>();
-            var purse = LabUI.Panel(top.transform, "ქიმქოინები", LabUI.Navy); LabUI.Size(purse.gameObject, 62, 130, 0);
-            var coin = LabUI.Icon(purse.transform, LabIcon.Coin, Color.white); Place(coin.rectTransform, new Vector2(0, 0.5f), new Vector2(26, 0), new Vector2(34, 34));
-            coins = LabUI.Text(purse.transform, "", 22, Color.white); coins.fontStyle = FontStyles.Bold;
-            Place(coins.rectTransform, new Vector2(0, 0.5f), new Vector2(86, 0), new Vector2(80, 40));
+            book = LabUI.Button(top.transform, "", Book, 62); book.GetComponent<Image>().color = new Color32(120, 86, 160, 255);
+            LabUI.Size(book.gameObject, 62, 240, 0);
 
             // Middle: jars | beaker | guesses and the mix button.
             var middle = LabUI.Row(window.Body, "მაგიდა", 14); LabUI.FlexibleHeight(middle.gameObject);
             middle.childForceExpandHeight = true;
             var jars = LabUI.Object(middle.transform, "თარო", typeof(GridLayoutGroup));
             var grid = jars.GetComponent<GridLayoutGroup>();
-            grid.cellSize = new Vector2(88, 86); grid.spacing = new Vector2(6, 6);
+            grid.cellSize = new Vector2(108, 100); grid.spacing = new Vector2(6, 6);
             grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount; grid.constraintCount = 4;
-            LabUI.Size(jars, 362, 370, 0); shelf = jars.transform;
+            LabUI.Size(jars, 418, 450, 0); shelf = jars.transform;
 
-            var panel = LabUI.Panel(middle.transform, "ჭიქა", LabUI.Navy); LabUI.Size(panel.gameObject, 362, 300, 0); stage = panel.rectTransform;
-            pairText = LabUI.Text(panel.transform, "", 19, LabUI.Gold); pairText.alignment = TextAlignmentOptions.Center; pairText.fontStyle = FontStyles.Bold;
-            Place(pairText.rectTransform, new Vector2(0.5f, 1), new Vector2(0, -26), new Vector2(280, 40));
+            var panel = LabUI.Panel(middle.transform, "ჭიქა", LabUI.Navy); LabUI.Size(panel.gameObject, 418, 290, 0); stage = panel.rectTransform;
+            pairText = LabUI.Text(panel.transform, "", 24, LabUI.Gold); pairText.alignment = TextAlignmentOptions.Center; pairText.fontStyle = FontStyles.Bold;
+            pairText.enableAutoSizing = true; pairText.fontSizeMin = 15; pairText.fontSizeMax = 24;
+            Place(pairText.rectTransform, new Vector2(0.5f, 1), new Vector2(0, -28), new Vector2(270, 44));
 
             var right = LabUI.Column(middle.transform, "ვარაუდი", 8); LabUI.Size(right.gameObject, -1, -1, 1);
             var ask = LabUI.Text(right.transform, "რა მოხდება?", 20, LabUI.Ink); ask.fontStyle = FontStyles.Bold; LabUI.Size(ask.gameObject, 28);
             var tiles = LabUI.Object(right.transform, "ვარაუდები", typeof(GridLayoutGroup));
             var tileGrid = tiles.GetComponent<GridLayoutGroup>();
-            tileGrid.cellSize = new Vector2(212, 68); tileGrid.spacing = new Vector2(8, 8);
+            tileGrid.cellSize = new Vector2(206, 88); tileGrid.spacing = new Vector2(8, 8);
             tileGrid.constraint = GridLayoutGroup.Constraint.FixedColumnCount; tileGrid.constraintCount = 2;
-            LabUI.Size(tiles, 220); guesses = tiles.transform; spots["guess"] = (RectTransform)tiles.transform;
-            mixButton = LabUI.Button(right.transform, "შერევა!", Mix, 76); mixButton.GetComponent<Image>().color = new Color32(224, 160, 60, 255);
-            LabUI.Size(mixButton.gameObject, 76); spots["mix"] = (RectTransform)mixButton.transform;
+            LabUI.Size(tiles, 280); guesses = tiles.transform; spots["guess"] = (RectTransform)tiles.transform;
+            mixButton = LabUI.Button(right.transform, "შერევა!", Mix, 96); mixButton.GetComponent<Image>().color = new Color32(224, 160, 60, 255);
+            LabUI.Size(mixButton.gameObject, 96); spots["mix"] = (RectTransform)mixButton.transform;
 
             // Bottom: one big line for what happened, one small line for why.
-            var result = LabUI.Card(window.Body, "შედეგი", LabUI.Soft, 10); LabUI.Size(result.gameObject, 92);
+            var result = LabUI.Card(window.Body, "შედეგი", LabUI.Soft, 8); LabUI.Size(result.gameObject, 84);
             result.GetComponent<VerticalLayoutGroup>().spacing = 2;
             headline = LabUI.Text(result.transform, "შეეხე ორ ქილას, გამოიცანი და შეურიე!", 22, LabUI.Green); headline.fontStyle = FontStyles.Bold;
-            headline.enableAutoSizing = true; headline.fontSizeMin = 14; headline.fontSizeMax = 22; LabUI.Size(headline.gameObject, 30);
+            headline.enableAutoSizing = true; headline.fontSizeMin = 16; headline.fontSizeMax = 25; LabUI.Size(headline.gameObject, 30);
             detail = LabUI.Text(result.transform, "", 15, LabUI.Ink);
-            detail.enableAutoSizing = true; detail.fontSizeMin = 11; detail.fontSizeMax = 15; LabUI.Size(detail.gameObject, 40);
+            detail.enableAutoSizing = true; detail.fontSizeMin = 12; detail.fontSizeMax = 17; LabUI.Size(detail.gameObject, 38);
             Refresh();
             Beaker(null, null);
         }
@@ -184,14 +183,19 @@ namespace ChemistryGame
                 var icon = LabUI.Object(card.transform, "ნიშანი", typeof(Image)).GetComponent<Image>();
                 icon.sprite = done ? LabIcons.Get(LabIcon.Check) : SignSprite(o.Wants); icon.preserveAspect = true; icon.raycastTarget = false;
                 Place(icon.rectTransform, new Vector2(0, 0.5f), new Vector2(28, 0), new Vector2(34, 34));
-                var text = LabUI.Text(card.transform, "<b>" + o.Name + "</b>\n<size=13>" + (done ? "შესრულდა!" : Mixing.SignName(o.Wants)) + "</size>", 16, LabUI.Ink);
+                var text = LabUI.Text(card.transform, "<b>" + o.Name + "</b>" + (done ? "" : " უკვეთავს:") + "\n<size=13>" + (done ? "შესრულდა!" : Mixing.SignName(o.Wants)) + "</size>", 16, LabUI.Ink);
                 text.enableAutoSizing = true; text.fontSizeMin = 10; text.fontSizeMax = 16;
                 LabUI.Fill(text.rectTransform, 6); text.rectTransform.offsetMin = new Vector2(52, 6);
             }
-            bookLabel.text = "წიგნი " + Mixing.Results.Count(r => LabProgress.Owns(r.ID)) + "/" + Mixing.Results.Length;
-            coins.text = GameSaveManager.Instance.Data.chemCoins.ToString();
-            pairText.text = string.Join(" + ", picked.Select(p => Mixing.Get(p).Name));
-            mixButton.interactable = picked.Count == 2 && guess != null;
+            int found = Mixing.Results.Count(r => LabProgress.Owns(r.ID));
+            NextGlow.Progress(book, "წიგნი " + found + "/" + Mixing.Results.Length, found, Mixing.Results.Length);
+            // The beaker's two slots: "? + ?" fills in as jars are picked.
+            pairText.text = (picked.Count > 0 ? Mixing.Get(picked[0]).Name : "?") + "  +  " + (picked.Count > 1 ? Mixing.Get(picked[1]).Name : "?");
+            // The big button and the gold ring both say what comes next: jars, then a guess, then mix.
+            bool ready = picked.Count == 2 && guess != null;
+            mixButton.interactable = ready;
+            mixButton.GetComponentInChildren<TMP_Text>().text = picked.Count < 2 ? "აირჩიე 2 ქილა" : guess == null ? "რა მოხდება? გამოიცანი" : "შეურიე!";
+            next.Target = picked.Count < 2 ? (RectTransform)shelf : guess == null ? (RectTransform)guesses : (RectTransform)mixButton.transform;
         }
 
         /// <summary>One jar on the shelf: its colour in a glass, the name and how many are left (or the price).</summary>
@@ -199,40 +203,40 @@ namespace ChemistryGame
         {
             string id = r.ID;
             bool selected = picked.Contains(id), locked = Teaching && !FirstPair.Contains(id);
-            var tile = LabUI.Button(shelf, "", () => Pick(id), 86);
+            var tile = LabUI.Button(shelf, "", () => Pick(id), 100);
             tile.GetComponent<Image>().color = selected ? LabUI.Mint : locked ? new Color32(205, 205, 196, 255) : LabUI.Paper;
             spots[id] = (RectTransform)tile.transform;
             var liquid = LabUI.Object(tile.transform, "სითხე", typeof(Image)).GetComponent<Image>();
             liquid.sprite = Glass(true); liquid.color = r.Color; liquid.raycastTarget = false;
-            Place(liquid.rectTransform, new Vector2(0.5f, 1), new Vector2(0, -26), new Vector2(30, 36));
+            Place(liquid.rectTransform, new Vector2(0.5f, 1), new Vector2(0, -30), new Vector2(38, 46));
             var glass = LabUI.Object(tile.transform, "მინა", typeof(Image)).GetComponent<Image>();
             glass.sprite = Glass(false); glass.raycastTarget = false;
-            Place(glass.rectTransform, new Vector2(0.5f, 1), new Vector2(0, -26), new Vector2(30, 36));
+            Place(glass.rectTransform, new Vector2(0.5f, 1), new Vector2(0, -30), new Vector2(38, 46));
             var label = tile.GetComponentInChildren<TMP_Text>();
             label.text = r.Name; label.color = LabUI.Ink; label.fontStyle = FontStyles.Bold;
-            label.fontSizeMin = 9; label.fontSizeMax = 12; label.alignment = TextAlignmentOptions.Bottom;
-            label.rectTransform.offsetMin = new Vector2(4, 11); label.rectTransform.offsetMax = new Vector2(-4, -44);
+            label.fontSizeMin = 11; label.fontSizeMax = 15; label.alignment = TextAlignmentOptions.Bottom;
+            label.rectTransform.offsetMin = new Vector2(4, 11); label.rectTransform.offsetMax = new Vector2(-4, -54);
             int stock = Mixing.Stock(id);
             var material = LabProgress.Material(id);
             string badgeText = Mixing.Free(id) ? "∞" : stock > 0 ? "×" + stock : material != null && material.Price > 0 ? material.Price.ToString() : "სათბ.";
             var badge = LabUI.Panel(tile.transform, "რაოდენობა", stock > 0 ? LabUI.Navy : LabUI.Coral);
-            Place(badge.rectTransform, Vector2.one, new Vector2(-18, -14), new Vector2(34, 22));
+            Place(badge.rectTransform, Vector2.one, new Vector2(-22, -16), new Vector2(42, 26));
             var count = LabUI.Text(badge.transform, badgeText, 12, Color.white); count.alignment = TextAlignmentOptions.Center; count.fontStyle = FontStyles.Bold;
-            count.enableAutoSizing = true; count.fontSizeMin = 8; count.fontSizeMax = 12;
+            count.enableAutoSizing = true; count.fontSizeMin = 10; count.fontSizeMax = 15;
             LabUI.Fill(count.rectTransform, 2);
         }
 
         private void GuessTile(MixSign sign)
         {
-            var tile = LabUI.Button(guesses, "", () => Guess(sign), 68);
+            var tile = LabUI.Button(guesses, "", () => Guess(sign), 88);
             tile.GetComponent<Image>().color = guess == sign ? LabUI.Green : LabUI.Paper;
             var icon = LabUI.Object(tile.transform, "ნიშანი", typeof(Image)).GetComponent<Image>();
             icon.sprite = SignSprite(sign); icon.preserveAspect = true; icon.raycastTarget = false;
-            Place(icon.rectTransform, new Vector2(0, 0.5f), new Vector2(32, 4), new Vector2(38, 38));
+            Place(icon.rectTransform, new Vector2(0, 0.5f), new Vector2(36, 4), new Vector2(46, 46));
             var label = tile.GetComponentInChildren<TMP_Text>();
             label.text = Mixing.SignNames[(int)sign]; label.color = guess == sign ? Color.white : LabUI.Ink;
-            label.alignment = TextAlignmentOptions.Left; label.fontSizeMin = 11; label.fontSizeMax = 16;
-            label.rectTransform.offsetMin = new Vector2(58, 12);
+            label.alignment = TextAlignmentOptions.Left; label.fontSizeMin = 13; label.fontSizeMax = 19;
+            label.rectTransform.offsetMin = new Vector2(68, 12);
         }
 
         private static void Place(RectTransform rect, Vector2 anchor, Vector2 position, Vector2 size)
@@ -348,7 +352,7 @@ namespace ChemistryGame
         private static Sprite Disc => disc ??= PixelArt.Make(32, 32, (x, y) => Vector2.Distance(new Vector2(x, y), new Vector2(15.5f, 15.5f)) < 15.5f ? Color.white : Color.clear);
 
         /// <summary>A small jar: <paramref name="liquid"/> is the white fill to tint, otherwise the glass outline and shine.</summary>
-        private static Sprite Glass(bool liquid)
+        public static Sprite Glass(bool liquid)
         {
             if (liquid && fill != null) return fill;
             if (!liquid && glass != null) return glass;

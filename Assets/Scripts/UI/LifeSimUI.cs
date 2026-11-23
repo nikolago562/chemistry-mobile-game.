@@ -117,7 +117,7 @@ namespace ChemistryGame
                     Button(actions.transform, "ცდის დაწყება", () =>
                     {
                         if (!game.Personal.Inside) { status.text = "ცდა შენს პირად ლაბორატორიაში ჩაატარე: ზედა კარი კლასში."; status.color = LabUI.Coral; return; }
-                        window.Close(); game.Games.Open(current.Target, p.ID);
+                        window.Close(); game.Lessons.Tables.Open(LabKits.For(current.Target), p.ID);
                     });
                     break;
                 case StageKind.Observe:
@@ -236,8 +236,8 @@ namespace ChemistryGame
             for (int i = 0; i < categories.Length; i++)
                 Ui.Line(content, categories[i] + ": " + LabProgress.Stars(LabProgress.MasteryLevel("category:" + (ReactionCategory)i)), 15, LabUI.Ink, 22);
             Ui.Line(content, "აღჭურვილობის ოსტატობა", 18, LabUI.Ink, 28, true);
-            foreach (var id in ExperimentGamesUI.GameIDs)
-                Ui.Line(content, ExperimentGamesUI.Title(id) + ": " + LabProgress.Stars(LabProgress.MasteryLevel("equipment:" + id)), 15, LabUI.Ink, 22);
+            foreach (var kit in LabKits.All)
+                Ui.Line(content, kit.Title + ": " + LabProgress.Stars(LabProgress.MasteryLevel("equipment:" + kit.ID)), 15, LabUI.Ink, 22);
             Ui.Line(content, "მეგობრობა", 18, LabUI.Ink, 28, true);
             foreach (var c in Classmates.All)
             {

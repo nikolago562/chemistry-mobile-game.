@@ -17,8 +17,10 @@ namespace ChemistryGame
         private RectTransform root, ring, arrow, bubble;
         private TMP_Text caption;
         private Vector3? start;
-        private bool moved;
+        private bool moved, taught;
+        private float goalUntil;
         private static Sprite ringSprite, arrowSprite;
+        private readonly Vector3[] corners = new Vector3[4];
 
         public string Caption => root != null && root.gameObject.activeSelf ? caption.text : "";
 
@@ -38,6 +40,7 @@ namespace ChemistryGame
             root = self;
             LabUI.Fill(root);
             ring = Image("რგოლი", RingSprite, LabUI.Gold);
+            var frame = ring.GetComponent<Image>(); frame.type = UnityEngine.UI.Image.Type.Sliced; frame.pixelsPerUnitMultiplier = 1 / LabUI.PixelScale;
             arrow = Image("ისარი", ArrowSprite, Color.white);
             arrow.sizeDelta = new Vector2(44, 48);
             var panel = LabUI.Panel(root, "მინიშნება", LabUI.Navy);
@@ -70,6 +73,15 @@ namespace ChemistryGame
                 return (null, "მიჰყევი ყვითელ ისრებს — კარადაში ხალათი გელოდება");
             }
             var bench = game.Lessons.Bench;
+            if (!MixBenchUI.Teaching)
+            {
+                if (LabUI.AnyOpen) return (null, null);
+                if (goalUntil == 0) goalUntil = Time.unscaledTime + 5;
+                if (Time.unscaledTime < goalUntil) return (game.HUD.Tracker, "აქ ყოველთვის ჩანს, რა გააკეთო შემდეგ");
+                if (Time.unscaledTime < goalUntil + 20) return (null, "მასწავლებელს დაელაპარაკე — ის სხვა მაგიდებსაც გაგაცნობს");
+                Destroy(gameObject);
+                return (null, null);
+            }
             if (!bench.IsOpen)
             {
                 if (LabUI.AnyOpen) return (null, null);
@@ -84,7 +96,10 @@ namespace ChemistryGame
 
         private void LateUpdate()
         {
-            if (!MixBenchUI.Teaching && GameSaveManager.Instance.Data.starterCoatCollected) { Destroy(gameObject); return; }
+            var data = GameSaveManager.Instance.Data;
+            if (MixBenchUI.Teaching) taught = true;
+            // Once the first mix is done: show where the goal lives, then send the player to the teacher.
+            else if (data.starterCoatCollected && (!taught || game.Dialogue.IsOpen)) { Destroy(gameObject); return; }
             if (start == null && game.player != null) start = game.player.transform.position;
             if (!moved && start is Vector3 from && Vector3.Distance(from, game.player.transform.position) > 1.2f) moved = true;
             var (target, text) = Step();
@@ -103,11 +118,11 @@ namespace ChemistryGame
                 bubble.anchoredPosition = new Vector2(0, 120);
                 return;
             }
-            float scale = target.lossyScale.x / root.lossyScale.x;
-            Vector2 size = target.rect.size * scale;
-            Vector3 centre = target.TransformPoint(target.rect.center);
+            target.GetWorldCorners(corners);
+            Vector3 centre = (corners[0] + corners[2]) / 2;
+            Vector2 size = (corners[2] - corners[0]) / root.lossyScale.x;
             ring.position = centre;
-            ring.sizeDelta = Vector2.one * (Mathf.Max(size.x, size.y) + 26) * (1 + 0.06f * Mathf.Sin(t * 6));
+            ring.sizeDelta = (size + Vector2.one * 22) * (1 + 0.04f * Mathf.Sin(t * 6));
             // The arrow and caption go above the target, or below it when it is near the top.
             Vector2 local = root.InverseTransformPoint(centre);
             bool below = local.y > root.rect.height * 0.25f;
@@ -122,11 +137,24 @@ namespace ChemistryGame
             bubble.anchoredPosition = new Vector2(Mathf.Clamp(pos.x, -halfW, halfW), Mathf.Clamp(pos.y, -halfH, halfH));
         }
 
-        private static Sprite RingSprite => ringSprite ??= PixelArt.Make(32, 32, (x, y) =>
+        /// <summary>A hollow pixel frame (9-sliced) that hugs any target, round button or wide card.</summary>
+        private static Sprite RingSprite
         {
-            float d = Vector2.Distance(new Vector2(x, y), new Vector2(15.5f, 15.5f));
-            return d < 15.5f && d > 13 ? Color.white : Color.clear;
-        });
+            get
+            {
+                if (ringSprite != null) return ringSprite;
+                var texture = new Texture2D(12, 12, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point };
+                for (int y = 0; y < 12; y++)
+                for (int x = 0; x < 12; x++)
+                {
+                    bool corner = (x < 2 || x > 9) && (y < 2 || y > 9) && !((x == 1 || x == 10) && (y == 1 || y == 10));
+                    bool band = x < 3 || x > 8 || y < 3 || y > 8;
+                    texture.SetPixel(x, y, band && !corner ? Color.white : Color.clear);
+                }
+                texture.Apply();
+                return ringSprite = Sprite.Create(texture, new Rect(0, 0, 12, 12), Vector2.one * 0.5f, 100, 0, SpriteMeshType.FullRect, Vector4.one * 4);
+            }
+        }
 
         /// <summary>A chunky gold arrow pointing down, with a dark rim.</summary>
         private static Sprite ArrowSprite => arrowSprite ??= PixelArt.Make(11, 12, (x, y) =>

@@ -69,7 +69,16 @@ namespace ChemistryGame
         }
         /// <summary>Each sprite pixel covers this many UI units, so frames read as chunky pixel art.</summary>
         public const float PixelScale = 2;
-        private static Sprite frame, chunky;
+        private static Sprite frame, chunky, ring;
+
+        /// <summary>A hollow 4px ring with notched corners and a dark rim, for the "touch here next" glow.</summary>
+        public static Sprite Ring() => ring ??= Pixel9(10, 10, Vector4.one * 4, (x, y) =>
+        {
+            if ((x == 0 || x == 9) && (y == 0 || y == 9)) return -1;
+            if (x >= 4 && x <= 5 && y >= 4 && y <= 5) return -1;
+            bool rim = x == 0 || x == 9 || y == 0 || y == 9 || ((x == 3 || x == 6) && y >= 3 && y <= 6) || ((y == 3 || y == 6) && x >= 3 && x <= 6);
+            return rim ? 0.55f : 1;
+        });
 
         /// <summary>Builds a point-filtered 9-slice sprite from a pixel function (1 = full tint, lower = shade).</summary>
         private static Sprite Pixel9(int w, int h, Vector4 border, Func<int, int, float> shade)
@@ -155,6 +164,8 @@ namespace ChemistryGame
             rect.offsetMin = Vector2.one * padding;
             rect.offsetMax = Vector2.one * -padding;
         }
+        /// <summary>World prompts are written "[E] use"; on a phone the round action button replaces the key, so the label drops it.</summary>
+        public static string Prompt(string text) => text.Replace("[E] ", "");
         public static TMP_Text Text(Transform parent, string text, float size = 20, Color? color = null)
         {
             var label = Object(parent, "ტექსტი", typeof(TextMeshProUGUI)).GetComponent<TextMeshProUGUI>();
@@ -257,7 +268,7 @@ namespace ChemistryGame
             label.rectTransform.offsetMin = new Vector2(9, 12); // the lip takes the bottom 8 units
             Size(image.gameObject, height, -1, 1);
             image.gameObject.AddComponent<ButtonMotion>();
-            button.onClick.AddListener(() => { AudioManager.Instance?.Click(); pressed(); });
+            button.onClick.AddListener(() => { AudioManager.Instance?.Click(); Juice.Sparkle(image.transform, 5); pressed(); });
             return button;
         }
         public static Button Secondary(Transform parent, string text, Action pressed, float height = 42)

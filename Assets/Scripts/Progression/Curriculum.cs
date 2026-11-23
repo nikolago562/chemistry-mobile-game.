@@ -66,7 +66,6 @@ namespace ChemistryGame
         public const int LessonXP = 10, PerfectXP = 5, RepeatXP = 5;
         public static readonly string[] PathNames =
             { "ქიმიის დასაწყისი", "ატომები", "ელემენტები", "მოლეკულები", "ბმები", "რეაქციები", "ხსნარები", "მჟავები და ფუძეები", "რთული გამოწვევები" };
-        public static readonly string[] StepNames = { "ახსნა", "ჩვენება", "ვარჯიში მინიშნებით", "დამოუკიდებლად", "ტესტი", "ჯილდო" };
 
         public static readonly Chapter[] Chapters =
         {

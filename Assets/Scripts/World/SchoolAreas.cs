@@ -42,8 +42,8 @@ namespace ChemistryGame
         {
             focus.Near = near && Usable;
             bool allowed = focus.IsFocused && !LabUI.AnyOpen;
-            if (prompt.activeSelf != allowed) { prompt.SetActive(allowed); if (allowed) label.text = PromptText(); }
-            if (allowed && TouchControls.Interact) { Use?.Invoke(); if (prompt.activeSelf) label.text = PromptText(); }
+            if (prompt.activeSelf != allowed) { prompt.SetActive(allowed); if (allowed) label.text = LabUI.Prompt(PromptText()); }
+            if (allowed && TouchControls.Interact) { Use?.Invoke(); if (prompt.activeSelf) label.text = LabUI.Prompt(PromptText()); }
         }
         private void OnTriggerEnter2D(Collider2D other) { if (other.GetComponentInParent<PlayerController>() != null) near = true; }
         private void OnTriggerExit2D(Collider2D other) { if (other.GetComponentInParent<PlayerController>() != null) near = false; }

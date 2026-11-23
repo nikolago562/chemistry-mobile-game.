@@ -81,7 +81,6 @@ namespace ChemistryGame
         public bool IsEntranceCell(int column, int row) => row == Rows - 1 && (column == 1 || column == 2);
         public Transform Room { get; private set; }
         public LabWorkshopUI Workshop { get; private set; }
-        public LabActivitiesUI Activities { get; private set; }
         private LabGame game;
         private Vector2 returnPoint;
         private float travelAfter;
@@ -90,7 +89,6 @@ namespace ChemistryGame
         {
             game = lab;
             Workshop = gameObject.AddComponent<LabWorkshopUI>(); Workshop.Initialize(this);
-            Activities = gameObject.AddComponent<LabActivitiesUI>();
             // Repair invalid or duplicate placements from older/corrupt save files without charging the player.
             var data = GameSaveManager.Instance.Data;
             var ids = new HashSet<string>(); var cells = new HashSet<Vector2Int>();
@@ -349,7 +347,7 @@ namespace ChemistryGame
             go.transform.localPosition = point; go.transform.localScale = Vector3.one / 65;
             go.GetComponent<RectTransform>().sizeDelta = new Vector2(380, 75);
             go.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace; go.GetComponent<Canvas>().sortingOrder = 12;
-            var label = LabUI.Text(go.transform, text, 18, color); label.alignment = TMPro.TextAlignmentOptions.Center;
+            var label = LabUI.Text(go.transform, LabUI.Prompt(text), 18, color); label.alignment = TMPro.TextAlignmentOptions.Center;
             LabUI.WorldLabel(label, color); LabUI.Fill(label.rectTransform);
         }
     }
@@ -394,10 +392,9 @@ namespace ChemistryGame
             var game = lab.Game;
             if (item.Decor) { PersonalDecor.Use(game, item.ID); return; }
             var waiting = Waiting();
-            if (waiting != null) { game.Games.Open(ResearchProjects.Stage(waiting).Target, waiting.id); return; }
-            if (ExperimentGamesUI.IsGame(item.ID)) { game.Games.Open(item.ID); return; }
             LabProgress.CountStat("activity:any"); LabProgress.CountStat("activity:" + item.ID);
-            lab.Activities.Open(item.ID);
+            // Every lab table is a build-and-discover bench; a waiting research project rides along.
+            game.Lessons.Tables.Open(LabKits.For(waiting != null ? ResearchProjects.Stage(waiting).Target : item.ID), waiting?.id);
         }
         private void OnTriggerEnter2D(Collider2D other) { if (other.GetComponentInParent<PlayerController>() != null) near = true; }
         private void OnTriggerExit2D(Collider2D other) { if (other.GetComponentInParent<PlayerController>() != null) near = false; }

@@ -4,204 +4,291 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace ChemistryGame
 {
     /// <summary>
-    /// Beginner lessons (teach → demo → guided practice → free practice → small test → reward),
-    /// the learning map and the practice hubs of the classroom stations.
+    /// Lessons as a Duolingo-style deck of short, varied cards (pick, true/false, choice, mark-all,
+    /// drag-to-group, hands-on builder), the learning map and the practice hubs of the classroom stations.
     /// </summary>
     public sealed class CurriculumUI : MonoBehaviour
     {
-        public enum Step { Teach, Demo, Guided, Free, Test, Reward }
+        /// <summary>The exercise kinds a lesson mixes, so consecutive cards ask for different actions.</summary>
+        public enum Ex { Pick, TrueFalse, Choice, SelectAll, Drag, Build, Reward }
+
+        /// <summary>One exercise card in a lesson's deck.</summary>
+        private sealed class Card
+        {
+            public Ex Kind;
+            /// <summary>Sort items the card uses (Pick, TrueFalse, SelectAll, Drag).</summary>
+            public int[] Items = new int[0];
+            /// <summary>SelectAll: the group to mark. TrueFalse on an item: the group the statement claims.</summary>
+            public int Bin;
+            /// <summary>Question key (Choice, or TrueFalse on a question) and, for TrueFalse, the choice the statement claims.</summary>
+            public string Key;
+            public int Claim;
+            /// <summary>Build: index into the lesson's practices (1 = guided with live hints, 2 = free with a check).</summary>
+            public int Step;
+            public int[] Order;
+            public Card Copy() => (Card)MemberwiseClone();
+        }
+
+        /// <summary>Drag a card onto a group; a plain tap still works through the chip's button.</summary>
+        private sealed class DragChip : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+        {
+            public CurriculumUI Owner;
+            public int Item;
+            public void OnBeginDrag(PointerEventData e)
+            {
+                GetComponent<LayoutElement>().ignoreLayout = true;
+                transform.SetAsLastSibling();
+                transform.localScale = Vector3.one * 1.08f;
+            }
+            public void OnDrag(PointerEventData e) => transform.position = e.position; // overlay canvas: screen = world
+            public void OnEndDrag(PointerEventData e)
+            {
+                int bin = Owner.BinAt(e.position);
+                if (bin >= 0) Owner.Drop(Item, bin); else Owner.Refresh();
+            }
+        }
+
+        private static readonly Color Chosen = new Color32(206, 232, 246, 255), ChosenText = new Color32(40, 110, 160, 255), BinColor = new Color32(48, 78, 66, 255);
+        private static readonly string[] Praises = { "ყოჩაღ!", "ზუსტად!", "შესანიშნავია!", "ნამდვილი ქიმიკოსი ხარ!", "ასე გააგრძელე!", "ბრწყინვალეა!" };
+        private static readonly string[] Comforts = { "არაუშავს — ახლა უკვე იცი.", "კარგი ცდა! ეს ბოლოს კიდევ ერთხელ შეგხვდება.", "შეცდომებზე ვსწავლობთ." };
 
         private LabGame game;
         private LabWindow window, map, hub;
         private RectTransform stage;
-        private Transform controls;
-        private TMP_Text feedback;
-        private Button next;
-        private Coroutine demo;
+        private Transform controls, play;
+        private TMP_Text feedback, bubble, primaryLabel;
+        private Button primary;
         private Practice practice;
         private int[] values;
-        private bool practiceOnly, answered;
-        private int from, to, question, tries, lessonMistakes, xpAtStart;
+        private bool practiceOnly;
+        private int tries, lessonMistakes, answers, streak, xpAtStart, cardIndex, selected = -1, holding = -1;
         private float startedAt;
         private Image feedbackCard, progressFill;
-        private string[] keys = new string[0];
-        private readonly HashSet<int> sorted = new HashSet<int>();
-        private readonly Dictionary<int, int> misses = new Dictionary<int, int>();
+        private readonly List<Card> deck = new List<Card>();
+        private readonly HashSet<int> picked = new HashSet<int>();
         private readonly HashSet<string> wrong = new HashSet<string>();
-        private readonly List<Button> choiceButtons = new List<Button>();
+        private readonly List<RectTransform> bins = new List<RectTransform>();
         private static Sprite circle;
 
         public Lesson Lesson { get; private set; }
-        public Step Current { get; private set; }
+        public Ex Current { get; private set; }
         public bool IsOpen => window != null;
         public bool MapOpen => map != null;
         public bool HubOpen => hub != null;
+        /// <summary>The current card is answered (right or wrong) and the lesson can move on.</summary>
         public bool Solved { get; private set; }
+        public bool Correct { get; private set; }
         public string Feedback => feedback != null ? feedback.text : "";
-        public LessonQuestion Question => question < keys.Length ? Curriculum.Resolve(keys[question]).question : null;
+        public int Cards => deck.Count;
+        private Card Now => cardIndex < deck.Count ? deck[cardIndex] : null;
+        public int[] CardItems => Now?.Items ?? new int[0];
+        public int CardBin => Now?.Bin ?? -1;
+        public int CardClaim => Now?.Claim ?? -1;
+        public LessonQuestion Question => Now?.Key != null ? Curriculum.Resolve(Now.Key).question : null;
         public List<string> Rewards { get; private set; }
         private MixBenchUI bench;
         public MixBenchUI Bench => bench != null ? bench : bench = gameObject.AddComponent<MixBenchUI>();
+        private KitBenchUI tables;
+        /// <summary>The atom, molecule and pH tables share one build-and-discover window.</summary>
+        public KitBenchUI Tables { get { if (tables == null) { tables = gameObject.AddComponent<KitBenchUI>(); tables.Initialize(game); } return tables; } }
 
         public void Initialize(LabGame lab) => game = lab;
 
         // ================================================================== starting a lesson
 
-        /// <summary>The teacher explains the lesson in the dialogue box, then the workbook opens.</summary>
         public void Begin(Lesson lesson)
         {
             if (lesson == null) return;
             if (!Curriculum.Available(lesson)) { game.HUD.Notify(Curriculum.LockedText + " " + Curriculum.Requirement(lesson)); return; }
             if (map != null) map.Close();
             if (hub != null) hub.Close();
-            // Play first: the activity opens straight away; explanations come after the player has tried it.
             if (game.Dialogue.IsOpen) game.Dialogue.End();
             OpenWorkbook(lesson);
         }
 
-        /// <summary>Opens the hands-on part of a lesson. Station practice starts straight at the free exercise.</summary>
+        /// <summary>Opens a lesson's card deck. Station practice is a single hands-on card.</summary>
         public void OpenWorkbook(Lesson lesson, bool practiceOnlyMode = false)
         {
             if (lesson == null) return;
             if (window != null) window.Close();
             Lesson = lesson; practiceOnly = practiceOnlyMode && !lesson.IsReview;
-            sorted.Clear(); misses.Clear(); wrong.Clear(); Rewards = null;
-            lessonMistakes = 0; startedAt = Time.unscaledTime; xpAtStart = GameSaveManager.Instance.Data.totalXP;
-            var created = LabUI.Window(practiceOnly ? "ვარჯიში • " + lesson.Title : "თავი " + lesson.Chapter + " • " + Curriculum.Label(lesson), 1100, 680);
-            created.Closed = () => { if (window == created) { window = null; StopDemo(); } };
+            wrong.Clear(); Rewards = null;
+            lessonMistakes = answers = streak = 0; startedAt = Time.unscaledTime; xpAtStart = GameSaveManager.Instance.Data.totalXP;
+            var created = LabUI.Window(practiceOnly ? "ვარჯიში • " + lesson.Title : "თავი " + lesson.Chapter + " • " + Curriculum.Label(lesson), 1220, 710);
+            created.Closed = () => { if (window == created) { window = null; OpenChest(); } };
             window = created;
-            int n = lesson.Items.Length;
-            int guidedEnd = Mathf.Min(n, 2 + (n - 1) / 2);
-            if (practiceOnly) for (int i = 0; i < guidedEnd; i++) sorted.Add(i);
-            Go(practiceOnly ? Step.Free : lesson.IsReview ? Step.Test : Step.Demo);
+            Chest = null;
+            Deal();
+            cardIndex = 0;
+            Show();
         }
 
         public void Close() { if (window != null) window.Close(); }
 
-        private void Go(Step step)
+        /// <summary>Builds the deck from the lesson's data, alternating kinds so no two cards in a row feel alike.</summary>
+        private void Deal()
         {
-            StopDemo();
-            Current = step; Solved = false; practice = null; tries = 0;
-            foreach (Transform child in window.Body) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
-            choiceButtons.Clear();
-            if (step == Step.Test) { keys = Lesson.IsReview ? Curriculum.ReviewKeys(Lesson) : Lesson.Questions.Select((q, i) => Curriculum.Key(Lesson, i)).ToArray(); question = 0; answered = false; }
-            Header();
-            if (step == Step.Test) BuildQuestion();
-            else if (step == Step.Reward) BuildReward();
-            else BuildPractice();
+            deck.Clear();
+            var l = Lesson;
+            var keys = l.IsReview ? Curriculum.ReviewKeys(l) : Enumerable.Range(0, l.Questions.Length).Select(i => Curriculum.Key(l, i)).ToArray();
+            void Ask(int i, bool truth) { if (i < keys.Length) deck.Add(truth ? TruthCard(keys[i]) : new Card { Kind = Ex.Choice, Key = keys[i] }); }
+            if (l.IsReview) { for (int i = 0; i < keys.Length; i++) Ask(i, i % 2 == 1); return; }
+            if (l.Kind == PracticeKind.Sort)
+            {
+                var order = Enumerable.Range(0, l.Items.Length).OrderBy(_ => UnityEngine.Random.value).ToArray();
+                if (practiceOnly) { deck.Add(new Card { Kind = Ex.Drag, Items = order.Take(6).ToArray() }); return; }
+                int b = l.Items[order[1]].Bin;
+                deck.Add(new Card { Kind = Ex.Pick, Items = new[] { order[0] } });
+                deck.Add(new Card { Kind = Ex.TrueFalse, Items = new[] { order[1] }, Bin = UnityEngine.Random.value < 0.5f ? b : (b + UnityEngine.Random.Range(1, l.Bins.Length)) % l.Bins.Length });
+                Ask(0, false);
+                var marked = order.Skip(2).Take(6).ToArray();
+                if (marked.Length > 0) deck.Add(new Card { Kind = Ex.SelectAll, Items = marked, Bin = l.Items[marked[0]].Bin });
+                Ask(1, true);
+                deck.Add(new Card { Kind = Ex.Drag, Items = order.Skip(6).Concat(order).Distinct().Take(5).ToArray() });
+                Ask(2, false);
+                return;
+            }
+            int free = Mathf.Max(0, l.Steps.Length - 1), guided = Mathf.Min(1, free);
+            if (practiceOnly) { deck.Add(new Card { Kind = Ex.Build, Step = free }); return; }
+            deck.Add(new Card { Kind = Ex.Build, Step = guided });
+            Ask(0, true);
+            Ask(1, false);
+            if (free != guided) deck.Add(new Card { Kind = Ex.Build, Step = free });
+            Ask(2, false);
         }
 
-        private Step[] Steps => Lesson.IsReview ? new[] { Step.Teach, Step.Test, Step.Reward } : practiceOnly ? new[] { Step.Free } : new[] { Step.Demo, Step.Guided, Step.Free, Step.Reward };
-        /// <summary>How far through the lesson the player is, 0..1 (quiz questions count inside their step).</summary>
-        private float Progress(bool solved)
+        private static Card TruthCard(string key)
         {
-            var steps = Steps;
-            int index = Array.IndexOf(steps, Current);
-            float done = index + (solved ? 1 : 0);
-            if (Current == Step.Test && keys.Length > 0) done = index + (question + (answered ? 1f : 0f)) / keys.Length;
-            if (Current == Step.Reward) done = steps.Length;
-            return Mathf.Clamp01(done / steps.Length);
+            var q = Curriculum.Resolve(key).question;
+            return new Card { Kind = Ex.TrueFalse, Key = key, Claim = UnityEngine.Random.value < 0.5f ? 0 : UnityEngine.Random.Range(1, q.Choices.Length) };
         }
+
+        /// <summary>Lays out the current card: progress, teacher bubble, play area and the bottom check/continue bar.</summary>
+        private void Show()
+        {
+            Current = Now?.Kind ?? Ex.Reward;
+            Solved = Correct = false; practice = null; tries = 0; selected = holding = -1;
+            picked.Clear(); bins.Clear(); play = null; bubble = null;
+            foreach (Transform child in window.Body) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
+            if (Current == Ex.Reward) { BuildReward(); return; }
+            if (Current == Ex.Choice && Now.Order == null) Now.Order = Enumerable.Range(0, Question.Choices.Length).OrderBy(_ => UnityEngine.Random.value).ToArray();
+            Header();
+            if (Current == Ex.Build) BuildCard();
+            else
+            {
+                Teacher(Instruction());
+                var column = LabUI.Column(window.Body, "ვარჯიში", 12);
+                column.childAlignment = TextAnchor.UpperCenter;
+                LabUI.FlexibleHeight(column.gameObject);
+                play = column.transform;
+            }
+            Banner();
+            Say(Current == Ex.Build ? (Guided ? "შეცვალე რიცხვები — მინიშნებას მაშინვე დაინახავ." : "როცა მზად იქნები, დააჭირე „შემოწმებას“.")
+                : Current == Ex.Drag ? "ან შეეხე ბარათს, მერე — ჯგუფს." : "", LabUI.Ink);
+            Refresh();
+            StartCoroutine(Pop(play));
+        }
+
+        private float Progress => deck.Count == 0 ? 1 : Mathf.Clamp01((cardIndex + (Solved ? 1f : 0f)) / deck.Count);
 
         private void Header()
         {
             var row = LabUI.Row(window.Body, "გაკვეთილის პროგრესი", 14);
             LabUI.Size(row.gameObject, 30);
-            row.childAlignment = TextAnchor.MiddleLeft;
-            row.childForceExpandHeight = false;
-            var label = LabUI.Text(row.transform, Curriculum.StepNames[(int)Current], 16, LabUI.Green);
-            label.fontStyle = FontStyles.Bold; label.enableAutoSizing = true; label.fontSizeMin = 11; label.fontSizeMax = 16;
-            LabUI.Size(label.gameObject, 26, 200, 0);
-            progressFill = LabUI.Progress(row.transform, Progress(false), LabUI.Mint, 18);
-            LabUI.Size(progressFill.transform.parent.gameObject, 18, -1, 1);
+            progressFill = LabUI.Progress(row.transform, Progress, LabUI.Mint, 22);
+            LabUI.Size(progressFill.transform.parent.gameObject, 22, -1, 1);
+            if (streak >= 2) LabUI.Pill(row.transform, streak + " ზედიზედ!", new Color32(226, 150, 40, 255), 180).fontSize = 20;
         }
 
-        /// <summary>Slides the lesson bar forward instead of jumping.</summary>
-        private IEnumerator Grow(Image fill, float to)
+        /// <summary>The teacher's portrait with a speech bubble, like Duolingo's characters.</summary>
+        private void Teacher(string text)
         {
-            float from = fill.rectTransform.anchorMax.x;
-            for (float t = 0; t < 0.35f && fill != null; t += Time.unscaledDeltaTime)
+            var row = LabUI.Row(window.Body, "მასწავლებელი", 14);
+            LabUI.Size(row.gameObject, 104);
+            var frame = LabUI.Panel(row.transform, "პორტრეტი", LabUI.Green);
+            LabUI.Size(frame.gameObject, 100, 100, 0);
+            var art = LabUI.Object(frame.transform, "სახე", typeof(Image)).GetComponent<Image>();
+            var theme = LabUI.Theme;
+            art.sprite = theme != null && theme.teacherPortrait != null ? theme.teacherPortrait : LabIcons.Get(LabIcon.Atom);
+            if (theme != null && theme.teacherPortrait != null && theme.teacherPortraitMaterial != null) art.material = theme.teacherPortraitMaterial;
+            art.preserveAspect = true; art.raycastTarget = false;
+            LabUI.Fill(art.rectTransform, 6);
+            var cloud = LabUI.Panel(row.transform, "ბუშტი", Color.white);
+            LabUI.Size(cloud.gameObject, 100, -1, 1);
+            bubble = LabUI.Text(cloud.transform, text, 24, LabUI.Ink);
+            LabUI.Fill(bubble.rectTransform, 14);
+            bubble.alignment = TextAlignmentOptions.MidlineLeft;
+            bubble.enableAutoSizing = true; bubble.fontSizeMin = 17; bubble.fontSizeMax = 24;
+        }
+
+        private string Instruction()
+        {
+            // The lesson's key facts arrive one per card at the start, next to the task they help with.
+            string lead = !Lesson.IsReview && !practiceOnly && cardIndex < Lesson.Teach.Length ? Lesson.Teach[cardIndex] + "\n" : "";
+            string ask = Current switch
             {
-                fill.rectTransform.anchorMax = new Vector2(Mathf.Lerp(from, to, Mathf.SmoothStep(0, 1, t / 0.35f)), 1);
-                yield return null;
-            }
-            if (fill != null) fill.rectTransform.anchorMax = new Vector2(to, 1);
+                Ex.Pick => "რომელ ჯგუფს ეკუთვნის?",
+                Ex.TrueFalse => "მართალია თუ მცდარი?",
+                Ex.Choice => "აირჩიე სწორი პასუხი.",
+                Ex.SelectAll => "მონიშნე ყველაფერი ჯგუფიდან „" + Lesson.Bins[Now.Bin] + "“.",
+                Ex.Drag => "გადაათრიე თითოეული ბარათი თავის ჯგუფში.",
+                _ => "",
+            };
+            return lead + "<b>" + ask + "</b>";
         }
 
-        /// <summary>The bottom banner: feedback on the left, the continue button on the right.</summary>
-        private void Banner(string text, string nextLabel)
+        /// <summary>The bottom bar: feedback on the left, one big check/continue button on the right.</summary>
+        private void Banner()
         {
-            feedbackCard = LabUI.Card(window.Body, "შედეგი", LabUI.Soft, 10);
-            LabUI.Size(feedbackCard.gameObject, 92);
-            var row = LabUI.Row(feedbackCard.transform, "ბანერი", 14);
-            row.childAlignment = TextAnchor.MiddleLeft;
+            feedbackCard = LabUI.Card(window.Body, "შედეგი", LabUI.Soft, 12);
+            LabUI.Size(feedbackCard.gameObject, 104);
+            var row = LabUI.Row(feedbackCard.transform, "ბანერი", 16);
             LabUI.FlexibleHeight(row.gameObject);
-            feedback = LabUI.Text(row.transform, text, 17, LabUI.Ink);
-            feedback.enableAutoSizing = true; feedback.fontSizeMin = 12; feedback.fontSizeMax = 17;
-            LabUI.Size(feedback.gameObject, 70, -1, 1);
-            next = LabUI.Button(row.transform, nextLabel, () => Advance(), 54);
-            LabUI.Size(next.gameObject, 54, 230, 0);
+            feedback = LabUI.Text(row.transform, "", 22, LabUI.Ink);
+            feedback.enableAutoSizing = true; feedback.fontSizeMin = 15; feedback.fontSizeMax = 22;
+            LabUI.Size(feedback.gameObject, 78, -1, 1);
+            primary = LabUI.Button(row.transform, "შემოწმება", Primary, 72);
+            LabUI.Size(primary.gameObject, 72, 300, 0);
+            primaryLabel = Big(primary, 26);
         }
 
-        // ================================================================== practice
-
-        private void BuildPractice()
+        private static TMP_Text Big(Button button, float size)
         {
-            bool sort = Lesson.Kind == PracticeKind.Sort;
-            int stepIndex = Current == Step.Demo ? 0 : Current == Step.Guided ? 1 : 2;
-            int n = Lesson.Items.Length, guidedEnd = Mathf.Min(n, 2 + (n - 1) / 2);
-            from = stepIndex == 0 ? 0 : stepIndex == 1 ? 2 : guidedEnd;
-            to = stepIndex == 0 ? Mathf.Min(2, n) : stepIndex == 1 ? guidedEnd : n;
-            if (!sort) practice = Lesson.Steps[stepIndex];
-            string goal = sort
-                ? (Current == Step.Demo ? "ნახე, როგორ დავალაგებ პირველ მაგალითებს." : Current == Step.Guided ? "დაალაგე შემდეგი მაგალითები. მინიშნება: " + Lesson.Hint : "ახლა დამოუკიდებლად დაალაგე დარჩენილი მაგალითები.")
-                : practice.Goal;
-            var goalText = LabUI.Text(window.Body, (Current == Step.Demo ? "მასწავლებელი აჩვენებს • " : Current == Step.Guided ? "ვარჯიში მინიშნებით • " : "დამოუკიდებელი ვარჯიში • ") + goal, 19, LabUI.Ink);
-            LabUI.Size(goalText.gameObject, 50);
-            goalText.enableAutoSizing = true; goalText.fontSizeMin = 13; goalText.fontSizeMax = 19;
+            var label = button.GetComponentInChildren<TMP_Text>();
+            label.fontSizeMax = size; label.fontSizeMin = Mathf.Round(size * 0.65f);
+            return label;
+        }
 
-            var split = LabUI.Row(window.Body, "ვარჯიში", 18);
-            LabUI.FlexibleHeight(split.gameObject);
-            split.childForceExpandHeight = true;
-            var panel = LabUI.Panel(split.transform, "სცენა", LabUI.Navy);
-            LabUI.Size(panel.gameObject, 280, 470, 0);
-            LabUI.FlexibleHeight(panel.gameObject);
-            panel.gameObject.AddComponent<RectMask2D>();
-            stage = panel.rectTransform;
-            var column = LabUI.Column(split.transform, "მართვა", 8);
-            LabUI.Size(column.gameObject, 280, -1, 1);
-            controls = column.transform;
+        private void Primary() { if (Solved) Advance(); else Check(); }
 
-            Banner("", Current == Step.Demo ? "გამოტოვება →" : "გაგრძელება →");
-
-            var footer = LabUI.Row(window.Body, "ქმედებები", 10);
-            LabUI.Size(LabUI.Secondary(footer.transform, "რა ხდება აქ?", () => Say(string.Join("\n", Lesson.Teach), LabUI.Ink), 42).gameObject, 42, 230, 0);
-            LabUI.Size(LabUI.Secondary(footer.transform, "რვეული [N]", () => game.Notebook.Open(1), 42).gameObject, 42, 160, 0);
-            if (Current == Step.Free && !sort) LabUI.Size(LabUI.Button(footer.transform, "შემოწმება", Check, 42).gameObject, 42, 180, 0);
-
-            if (sort)
-            {
-                if (Current == Step.Demo) demo = StartCoroutine(SortDemo());
-                else { next.interactable = false; Say(Current == Step.Guided ? "აირჩიე სწორი ჯგუფი ყოველი მაგალითისთვის." : "შეცდომის შემთხვევაში მინიშნებას მოგცემ.", LabUI.Ink); }
-                RefreshSort();
-            }
+        /// <summary>Redraws the play area after any change (selection, drop, counter, answer).</summary>
+        private void Refresh()
+        {
+            if (window == null || play == null) return;
+            if (Current == Ex.Build) { BuildCounters(); Draw(); }
             else
             {
-                values = (practice.Start ?? Min()).ToArray();
-                if (Current == Step.Demo) demo = StartCoroutine(BuildDemo());
-                else
+                foreach (Transform child in play) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
+                bins.Clear();
+                switch (Current)
                 {
-                    next.interactable = false;
-                    Say(Current == Step.Guided ? "შეცვალე რიცხვები. ყოველი ცვლილების შემდეგ მინიშნებას დაინახავ." : "როცა მზად იქნები, დააჭირე „შემოწმებას“.", LabUI.Ink);
+                    case Ex.Pick: ShowPick(); break;
+                    case Ex.TrueFalse: ShowTruth(); break;
+                    case Ex.Choice: ShowChoice(); break;
+                    case Ex.SelectAll: ShowMarks(); break;
+                    case Ex.Drag: ShowDrag(); break;
                 }
-                BuildCounters();
-                Draw();
             }
+            if (primary == null) return;
+            primary.interactable = Solved || Current == Ex.Choice && selected >= 0 || Current == Ex.SelectAll && picked.Count > 0 || Current == Ex.Build && !Guided;
+            primaryLabel.text = Solved ? "გაგრძელება →" : "შემოწმება";
+            primary.GetComponent<Image>().color = Solved && !Correct ? LabUI.Coral : LabUI.Green;
         }
 
         /// <summary>Gives a text line a fixed layout height and lets it shrink to fit.</summary>
@@ -230,156 +317,335 @@ namespace ChemistryGame
             }
             if (target != null) target.localScale = Vector3.one;
         }
-        private void MarkSolved(string text)
+        /// <summary>Slides the lesson bar forward instead of jumping.</summary>
+        private IEnumerator Grow(Image fill, float to)
         {
-            Solved = true;
-            Say(text, LabUI.Green);
-            if (next != null) { next.interactable = true; next.GetComponentInChildren<TMP_Text>().text = "გაგრძელება →"; }
-            if (progressFill != null) StartCoroutine(Grow(progressFill, Progress(true)));
-            AudioManager.Instance?.Correct();
+            float from = fill.rectTransform.anchorMax.x;
+            for (float t = 0; t < 0.35f && fill != null; t += Time.unscaledDeltaTime)
+            {
+                fill.rectTransform.anchorMax = new Vector2(Mathf.Lerp(from, to, Mathf.SmoothStep(0, 1, t / 0.35f)), 1);
+                yield return null;
+            }
+            if (fill != null) fill.rectTransform.anchorMax = new Vector2(to, 1);
         }
 
-        // Enter presses the continue button, like the big green button in Duolingo.
+        /// <summary>Settles the current card. Wrong pick/choice cards come back at the end of the deck, as in Duolingo.</summary>
+        private void Settle(bool right, string text)
+        {
+            Solved = true; Correct = right;
+            if (right) { answers++; streak++; AudioManager.Instance?.Correct(); }
+            else
+            {
+                lessonMistakes++; streak = 0; AudioManager.Instance?.Wrong();
+                if (Now.Key != null) wrong.Add(Now.Key);
+                if (Current != Ex.Build && Current != Ex.Drag) deck.Add(Now.Copy());
+            }
+            Say(text, right ? LabUI.Green : LabUI.Coral);
+            if (right) { Juice.Sparkle(feedbackCard.transform, 14); if (streak >= 3) Juice.Confetti(feedbackCard.transform, 2, 220); }
+            else if (play != null) play.gameObject.AddComponent<Wobble>();
+            if (bubble != null)
+                bubble.text = right ? (streak >= 3 ? "<b>" + streak + " ზედიზედ!</b> " : "") + Praises[UnityEngine.Random.Range(0, Praises.Length)]
+                    : Comforts[UnityEngine.Random.Range(0, Comforts.Length)];
+            Refresh();
+            if (progressFill != null) StartCoroutine(Grow(progressFill, Progress));
+        }
+
+        // Enter presses the big bottom button, like Duolingo's.
         private void Update()
         {
-            if (window != null && next != null && next.interactable && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))) next.onClick.Invoke();
+            if (window != null && primary != null && primary.interactable && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))) primary.onClick.Invoke();
         }
+
+        /// <summary>Moves on once the current card is answered; after the last card comes the reward.</summary>
+        public bool Advance()
+        {
+            if (window == null) return false;
+            if (Current == Ex.Reward)
+            {
+                var upcoming = Curriculum.Next;
+                window.Close();
+                // The next activity starts here only if it lives at the same station; otherwise its station lights up.
+                if (upcoming == null) return true;
+                if (Curriculum.ChapterOf(upcoming).Station == Curriculum.ChapterOf(Lesson).Station) Begin(upcoming);
+                else game.HUD.Notify("ახალი ცდა გაიხსნა: " + Curriculum.ChapterOf(upcoming).StationName + "!");
+                return true;
+            }
+            if (!Solved) return false;
+            cardIndex++;
+            if (cardIndex >= deck.Count && practiceOnly)
+            {
+                GameSaveManager.Instance.AddXP(Curriculum.RepeatXP);
+                game.HUD.Notify("ყოჩაღ! ვარჯიში დასრულდა. +" + Curriculum.RepeatXP + " XP");
+                window.Close();
+                return true;
+            }
+            Show();
+            return true;
+        }
+
+        /// <summary>Choice and mark-all cards commit their selection; free builds are checked.</summary>
+        public void Check()
+        {
+            if (window == null || Solved) return;
+            switch (Current)
+            {
+                case Ex.Choice: if (selected >= 0) Answer(selected); break;
+                case Ex.SelectAll: if (picked.Count > 0) CommitMarks(); break;
+                case Ex.Build:
+                    if (Guided || practice == null) return;
+                    string problem = Problem();
+                    if (problem == null) Settle(true, Praise() + Built());
+                    else { tries++; lessonMistakes++; streak = 0; AudioManager.Instance?.Wrong(); Say("ჯერ არა. " + problem + "\nშეცვალე და კიდევ სცადე.", LabUI.Coral); }
+                    break;
+            }
+        }
+
+        // ------------------------------------------------------------ pick one group
+
+        private void ShowPick()
+        {
+            var item = Lesson.Items[Now.Items[0]];
+            BigCard(item.Label, 130, 46);
+            var row = LabUI.Row(play, "ჯგუფები", 16);
+            LabUI.Size(row.gameObject, 86);
+            for (int b = 0; b < Lesson.Bins.Length; b++)
+            {
+                int bin = b;
+                var button = LabUI.Button(row.transform, Lesson.Bins[b], () => Pick(bin), 86);
+                Big(button, 28);
+                if (Solved) button.GetComponent<Image>().color = b == item.Bin ? LabUI.Green : b == selected ? LabUI.Coral : LabUI.Muted;
+            }
+        }
+
+        public void Pick(int bin)
+        {
+            if (window == null || Current != Ex.Pick || Solved || bin < 0 || bin >= Lesson.Bins.Length) return;
+            var item = Lesson.Items[Now.Items[0]];
+            selected = bin;
+            Settle(bin == item.Bin, (bin == item.Bin ? "" : "„" + item.Label + "“ — " + Lesson.Bins[item.Bin] + ". ") + item.Why);
+        }
+
+        /// <summary>A big white card with one centred line, the thing the player is judging.</summary>
+        private void BigCard(string text, float height, float size)
+        {
+            var card = LabUI.Panel(play, "ბარათი", Color.white);
+            LabUI.Size(card.gameObject, height);
+            var label = LabUI.Text(card.transform, text, size, LabUI.Ink);
+            label.alignment = TextAlignmentOptions.Center; label.fontStyle = FontStyles.Bold;
+            label.enableAutoSizing = true; label.fontSizeMin = 20; label.fontSizeMax = size;
+            LabUI.Fill(label.rectTransform, 14);
+        }
+
+        // ------------------------------------------------------------ true or false
+
+        private bool StatementTrue => Now.Key == null ? Lesson.Items[Now.Items[0]].Bin == Now.Bin : Now.Claim == 0;
+        private string Statement()
+        {
+            if (Now.Key == null) return "„" + Lesson.Items[Now.Items[0]].Label + "“ — " + Lesson.Bins[Now.Bin];
+            var q = Question;
+            return "<size=80%>" + q.Prompt + "</size>\n" + q.Choices[Now.Claim];
+        }
+
+        private void ShowTruth()
+        {
+            BigCard(Statement(), 160, 34);
+            var row = LabUI.Row(play, "მართალია თუ მცდარი", 16);
+            LabUI.Size(row.gameObject, 86);
+            foreach (bool claim in new[] { true, false })
+            {
+                bool c = claim;
+                var button = LabUI.Button(row.transform, claim ? "მართალია" : "მცდარია", () => Truth(c), 86);
+                Big(button, 30);
+                var image = button.GetComponent<Image>();
+                image.color = claim ? LabUI.Green : LabUI.Coral;
+                if (Solved && (selected == 1) != claim) image.color = LabUI.Muted;
+            }
+        }
+
+        public void Truth(bool claim)
+        {
+            if (window == null || Current != Ex.TrueFalse || Solved) return;
+            selected = claim ? 1 : 0;
+            string why;
+            if (Now.Key == null)
+            {
+                var item = Lesson.Items[Now.Items[0]];
+                why = (StatementTrue ? "მართალია. " : "მცდარია: „" + item.Label + "“ — " + Lesson.Bins[item.Bin] + ". ") + item.Why;
+            }
+            else
+            {
+                var q = Question;
+                why = Now.Claim == 0 ? "მართალია. " + q.Why[0] : "მცდარია. " + q.Why[Now.Claim] + "\nსწორი პასუხი: „" + q.Choices[0] + "“.";
+            }
+            Settle(claim == StatementTrue, why);
+        }
+
+        // ------------------------------------------------------------ multiple choice
+
+        private void ShowChoice()
+        {
+            var q = Question;
+            var prompt = LabUI.Text(play, q.Prompt, 28, LabUI.Ink);
+            prompt.fontStyle = FontStyles.Bold; prompt.alignment = TextAlignmentOptions.Center;
+            prompt.enableAutoSizing = true; prompt.fontSizeMin = 19; prompt.fontSizeMax = 28;
+            LabUI.Size(prompt.gameObject, 66);
+            foreach (int index in Now.Order)
+            {
+                int i = index;
+                var button = LabUI.Secondary(play, q.Choices[i], () => Select(i), 60);
+                var label = Big(button, 24);
+                var image = button.GetComponent<Image>();
+                if (Solved && i == 0) { image.color = LabUI.Green; label.color = Color.white; }
+                else if (Solved && i == selected) { image.color = LabUI.Coral; label.color = Color.white; }
+                else if (i == selected) { image.color = Chosen; label.color = ChosenText; }
+            }
+        }
+
+        /// <summary>Highlights a choice; the bottom button then checks it.</summary>
+        public void Select(int choice)
+        {
+            if (window == null || Current != Ex.Choice || Solved || Question == null || choice < 0 || choice >= Question.Choices.Length) return;
+            selected = choice;
+            Refresh();
+        }
+
+        /// <summary>Answers the current choice card; <paramref name="choice"/> indexes the original choices (0 is right).</summary>
+        public void Answer(int choice)
+        {
+            var q = Question;
+            if (window == null || Current != Ex.Choice || Solved || q == null || choice < 0 || choice >= q.Choices.Length) return;
+            selected = choice;
+            Settle(choice == 0, choice == 0 ? q.Why[0] : "სწორი პასუხი: „" + q.Choices[0] + "“. " + q.Why[choice]);
+        }
+
+        // ------------------------------------------------------------ mark all of one group
+
+        private void ShowMarks()
+        {
+            var grid = LabUI.Object(play, "ბარათები", typeof(GridLayoutGroup)).GetComponent<GridLayoutGroup>();
+            grid.cellSize = new Vector2(370, 78); grid.spacing = new Vector2(14, 14);
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount; grid.constraintCount = 3;
+            grid.childAlignment = TextAnchor.UpperCenter;
+            foreach (int index in Now.Items)
+            {
+                int i = index;
+                bool belongs = Lesson.Items[i].Bin == Now.Bin, on = picked.Contains(i);
+                var button = LabUI.Secondary(grid.transform, Lesson.Items[i].Label, () => Toggle(i), 78);
+                var label = Big(button, 26);
+                var image = button.GetComponent<Image>();
+                if (Solved && (belongs || on)) { image.color = belongs && on ? LabUI.Green : belongs ? LabUI.Gold : LabUI.Coral; label.color = Color.white; }
+                else if (!Solved && on) { image.color = Chosen; label.color = ChosenText; }
+            }
+        }
+
+        public void Toggle(int item)
+        {
+            if (window == null || Current != Ex.SelectAll || Solved || !Now.Items.Contains(item)) return;
+            if (!picked.Remove(item)) picked.Add(item);
+            Refresh();
+        }
+
+        private void CommitMarks()
+        {
+            var lines = Now.Items.Where(i => picked.Contains(i) != (Lesson.Items[i].Bin == Now.Bin)).Select(i =>
+                (picked.Contains(i) ? "„" + Lesson.Items[i].Label + "“ — " + Lesson.Bins[Lesson.Items[i].Bin] + ". " : "გამოგრჩა: „" + Lesson.Items[i].Label + "“. ") + Lesson.Items[i].Why).ToList();
+            Settle(lines.Count == 0, lines.Count == 0 ? "ყველა იპოვე! " + Lesson.Items[Now.Items.First(i => Lesson.Items[i].Bin == Now.Bin)].Why : string.Join("\n", lines.Take(2)));
+        }
+
+        // ------------------------------------------------------------ drag into groups
+
+        private void ShowDrag()
+        {
+            var row = LabUI.Row(play, "ჯგუფები", 14);
+            LabUI.Size(row.gameObject, 176);
+            row.childForceExpandWidth = true; row.childForceExpandHeight = true;
+            for (int b = 0; b < Lesson.Bins.Length; b++)
+            {
+                int bin = b;
+                var placed = Now.Items.Where(i => picked.Contains(i) && Lesson.Items[i].Bin == b).Select(i => Lesson.Items[i].Label);
+                var box = LabUI.Button(row.transform, "", () => Drop(holding, bin), 176);
+                box.GetComponent<Image>().color = holding >= 0 ? new Color32(62, 112, 92, 255) : BinColor;
+                var label = Big(box, 24);
+                label.text = "<b><color=#EFC266>" + Lesson.Bins[b] + "</color></b>\n" + string.Join("  •  ", placed);
+                label.alignment = TextAlignmentOptions.Top;
+                bins.Add((RectTransform)box.transform);
+            }
+            var chips = LabUI.Row(play, "ბარათები", 12);
+            LabUI.Size(chips.gameObject, 78);
+            chips.childAlignment = TextAnchor.MiddleCenter;
+            foreach (int index in Now.Items.Where(i => !picked.Contains(i)))
+            {
+                int i = index;
+                var chip = LabUI.Secondary(chips.transform, Lesson.Items[i].Label, () => Hold(i), 74);
+                LabUI.Size(chip.gameObject, 74, 210, 0);
+                var label = Big(chip, 24);
+                if (i == holding) { chip.GetComponent<Image>().color = Chosen; label.color = ChosenText; }
+                var drag = chip.gameObject.AddComponent<DragChip>();
+                drag.Owner = this; drag.Item = i;
+            }
+        }
+
+        private void Hold(int item) { if (Current != Ex.Drag || Solved) return; holding = holding == item ? -1 : item; Refresh(); }
+        private int BinAt(Vector2 screen)
+        {
+            for (int b = 0; b < bins.Count; b++) if (bins[b] != null && RectTransformUtility.RectangleContainsScreenPoint(bins[b], screen, null)) return b;
+            return -1;
+        }
+
+        /// <summary>Places a card into a group; a wrong group bounces it back with the reason.</summary>
+        public void Drop(int item, int bin)
+        {
+            if (window == null || Current != Ex.Drag || Solved || !Now.Items.Contains(item) || picked.Contains(item) || bin < 0 || bin >= Lesson.Bins.Length) { Refresh(); return; }
+            holding = -1;
+            var entry = Lesson.Items[item];
+            if (bin != entry.Bin)
+            {
+                lessonMistakes++; streak = 0; AudioManager.Instance?.Wrong();
+                Say("„" + entry.Label + "“ — არა „" + Lesson.Bins[bin] + "“. " + entry.Why, LabUI.Coral);
+                Refresh();
+                return;
+            }
+            picked.Add(item);
+            if (bin < bins.Count) Juice.Sparkle(bins[bin], 12);
+            if (Now.Items.All(picked.Contains)) { Settle(true, "ყველა ბარათი თავის ადგილზეა! " + entry.Why); return; }
+            answers++; AudioManager.Instance?.Click();
+            Say("სწორია! " + entry.Why, LabUI.Green);
+            Refresh();
+        }
+
+        // ------------------------------------------------------------ hands-on builder
+
+        private bool Guided => Current == Ex.Build && Now != null && Now.Step == 1 && !practiceOnly;
+
+        private void BuildCard()
+        {
+            practice = Lesson.Steps[Now.Step];
+            values = (practice.Start ?? Min()).ToArray();
+            var split = LabUI.Row(window.Body, "ვარჯიში", 18);
+            LabUI.FlexibleHeight(split.gameObject);
+            split.childForceExpandHeight = true;
+            play = split.transform;
+            var panel = LabUI.Panel(split.transform, "სცენა", LabUI.Navy);
+            LabUI.Size(panel.gameObject, 300, 500, 1);
+            LabUI.FlexibleHeight(panel.gameObject);
+            panel.gameObject.AddComponent<RectMask2D>();
+            stage = panel.rectTransform;
+            var column = LabUI.Column(split.transform, "მართვა", 10);
+            LabUI.Size(column.gameObject, 300, 520, 0);
+            controls = column.transform;
+        }
+
         /// <summary>What the player built, in the teacher's words (open goals accept several answers).</summary>
-        private string Result() => practice.Named?.Invoke(values) ?? practice.Done;
+        private string Built() => practice.Named?.Invoke(values) ?? practice.Done;
 
         /// <summary>The teacher reacts to how the step was solved, not only that it was.</summary>
         private string Praise()
         {
             if (practice != null && values != null && !values.SequenceEqual(practice.Solution)) return "ესეც სწორი პასუხია! ";
-            if (Current == Step.Free && tries == 0) return "პირველივე ცდაზე! ";
+            if (!Guided && tries == 0) return "პირველივე ცდაზე! ";
             if (tries >= 2) return "არ დანებდი და მიაგენი — ასე მუშაობენ ნამდვილი ქიმიკოსები. ";
             if (tries == 1) return "ერთი შეცდომა და მაშინვე გაასწორე — ყოჩაღ! ";
             return "სწორია! ";
-        }
-
-        /// <summary>Moves to the next step when the current one allows it (the demo can always be skipped).</summary>
-        public bool Advance()
-        {
-            if (window == null) return false;
-            if (Current == Step.Demo && !Solved)
-            {
-                StopDemo();
-                if (Lesson.Kind == PracticeKind.Sort) for (int i = from; i < to; i++) sorted.Add(i);
-            }
-            else if ((Current == Step.Guided || Current == Step.Free) && !Solved) return false;
-            switch (Current)
-            {
-                case Step.Demo: Go(Step.Guided); break;
-                case Step.Guided: Go(Step.Free); break;
-                case Step.Free:
-                    if (practiceOnly) { GameSaveManager.Instance.AddXP(Curriculum.RepeatXP); game.HUD.Notify("ყოჩაღ! ვარჯიში დასრულდა. +" + Curriculum.RepeatXP + " XP"); window.Close(); }
-                    // Lessons end on what the player built; the quiz questions live on in chapter reviews.
-                    else { keys = new string[0]; Go(Step.Reward); }
-                    break;
-                case Step.Test:
-                    if (!answered) return false;
-                    question++;
-                    if (question < keys.Length) RebuildQuestion(); else Go(Step.Reward);
-                    break;
-                case Step.Reward:
-                    var upcoming = Curriculum.Next;
-                    window.Close();
-                    // The next activity starts here only if it lives at the same station; otherwise its station lights up.
-                    if (upcoming == null) break;
-                    var station = Curriculum.ChapterOf(upcoming).Station;
-                    if (station == Curriculum.ChapterOf(Lesson).Station) Begin(upcoming);
-                    else game.HUD.Notify("ახალი ცდა გაიხსნა: " + Curriculum.ChapterOf(upcoming).StationName + "!");
-                    break;
-            }
-            return true;
-        }
-
-        // ------------------------------------------------------------ sorting
-
-        private IEnumerator SortDemo()
-        {
-            Say("ყურადღებით დააკვირდი...", LabUI.Ink);
-            for (int i = from; i < to; i++)
-            {
-                yield return new WaitForSecondsRealtime(1.1f);
-                sorted.Add(i);
-                var item = Lesson.Items[i];
-                Say("„" + item.Label + "“ → " + Lesson.Bins[item.Bin] + ". " + item.Why, LabUI.Green);
-                RefreshSort();
-            }
-            yield return new WaitForSecondsRealtime(0.6f);
-            demo = null;
-            MarkSolved(Feedback + "\nახლა შენი ჯერია!");
-        }
-
-        /// <summary>Places an item (index into the lesson's items) into a group.</summary>
-        public void Sort(int item, int bin)
-        {
-            if (window == null || Lesson.Kind != PracticeKind.Sort || Current == Step.Demo || item < from || item >= to || sorted.Contains(item)) return;
-            var entry = Lesson.Items[item];
-            if (bin != entry.Bin)
-            {
-                misses[item] = misses.TryGetValue(item, out int m) ? m + 1 : 1;
-                tries++; lessonMistakes++;
-                AudioManager.Instance?.Wrong();
-                bool reveal = Current == Step.Guided || misses[item] > 1;
-                Say("„" + entry.Label + "“ — არა „" + Lesson.Bins[bin] + "“. " + (reveal ? entry.Why : "მინიშნება: " + Lesson.Hint) + "\nსცადე თავიდან.", LabUI.Coral);
-                return;
-            }
-            sorted.Add(item);
-            AudioManager.Instance?.Click();
-            Say("სწორია! " + entry.Why, LabUI.Green);
-            RefreshSort();
-            if (Enumerable.Range(from, to - from).All(sorted.Contains)) MarkSolved(Praise() + entry.Why + "\nყველა მაგალითი დალაგებულია!");
-        }
-
-        private void RefreshSort()
-        {
-            foreach (Transform child in stage) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
-            var bins = LabUI.Row(stage, "ჯგუფები", 8);
-            LabUI.Fill((RectTransform)bins.transform, 10);
-            bins.childForceExpandHeight = true; bins.childForceExpandWidth = true; bins.childAlignment = TextAnchor.UpperLeft;
-            for (int b = 0; b < Lesson.Bins.Length; b++)
-            {
-                var column = LabUI.Card(bins.transform, Lesson.Bins[b], new Color32(48, 78, 66, 255), 8);
-                LabUI.Size(column.gameObject, 200, -1, 1);
-                column.GetComponent<VerticalLayoutGroup>().childAlignment = TextAnchor.UpperCenter;
-                var title = LabUI.Text(column.transform, Lesson.Bins[b], 16, LabUI.Gold);
-                title.fontStyle = FontStyles.Bold; title.alignment = TextAlignmentOptions.Center;
-                title.enableAutoSizing = true; title.fontSizeMin = 11; title.fontSizeMax = 16;
-                LabUI.Size(title.gameObject, 26);
-                foreach (int i in sorted.Where(i => Lesson.Items[i].Bin == b).OrderBy(i => i))
-                {
-                    var chip = LabUI.Text(column.transform, Lesson.Items[i].Label, 14, LabUI.Paper);
-                    chip.alignment = TextAlignmentOptions.Center;
-                    chip.enableAutoSizing = true; chip.fontSizeMin = 10; chip.fontSizeMax = 14;
-                    LabUI.Size(chip.gameObject, 22);
-                }
-            }
-            foreach (Transform child in controls) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
-            for (int i = from; i < to; i++)
-            {
-                int item = i;
-                var entry = Lesson.Items[i];
-                var row = LabUI.Row(controls, entry.Label, 6);
-                LabUI.Size(row.gameObject, 44);
-                var label = LabUI.Text(row.transform, entry.Label, 16, sorted.Contains(i) ? LabUI.Green : LabUI.Ink);
-                label.enableAutoSizing = true; label.fontSizeMin = 11; label.fontSizeMax = 16;
-                LabUI.Size(label.gameObject, 44, -1, 1);
-                if (sorted.Contains(i))
-                {
-                    var done = LabUI.Text(row.transform, "→ " + Lesson.Bins[entry.Bin], 15, LabUI.Green);
-                    LabUI.Size(done.gameObject, 44, 170, 0);
-                    continue;
-                }
-                for (int b = 0; b < Lesson.Bins.Length; b++)
-                {
-                    int bin = b;
-                    var button = LabUI.Secondary(row.transform, Lesson.Bins[b], () => Sort(item, bin), 40);
-                    LabUI.Size(button.gameObject, 40, Lesson.Bins.Length > 2 ? 104 : 140, 0);
-                    button.interactable = Current != Step.Demo;
-                }
-            }
         }
 
         // ------------------------------------------------------------ counters
@@ -402,68 +668,39 @@ namespace ChemistryGame
         private void BuildCounters()
         {
             foreach (Transform child in controls) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
+            var goal = LabUI.Text(controls, practice.Goal, 24, LabUI.Ink);
+            goal.fontStyle = FontStyles.Bold;
+            goal.enableAutoSizing = true; goal.fontSizeMin = 17; goal.fontSizeMax = 24;
+            LabUI.Size(goal.gameObject, 110);
             var min = Min(); var max = Max();
+            float height = Mathf.Clamp(270f / Mathf.Max(1, values.Length), 48, 68);
             for (int i = 0; i < values.Length; i++)
             {
                 int index = i;
-                var row = LabUI.Row(controls, practice.Counters[i], 8);
-                LabUI.Size(row.gameObject, 44);
+                var row = LabUI.Row(controls, practice.Counters[i], 10);
+                LabUI.Size(row.gameObject, height);
                 bool fixedValue = min[i] == max[i];
-                var caption = LabUI.Text(row.transform, CounterName(i) + ": " + values[i] + (fixedValue ? "  (ფიქსირებული)" : ""), 18, LabUI.Ink);
-                caption.enableAutoSizing = true; caption.fontSizeMin = 12; caption.fontSizeMax = 18;
-                LabUI.Size(caption.gameObject, 44, -1, 1);
-                var minus = LabUI.Secondary(row.transform, "−", () => Adjust(index, -1), 42);
-                var plus = LabUI.Secondary(row.transform, "+", () => Adjust(index, 1), 42);
-                LabUI.Size(minus.gameObject, 42, 52, 0); LabUI.Size(plus.gameObject, 42, 52, 0);
-                minus.interactable = plus.interactable = Current != Step.Demo && !fixedValue;
+                var caption = LabUI.Text(row.transform, CounterName(i) + ": <b>" + values[i] + "</b>" + (fixedValue ? "  (ფიქსირებული)" : ""), 23, LabUI.Ink);
+                caption.enableAutoSizing = true; caption.fontSizeMin = 16; caption.fontSizeMax = 23;
+                LabUI.Size(caption.gameObject, height, -1, 1);
+                var minus = LabUI.Secondary(row.transform, "−", () => Adjust(index, -1), height);
+                var plus = LabUI.Secondary(row.transform, "+", () => Adjust(index, 1), height);
+                LabUI.Size(minus.gameObject, height, 76, 0); LabUI.Size(plus.gameObject, height, 76, 0);
+                Big(minus, 34); Big(plus, 34);
+                minus.interactable = plus.interactable = !fixedValue && !Solved;
             }
         }
 
-        /// <summary>Changes a counter by <paramref name="delta"/> within its limits.</summary>
+        /// <summary>Changes a counter by <paramref name="delta"/> within its limits; guided cards hint after every change.</summary>
         public void Adjust(int counter, int delta)
         {
-            if (window == null || practice == null || Current == Step.Demo || counter < 0 || counter >= values.Length || Solved && Current == Step.Free) return;
+            if (window == null || practice == null || Current != Ex.Build || Solved || counter < 0 || counter >= values.Length) return;
             values[counter] = Mathf.Clamp(values[counter] + delta, Min()[counter], Max()[counter]);
-            BuildCounters();
-            Draw();
-            if (Current != Step.Guided) { Say("როცა მზად იქნები, დააჭირე „შემოწმებას“.", LabUI.Ink); return; }
+            Refresh();
+            if (!Guided) { Say("როცა მზად იქნები, დააჭირე „შემოწმებას“.", LabUI.Ink); return; }
             string problem = Problem();
-            if (problem == null) MarkSolved(Praise() + Result());
+            if (problem == null) Settle(true, Praise() + Built());
             else Say("მინიშნება: " + problem, LabUI.Coral);
-        }
-
-        /// <summary>Free practice: checks the current answer and names what is still wrong.</summary>
-        public void Check()
-        {
-            if (window == null || practice == null || Current != Step.Free || Solved) return;
-            string problem = Problem();
-            if (problem == null) MarkSolved(Praise() + Result());
-            else { tries++; lessonMistakes++; AudioManager.Instance?.Wrong(); Say("ჯერ არა. " + problem + "\nშეცვალე და კიდევ სცადე.", LabUI.Coral); }
-        }
-
-        private IEnumerator BuildDemo()
-        {
-            Say("ყურადღებით დააკვირდი...", LabUI.Ink);
-            yield return new WaitForSecondsRealtime(0.6f);
-            while (true)
-            {
-                int i = 0;
-                while (i < values.Length && values[i] == practice.Solution[i]) i++;
-                if (i >= values.Length) break;
-                values[i] += Math.Sign(practice.Solution[i] - values[i]);
-                BuildCounters();
-                Draw();
-                yield return new WaitForSecondsRealtime(0.4f);
-            }
-            demo = null;
-            MarkSolved(practice.Done + "\nახლა შენი ჯერია!");
-        }
-
-        private void StopDemo()
-        {
-            if (demo != null) StopCoroutine(demo);
-            demo = null;
-            if (practice != null && Current == Step.Demo && values != null) { values = practice.Solution.ToArray(); if (controls != null) { BuildCounters(); Draw(); } }
         }
 
         /// <summary>Null when the exercise is solved, otherwise what was counted wrong.</summary>
@@ -724,7 +961,7 @@ namespace ChemistryGame
         private void DrawDrops()
         {
             double ph = DropsPH();
-            var tint = ExperimentGamesUI.Indicator((float)ph);
+            var tint = ChemistrySandbox.Indicator((float)ph);
             Label("pH ≈ " + ph.ToString("0.0") + " • " + PHName((int)Math.Round(ph)), new Vector2(0, 130), 21, LabUI.Gold);
             Shape("ჭიქა", new Vector2(0, 10), new Vector2(180, 170), new Color32(186, 204, 216, 255));
             Shape("ხსნარი", new Vector2(0, 0), new Vector2(164, 135), tint);
@@ -736,139 +973,157 @@ namespace ChemistryGame
         {
             int ph = values[0];
             Label("pH " + ph + " — " + PHName(ph), new Vector2(0, 110), 26, LabUI.Gold);
-            Shape("ნიმუში", new Vector2(0, 30), new Vector2(120, 90), ExperimentGamesUI.Indicator(ph));
+            Shape("ნიმუში", new Vector2(0, 30), new Vector2(120, 90), ChemistrySandbox.Indicator(ph));
             DrawStrip(-70, ph);
         }
 
         private void DrawStrip(float y, float ph)
         {
-            for (int i = 0; i <= 14; i++) Shape("pH ფერი", new Vector2(-196 + i * 28, y), new Vector2(26, 26), ExperimentGamesUI.Indicator(i));
+            for (int i = 0; i <= 14; i++) Shape("pH ფერი", new Vector2(-196 + i * 28, y), new Vector2(26, 26), ChemistrySandbox.Indicator(i));
             Shape("მაჩვენებელი", new Vector2(-196 + Mathf.Clamp(ph, 0, 14) * 28, y + 24), new Vector2(6, 18), Color.white);
             Label("0   მჟავა          7          ფუძე   14", new Vector2(0, y - 32), 15);
         }
 
-        // ================================================================== small test
-
-        private void BuildQuestion()
-        {
-            answered = false;
-            var q = Question;
-            var info = LabUI.Row(window.Body, "კითხვის ინფორმაცია", 10);
-            LabUI.Size(info.gameObject, 30);
-            LabUI.Pill(info.transform, (Lesson.IsReview ? "შემაჯამებელი ტესტი" : "პატარა ტესტი") + " • კითხვა " + (question + 1) + " / " + keys.Length, LabUI.Green);
-            LabUI.Pill(info.transform, "შეცდომა არაუშავს: აგიხსნი და თავიდან სცდი", new Color32(150, 156, 140, 255));
-            var panel = LabUI.Panel(window.Body, "კითხვა", LabUI.Navy);
-            LabUI.Size(panel.gameObject, 110);
-            var prompt = LabUI.Text(panel.transform, q.Prompt, 24, LabUI.Paper);
-            LabUI.Fill(prompt.rectTransform, 16);
-            prompt.alignment = TextAlignmentOptions.Center;
-            prompt.enableAutoSizing = true; prompt.fontSizeMin = 15; prompt.fontSizeMax = 24;
-            var order = Enumerable.Range(0, q.Choices.Length).OrderBy(_ => UnityEngine.Random.value).ToArray();
-            for (int k = 0; k < order.Length; k++)
-            {
-                int index = order[k];
-                var button = LabUI.Button(window.Body, (char)('ა' + k) + ")  " + q.Choices[index], () => Answer(index), 52);
-                button.GetComponent<Image>().color = new Color32(55, 91, 77, 255);
-                button.name = "პასუხი " + index;
-                choiceButtons.Add(button);
-            }
-            Banner("აირჩიე პასუხი. შეცდომის შემთხვევაში მოკლედ აგიხსნი, რატომაა ასე.", question + 1 < keys.Length ? "გაგრძელება →" : "დასრულება →");
-            var footer = LabUI.Row(window.Body, "ქმედებები", 10);
-            LabUI.Size(LabUI.Secondary(footer.transform, "მინიშნება", Hint, 42).gameObject, 42, 180, 0);
-            LabUI.Size(LabUI.Secondary(footer.transform, "რვეული [N]", () => game.Notebook.Open(1), 42).gameObject, 42, 160, 0);
-            next.interactable = false;
-        }
-
-        private void RebuildQuestion()
-        {
-            foreach (Transform child in window.Body) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
-            choiceButtons.Clear();
-            Header();
-            BuildQuestion();
-        }
-
-        public void Hint() { if (Question != null && !answered) Say("მინიშნება: " + Question.Hint, LabUI.Ink); }
-
-        /// <summary>Answers the current question; <paramref name="choice"/> indexes the original choices (0 is right).</summary>
-        public void Answer(int choice)
-        {
-            var q = Question;
-            if (window == null || Current != Step.Test || q == null || answered || choice < 0 || choice >= q.Choices.Length) return;
-            if (choice != 0)
-            {
-                wrong.Add(keys[question]);
-                lessonMistakes++;
-                AudioManager.Instance?.Wrong();
-                foreach (var b in choiceButtons) if (b.name == "პასუხი " + choice) b.interactable = false;
-                Say("ჯერ არა. " + q.Why[choice] + "\nმინიშნება: " + q.Hint + " სცადე სხვა პასუხი.", LabUI.Coral);
-                return;
-            }
-            answered = true;
-            foreach (var b in choiceButtons) b.interactable = false;
-            AudioManager.Instance?.Correct();
-            Say("სწორია! " + q.Why[0], LabUI.Green);
-            next.interactable = true;
-            if (progressFill != null) StartCoroutine(Grow(progressFill, Progress(false)));
-        }
-
         // ================================================================== reward
+
+        private string[] AskedKeys => deck.Where(c => c.Key != null).Select(c => c.Key).Distinct().ToArray();
+
+        /// <summary>The lesson chest: usually a few coins, sometimes a bench ingredient, rarely two precious jars.</summary>
+        public sealed class Loot { public string Material = null, Name = ""; public int Count, Coins; public bool Rare; public Color Color = Color.white; }
+        private static readonly string[] Common = { "vinegar", "soda", "salt", "sugar", "chalk", "yeast", "nail" };
+        private static readonly string[] Precious = { "cuso4", "peroxide", "hcl", "naoh", "zinc", "copper" };
+        public const float RareChance = 0.08f, IngredientChance = 0.25f;
+        public Loot Chest { get; private set; }
+        public bool ChestOpen { get; private set; }
+        private Image chestArt;
+        private TMP_Text chestLabel;
+        private RectTransform chestCard;
+
+        public static Loot Roll(float roll)
+        {
+            if (roll >= RareChance + IngredientChance) return new Loot { Coins = UnityEngine.Random.Range(3, 9) };
+            bool rare = roll < RareChance;
+            var pool = rare ? Precious : Common;
+            var reagent = Mixing.Get(pool[UnityEngine.Random.Range(0, pool.Length)]);
+            return new Loot { Material = reagent.ID, Name = reagent.Name, Color = reagent.Color, Rare = rare, Count = rare ? 2 : UnityEngine.Random.Range(1, 3), Coins = rare ? 10 : 0 };
+        }
+
+        /// <summary>Opens the chest and pays what is inside. Closing the window first pays it quietly.</summary>
+        public void OpenChest()
+        {
+            if (Chest == null || ChestOpen) return;
+            ChestOpen = true;
+            var save = GameSaveManager.Instance;
+            save.Data.chemCoins += Chest.Coins;
+            if (Chest.Material != null) LabProgress.Give(Chest.Material, Chest.Count);
+            save.Commit();
+            if (chestArt == null) return;
+            chestArt.sprite = Juice.Chest(true);
+            AudioManager.Instance?.Coin();
+            if (Chest.Rare) AudioManager.Instance?.Milestone();
+            Juice.Confetti(chestCard, Chest.Rare ? 8 : 3, Chest.Rare ? 420 : 160);
+            // The prize floats out of the chest: a jar for ingredients, a coin otherwise.
+            var prize = LabUI.Object(chestCard, "მონაპოვარი", typeof(RectTransform));
+            Place((RectTransform)prize.transform, new Vector2(0, 0.5f), new Vector2(230, 0), new Vector2(84, 96));
+            if (Chest.Material != null)
+            {
+                foreach (bool liquid in new[] { true, false })
+                {
+                    var part = LabUI.Object(prize.transform, "ქილა", typeof(Image)).GetComponent<Image>();
+                    part.sprite = MixBenchUI.Glass(liquid); part.color = liquid ? Chest.Color : Color.white; part.raycastTarget = false;
+                    LabUI.Fill(part.rectTransform);
+                }
+            }
+            else LabUI.Fill(LabUI.Icon(prize.transform, LabIcon.Coin, Color.white).rectTransform, 8);
+            StartCoroutine(Juice.PopIn(prize.transform, 0.05f));
+            chestLabel.rectTransform.offsetMin = new Vector2(300, 12);
+            chestLabel.text = Chest.Material == null ? "<size=120%><b>+" + Chest.Coins + " ქიმქოინი</b></size>\nბონუსი ყულაბაში!"
+                : (Chest.Rare ? "<color=#E29628><b>იშვიათი მონაპოვარი!</b></color>\n" : "<b>ახალი ინგრედიენტი!</b>\n") +
+                  Chest.Name + " ×" + Chest.Count + (Chest.Coins > 0 ? "  +  " + Chest.Coins + " ქიმქოინი" : "") + "\n<size=75%>შერევის მაგიდაზე გელოდება</size>";
+            StartCoroutine(Pop(chestCard));
+        }
 
         private void BuildReward()
         {
+            var keys = AskedKeys;
+            var save = GameSaveManager.Instance;
+            int coinsBefore = save.Data.chemCoins;
             Rewards = Curriculum.Finish(Lesson, keys, wrong, lessonMistakes == 0);
-            AudioManager.Instance?.Milestone(); AudioManager.Instance?.Coin();
-            int answers = Lesson.IsReview ? keys.Length : Lesson.Kind == PracticeKind.Sort ? Mathf.Max(1, Lesson.Items.Length - 2) : 2;
-            int seconds = Mathf.RoundToInt(Time.unscaledTime - startedAt);
-            var tiles = LabUI.Row(window.Body, "შედეგები", 16);
-            LabUI.Size(tiles.gameObject, 92);
-            Tile(tiles.transform, "სულ XP", "+" + (GameSaveManager.Instance.Data.totalXP - xpAtStart), LabUI.Gold);
-            Tile(tiles.transform, lessonMistakes == 0 ? "უშეცდომოდ!" : "სიზუსტე", answers * 100 / (answers + lessonMistakes) + "%", LabUI.Green);
-            Tile(tiles.transform, "დრო", seconds / 60 + ":" + (seconds % 60).ToString("00"), new Color32(70, 140, 200, 255));
-            int score = keys.Count(k => !wrong.Contains(k));
-            var title = LabUI.Text(window.Body, Lesson.IsReview ? "თავი „" + Curriculum.ChapterOf(Lesson).Title + "“ დასრულებულია!" : "გაკვეთილი დასრულებულია!", 30, LabUI.Green);
-            title.fontStyle = FontStyles.Bold; LabUI.Size(title.gameObject, 44);
-            var summary = LabUI.Text(window.Body, !Lesson.IsReview ? "შენ თავად გააკეთე! აი, რა აღმოაჩინე: " + Lesson.Teach[0]
-                : "პირველივე ცდით სწორი პასუხები: " + score + " / " + keys.Length +
-                (score < keys.Length ? "  •  შეცდომებს მასწავლებელი მოგვიანებით გაგიმეორებს." : "  •  უშეცდომოდ! ბრწყინვალეა."), 18, LabUI.Ink);
-            summary.enableAutoSizing = true; summary.fontSizeMin = 12; summary.fontSizeMax = 18;
-            LabUI.Size(summary.gameObject, 52);
-            var row = LabUI.Row(window.Body, "ჯილდო და ჩანაწერი", 16);
-            LabUI.FlexibleHeight(row.gameObject);
-            row.childForceExpandHeight = true;
-            var gifts = LabUI.Card(row.transform, "ჯილდოები", LabUI.Navy, 16);
-            LabUI.Size(gifts.gameObject, 200, 470, 0);
-            var giftsTitle = Fit(LabUI.Text(gifts.transform, "შენ მიიღე", 20, LabUI.Gold), 30); giftsTitle.fontStyle = FontStyles.Bold;
-            foreach (string reward in Rewards) Fit(LabUI.Text(gifts.transform, "• " + reward, 17, LabUI.Paper), 44);
-            var note = LabUI.Card(row.transform, "რვეული", LabUI.Soft, 16);
-            LabUI.Size(note.gameObject, 200, -1, 1);
-            var noteTitle = Fit(LabUI.Text(note.transform, Lesson.IsReview ? "რა ისწავლე ამ თავში" : "რვეულის ჩანაწერი", 20, LabUI.Green), 30); noteTitle.fontStyle = FontStyles.Bold;
-            Fit(LabUI.Text(note.transform, Lesson.IsReview ? string.Join("\n", Curriculum.Of(Lesson.Chapter).Where(l => !l.IsReview).Select(l => "• " + l.Title)) : Lesson.Note, 16, LabUI.Ink), 150);
-            var footer = LabUI.Row(window.Body, "ქმედებები", 10);
-            LabUI.Size(LabUI.Secondary(footer.transform, "სასწავლო რუკა [M]", () => { window.Close(); OpenMap(); }, 44).gameObject, 44, 220, 0);
-            LabUI.Size(LabUI.Secondary(footer.transform, "დახურვა", () => window.Close(), 44).gameObject, 44, 150, 0);
+            int coins = save.Data.chemCoins - coinsBefore, xp = save.Data.totalXP - xpAtStart;
+            Chest = Roll(UnityEngine.Random.value); ChestOpen = false;
+            AudioManager.Instance?.Milestone();
+            int seconds = Mathf.RoundToInt(Time.unscaledTime - startedAt), score = keys.Count(k => !wrong.Contains(k));
+            int accuracy = answers * 100 / Mathf.Max(1, answers + lessonMistakes);
+            string head = Lesson.IsReview ? "თავი „" + Curriculum.ChapterOf(Lesson).Title + "“ დასრულებულია!" : lessonMistakes == 0 ? "უშეცდომო გაკვეთილი!" : "გაკვეთილი დასრულებულია!";
+            Teacher("<size=125%><b><color=#E29628>" + head + "</color></b></size>\n" +
+                (Lesson.IsReview ? "პირველივე ცდით სწორი: " + score + " / " + keys.Length : Praises[UnityEngine.Random.Range(0, Praises.Length)] + " შენ თავად გააკეთე!"));
+
+            var tiles = LabUI.Row(window.Body, "შედეგები", 18);
+            LabUI.Size(tiles.gameObject, 150);
+            Prize(tiles.transform, LabIcon.Flame, "XP", "+", xp, "", new Color32(226, 150, 40, 255), 0.15f);
+            Prize(tiles.transform, LabIcon.Coin, "ქიმქოინი", "+", coins, "", new Color32(214, 166, 60, 255), 0.45f);
+            Prize(tiles.transform, LabIcon.Check, lessonMistakes == 0 ? "უშეცდომოდ!" : "სიზუსტე", "", accuracy, "%", LabUI.Green, 0.75f);
+
+            // The mystery chest: tap to open; it rocks until opened.
+            var chest = LabUI.Button(window.Body, "", OpenChest, 120);
+            chest.GetComponent<Image>().color = new Color32(255, 236, 190, 255);
+            chestCard = (RectTransform)chest.transform;
+            chestArt = LabUI.Object(chest.transform, "ზარდახშა", typeof(Image)).GetComponent<Image>();
+            chestArt.sprite = Juice.Chest(false); chestArt.preserveAspect = true; chestArt.raycastTarget = false;
+            Place(chestArt.rectTransform, new Vector2(0, 0.5f), new Vector2(110, 4), new Vector2(120, 104));
+            chestLabel = chest.GetComponentInChildren<TMP_Text>();
+            chestLabel.text = "<b>საჩუქრის ზარდახშა</b>\n<size=80%>შეეხე და გახსენი!</size>";
+            chestLabel.color = new Color32(122, 68, 36, 255); chestLabel.alignment = TextAlignmentOptions.Left;
+            chestLabel.fontSizeMax = 28; chestLabel.fontSizeMin = 16;
+            chestLabel.rectTransform.offsetMin = new Vector2(200, 12);
+            StartCoroutine(Juice.PopIn(chest.transform, 1.1f));
+            StartCoroutine(Juice.Jiggle(chestArt.transform, () => ChestOpen));
+
+            // Anything else (notebook page, elements, badges...) as short pills; XP and coins are on the tiles.
+            var extras = LabUI.Row(window.Body, "სხვა ჯილდოები", 10);
+            LabUI.Size(extras.gameObject, 40);
+            foreach (string reward in Rewards.Skip(2).Prepend("დრო " + seconds / 60 + ":" + (seconds % 60).ToString("00")))
+            {
+                var pill = LabUI.Pill(extras.transform, reward, LabUI.Navy);
+                LabUI.Size(pill.transform.parent.gameObject, 40, -1, 1);
+                pill.enableAutoSizing = true; pill.fontSizeMin = 12; pill.fontSizeMax = 18;
+            }
+
+            var footer = LabUI.Row(window.Body, "ქმედებები", 12);
+            LabUI.Size(footer.gameObject, 64);
+            Big(LabUI.Secondary(footer.transform, "სასწავლო რუკა", () => { window.Close(); OpenMap(); }, 64), 22);
+            Big(LabUI.Secondary(footer.transform, "დახურვა", () => window.Close(), 64), 22);
             var upcoming = Curriculum.Next;
-            next = LabUI.Button(footer.transform, upcoming != null ? "შემდეგი გაკვეთილი: " + upcoming.Title + " →" : "რთული გამოწვევები გაიხსნა! →", () =>
+            primary = LabUI.Button(footer.transform, upcoming != null ? "შემდეგი: " + upcoming.Title + " →" : "რთული გამოწვევები გაიხსნა! →", () =>
             {
                 if (upcoming != null) Advance();
                 else { window.Close(); game.HUD.Notify("რთული გამოწვევების მაგიდა კლასის ქვედა მარცხენა კუთხეშია."); }
-            }, 44);
+            }, 64);
+            LabUI.Size(primary.gameObject, 64, 520, 0);
+            primaryLabel = Big(primary, 24);
+            Juice.Confetti(window.Card, 6);
         }
 
-        /// <summary>A coloured tile with a title strip, like the end-of-lesson stats in Duolingo.</summary>
-        private static void Tile(Transform parent, string title, string value, Color color)
+        /// <summary>A big reward tile: an icon and a number that pops in and counts up.</summary>
+        private void Prize(Transform parent, LabIcon icon, string title, string prefix, int value, string suffix, Color color, float delay)
         {
             var tile = LabUI.Panel(parent, title, color);
-            LabUI.Size(tile.gameObject, 92, -1, 1);
-            var column = LabUI.Column(tile.transform, "შიგთავსი", 0);
-            LabUI.Fill((RectTransform)column.transform, 4);
-            var head = LabUI.Text(column.transform, title, 15, Color.white);
+            LabUI.Size(tile.gameObject, 150, -1, 1);
+            var head = LabUI.Text(tile.transform, title, 22, Color.white);
             head.alignment = TextAlignmentOptions.Center; head.fontStyle = FontStyles.Bold;
-            LabUI.Size(head.gameObject, 26);
-            var body = LabUI.Panel(column.transform, "მნიშვნელობა", Color.white);
-            LabUI.FlexibleHeight(body.gameObject);
-            var number = LabUI.Text(body.transform, value, 28, color);
+            head.rectTransform.anchorMin = new Vector2(0, 1); head.rectTransform.anchorMax = Vector2.one; head.rectTransform.pivot = new Vector2(0.5f, 1);
+            head.rectTransform.sizeDelta = new Vector2(0, 36); head.rectTransform.anchoredPosition = new Vector2(0, -2);
+            var body = LabUI.Panel(tile.transform, "მნიშვნელობა", Color.white);
+            body.rectTransform.anchorMin = Vector2.zero; body.rectTransform.anchorMax = Vector2.one;
+            body.rectTransform.offsetMin = new Vector2(6, 8); body.rectTransform.offsetMax = new Vector2(-6, -40);
+            var art = LabUI.Icon(body.transform, icon, Color.white);
+            Place(art.rectTransform, new Vector2(0, 0.5f), new Vector2(54, 0), new Vector2(72, 72));
+            var number = LabUI.Text(body.transform, prefix + value + suffix, 48, color);
             number.alignment = TextAlignmentOptions.Center; number.fontStyle = FontStyles.Bold;
             LabUI.Fill(number.rectTransform);
+            number.rectTransform.offsetMin = new Vector2(96, 0);
+            StartCoroutine(Juice.PopIn(tile.transform, delay));
+            StartCoroutine(Juice.CountUp(number, prefix, value, suffix, delay + 0.2f));
         }
 
         // ================================================================== learning map
@@ -907,7 +1162,7 @@ namespace ChemistryGame
             var now = LabUI.Card(left.transform, "მიმდინარე გაკვეთილი", LabUI.Navy, 14);
             var heading = Fit(LabUI.Text(now.transform, next != null ? "ახლა: " + Curriculum.Label(next) : "თეორიის გზა დასრულებულია!", 20, LabUI.Gold), 30);
             heading.fontStyle = FontStyles.Bold;
-            Fit(LabUI.Text(now.transform, next != null ? next.Why : "რთული გამოწვევები, კვირის რეიტინგი და სამეცნიერო ბაზრობა შენ გელოდება.", 15, LabUI.Paper), 62);
+            Fit(LabUI.Text(now.transform, next != null ? next.Why : "რთული გამოწვევები, კვირის რეიტინგი და სამეცნიერო ბაზრობა შენ გელოდება.", 18, LabUI.Paper), 80);
             Fit(LabUI.Text(now.transform, next != null ? "სად: " + Curriculum.ChapterOf(next).StationName : "რთული გამოწვევების მაგიდა კლასის ქვედა მარცხენა კუთხეშია.", 15, LabUI.Mint), 26);
             if (next != null) LabUI.Button(now.transform, "გაკვეთილის დაწყება →", () => Begin(next), 46);
             LabUI.Secondary(now.transform, "რვეული [N]", () => game.Notebook.Open(1), 40);
@@ -935,7 +1190,7 @@ namespace ChemistryGame
                 bool reached = Curriculum.Of(c).Any(l => Curriculum.Available(l));
                 var unit = LabUI.Panel(scroll, chapter.Title, reached ? color : Locked);
                 LabUI.Size(unit.gameObject, 64);
-                var unitText = LabUI.Text(unit.transform, "<b>თავი " + c + " • " + chapter.Title + "</b>\n<size=14>" + chapter.StationName + (Curriculum.ChapterDone(c) ? "  •  დასრულებულია" : "") + "</size>", 19, Color.white);
+                var unitText = LabUI.Text(unit.transform, "<b>თავი " + c + " • " + chapter.Title + "</b>\n<size=14>" + chapter.StationName + (Curriculum.ChapterDone(c) ? "  •  დასრულებულია" : "") + "</size>", 21, Color.white);
                 LabUI.Fill(unitText.rectTransform, 12);
                 var lessons = Curriculum.Of(c);
                 for (int j = 0; j < lessons.Length; j++)
@@ -978,9 +1233,10 @@ namespace ChemistryGame
             LabUI.Fill(icon.rectTransform, size * 0.24f);
             icon.raycastTarget = false;
             var title = LabUI.Text(column.transform, current ? "ახლა: " + lesson.Title : lesson.Title, 13, current ? new Color32(176, 120, 38, 255) : done ? LabUI.Ink : LabUI.Muted);
+            title.fontSize = 17;
             title.alignment = TextAlignmentOptions.Center;
             if (current) title.fontStyle = FontStyles.Bold;
-            title.enableAutoSizing = true; title.fontSizeMin = 10; title.fontSizeMax = 13;
+            title.enableAutoSizing = true; title.fontSizeMin = 13; title.fontSizeMax = 17;
             LabUI.Size(title.gameObject, 30, 240, 0);
             if (current) StartCoroutine(Pulse(circle.transform));
             return (RectTransform)circle.transform;
@@ -1010,61 +1266,87 @@ namespace ChemistryGame
 
         // ================================================================== station hubs
 
-        /// <summary>A classroom station: practice for its lessons and the matching lab model.</summary>
+        /// <summary>
+        /// A classroom table, styled like the mixing bench: big toy tiles on top (the hands-on model),
+        /// then the table's optional lessons as round-cornered tiles, one coloured block per chapter.
+        /// </summary>
         public void OpenStation(StationType type, string name)
         {
-            var first = Curriculum.StationLesson(type);
-            if (first == null) return;
-            if (!Curriculum.StationOpen(type)) { game.HUD.Notify(Curriculum.LockedText + " საჭიროა: „" + first.Title + "“."); return; }
+            if (Curriculum.StationLesson(type) == null) return;
             if (hub != null) hub.Close();
-            var created = LabUI.Window(name, 980, 620);
+            var created = LabUI.Window(name, 1180, 680);
             created.Closed = () => { if (hub == created) hub = null; };
             hub = created;
             var chapters = Curriculum.Chapters.Select((c, i) => (c, i: i + 1)).Where(p => p.c.Station == type).ToList();
-            var intro = LabUI.Text(hub.Body, "ამ მაგიდაზე ივარჯიშებ: " + string.Join(", ", chapters.Select(p => p.c.Title)) + ". ნასწავლი გაკვეთილები ნებისმიერ დროს გაიმეორე.", 17, LabUI.Muted);
-            LabUI.Size(intro.gameObject, 46);
+            Color tint = ChapterColors[chapters[0].i - 1];
+
+            var toys = LabUI.Row(hub.Body, "სათამაშოები", 12);
+            LabUI.Size(toys.gameObject, 112);
+            switch (type)
+            {
+                case StationType.AtomTable: Toy(toys.transform, Kits.Atoms.Title, "ააწყვე ატომები — ზედმეტი ნეიტრონი აფეთქდება!", LabIcon.Atom, tint, () => { hub.Close(); Tables.Open(Kits.Atoms); }); break;
+                case StationType.MoleculeTable: Toy(toys.transform, Kits.Molecules.Title, "შეაერთე ატომები ნამდვილ მოლეკულებად", LabIcon.Flask, tint, () => { hub.Close(); Tables.Open(Kits.Molecules); }); break;
+                case StationType.SolutionStation: Toy(toys.transform, Kits.Solutions.Title, "გახსენი, გაათბე, გამოზარდე კრისტალები", LabIcon.Flask, tint, () => { hub.Close(); Tables.Open(Kits.Solutions); }); break;
+                case StationType.AcidBaseStation: Toy(toys.transform, Kits.Potions.Title, "ექვსი ფერის ნაყენი წვეთებით", LabIcon.Flask, tint, () => { hub.Close(); Tables.Open(Kits.Potions); }); break;
+                case StationType.ElementStation: Toy(toys.transform, "პერიოდული ცხრილი", "იპოვე ყველა ელემენტი", LabIcon.Atom, tint, () => { hub.Close(); game.Periodic.Open(); }); break;
+            }
+            Toy(toys.transform, "სასწავლო გზა", "ყველა გაკვეთილი ერთ რუკაზე", LabIcon.Book, LabUI.Navy, () => { hub.Close(); OpenMap(); });
+
+            Ui.Line(hub.Body, "გაკვეთილები არჩევითია: შეეხე, თუ გაინტერესებს, რატომ ხდება ასე.", 17, LabUI.Muted, 26);
             var scroll = LabUI.Scroll(hub.Body);
             foreach (var (chapter, number) in chapters)
             {
-                var title = LabUI.Text(scroll, number + ". " + chapter.Title, 19, LabUI.Green); title.fontStyle = FontStyles.Bold;
-                foreach (var lesson in Curriculum.Of(number))
-                {
-                    var record = Curriculum.Record(lesson.ID);
-                    var row = LabUI.Row(scroll, lesson.ID, 8);
-                    bool done = record?.done == true, current = lesson == Curriculum.Next;
-                    var text = LabUI.Text(row.transform, Curriculum.Label(lesson) + (done ? "" : current ? "  —  ახლა" : "  —  დაკეტილია"), 16, done || current ? LabUI.Ink : LabUI.Muted);
-                    LabUI.Size(text.gameObject, 38, -1, 1);
-                    var l = lesson;
-                    if (done && !lesson.IsReview) LabUI.Size(LabUI.Button(row.transform, "ვარჯიში", () => { hub.Close(); OpenWorkbook(l, true); }, 38).gameObject, 38, 120, 0);
-                    if (done || current) LabUI.Size(LabUI.Secondary(row.transform, done ? "გამეორება" : "დაწყება", () => { hub.Close(); Begin(l); }, 38).gameObject, 38, 130, 0);
-                }
+                Color color = ChapterColors[number - 1];
+                var banner = LabUI.Panel(scroll, chapter.Title, color);
+                LabUI.Size(banner.gameObject, 44);
+                var title = LabUI.Text(banner.transform, "<b>თავი " + number + " • " + chapter.Title + "</b>" + (Curriculum.ChapterDone(number) ? "  •  დასრულებულია" : ""), 19, Color.white);
+                LabUI.Fill(title.rectTransform, 10);
+                var grid = LabUI.Object(scroll, "გაკვეთილები", typeof(GridLayoutGroup)).GetComponent<GridLayoutGroup>();
+                grid.cellSize = new Vector2(270, 96); grid.spacing = new Vector2(10, 10);
+                grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount; grid.constraintCount = 4;
+                foreach (var lesson in Curriculum.Of(number)) LessonTile(grid.transform, lesson, color);
             }
-            var footer = LabUI.Row(hub.Body, "მოდელები", 10);
-            LabUI.Size(footer.gameObject, 46);
-            switch (type)
-            {
-                case StationType.AtomTable: Model(footer.transform, "ატომების მოდელი", "atom"); break;
-                case StationType.MoleculeTable: Model(footer.transform, "მოლეკულების მოდელი", "molecule"); break;
-                case StationType.SolutionStation: Model(footer.transform, "ხსნარების მოდელი", "solution"); break;
-                case StationType.AcidBaseStation: Model(footer.transform, "მჟავა-ფუძის მოდელი", "ph"); break;
-                case StationType.ElementStation:
-                    LabUI.Button(footer.transform, "პერიოდული ცხრილი [Tab]", () => { hub.Close(); game.Periodic.Open(); }, 44); break;
-                case StationType.ReactionTable:
-                    LabUI.Button(footer.transform, "ვიზუალური ექსპერიმენტი", () =>
-                    {
-                        if (!Curriculum.Done("c6_conserve")) { game.HUD.Notify(Curriculum.LockedText + " საჭიროა გაკვეთილი: „" + Curriculum.Get("c6_conserve").Title + "“."); return; }
-                        hub.Close(); game.Quiz.Open(visual: true);
-                    }, 44);
-                    LabUI.Button(footer.transform, "შერევის მაგიდა", () => { hub.Close(); Bench.Open(); }, 44); break;
-            }
-            LabUI.Size(LabUI.Secondary(footer.transform, "სასწავლო რუკა [M]", () => { hub.Close(); OpenMap(); }, 44).gameObject, 44, 220, 0);
         }
 
-        private void Model(Transform parent, string label, string id) =>
-            LabUI.Button(parent, label, () =>
+        /// <summary>A big coloured tile with an icon, a title and one short line, like the bench's buttons.</summary>
+        private static void Toy(Transform parent, string title, string line, LabIcon icon, Color color, Action pressed)
+        {
+            var tile = LabUI.Button(parent, "", pressed, 112);
+            tile.GetComponent<Image>().color = color;
+            LabUI.Size(tile.gameObject, 112, -1, 1);
+            var badge = LabUI.Panel(tile.transform, "ნიშანი", new Color(1, 1, 1, 0.9f));
+            Place(badge.rectTransform, new Vector2(0, 0.5f), new Vector2(54, 4), new Vector2(72, 72));
+            var art = LabUI.Icon(badge.transform, icon, Color.white);
+            LabUI.Fill(art.rectTransform, 10);
+            var label = tile.GetComponentInChildren<TMP_Text>();
+            label.text = "<size=24>" + title + "</size>\n<size=16><color=#FFFFFFCC>" + line + "</color></size>";
+            label.alignment = TextAlignmentOptions.Left; label.fontSizeMax = 24;
+            label.rectTransform.offsetMin = new Vector2(104, 12);
+        }
+
+        /// <summary>A lesson tile: coloured with a check when done, light and pulsing-ready when next, grey with a lock otherwise.</summary>
+        private void LessonTile(Transform parent, Lesson lesson, Color color)
+        {
+            bool done = Curriculum.Done(lesson.ID), open = Curriculum.Available(lesson);
+            var tile = LabUI.Button(parent, "", () =>
             {
-                if (!Curriculum.ActivityOpen(id)) { game.HUD.Notify(Curriculum.LockedText + " " + Curriculum.Requirement(id)); return; }
-                hub.Close(); game.Personal.Activities.Open(id);
-            }, 44);
+                if (!open) { game.HUD.Notify(Curriculum.Requirement(lesson)); return; }
+                hub.Close();
+                if (done && !lesson.IsReview) OpenWorkbook(lesson, true); else Begin(lesson);
+            }, 96);
+            tile.GetComponent<Image>().color = done ? color : open ? LabUI.Paper : new Color32(205, 205, 196, 255);
+            var icon = LabUI.Icon(tile.transform, lesson.IsReview ? LabIcon.Trophy : done ? LabIcon.Check : open ? LabIcon.Flask : LabIcon.Lock, Color.white);
+            Place(icon.rectTransform, new Vector2(0, 0.5f), new Vector2(34, 4), new Vector2(40, 40));
+            var label = tile.GetComponentInChildren<TMP_Text>();
+            label.text = Curriculum.Label(lesson) + "\n<size=13>" + (done ? "ვარჯიში" : open ? "დაწყება" : "დაკეტილია") + "</size>";
+            label.color = done ? Color.white : LabUI.Ink;
+            label.alignment = TextAlignmentOptions.Left; label.fontSizeMin = 14; label.fontSizeMax = 19;
+            label.rectTransform.offsetMin = new Vector2(64, 12);
+        }
+
+        private static void Place(RectTransform rect, Vector2 anchor, Vector2 position, Vector2 size)
+        {
+            rect.anchorMin = rect.anchorMax = anchor; rect.anchoredPosition = position; rect.sizeDelta = size;
+        }
     }
 }

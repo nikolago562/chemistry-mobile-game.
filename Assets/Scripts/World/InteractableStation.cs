@@ -39,7 +39,7 @@ namespace ChemistryGame
             canvas.sortingOrder = 15;
             prompt = root.GetComponent<CanvasGroup>();
             prompt.alpha = 0;
-            label = LabUI.Text(root.transform, stationPrompt, 22, Color.white);
+            label = LabUI.Text(root.transform, LabUI.Prompt(stationPrompt), 22, Color.white);
             label.alignment = TextAlignmentOptions.Center;
             LabUI.WorldLabel(label);
             LabUI.Fill(label.rectTransform);
@@ -52,7 +52,7 @@ namespace ChemistryGame
             focus.Near = inRange && allowed;
             bool focused = focus.IsFocused;
             prompt.alpha = Mathf.MoveTowards(prompt.alpha, focused && !LabUI.AnyOpen ? 1 : 0, Time.deltaTime * 8);
-            if (promptText != null && focused) label.text = promptText();
+            if (promptText != null && focused) label.text = LabUI.Prompt(promptText());
             if (supplyCloset && game.Tutorial.Step == TutorialManager.TutorialStep.CollectCoat && inRange && allowed && !LabUI.AnyOpen)
             {
                 game.Tutorial.CollectCoat();

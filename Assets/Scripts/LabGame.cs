@@ -41,7 +41,6 @@ namespace ChemistryGame
         public ResearchUI Research { get; private set; }
         public CollectionUI Collection { get; private set; }
         public JournalUI Journal { get; private set; }
-        public ExperimentGamesUI Games { get; private set; }
         public SafeMishaps Mishaps { get; private set; }
         public TeacherGuide Guide { get; private set; }
         public CurriculumUI Lessons { get; private set; }
@@ -83,7 +82,6 @@ namespace ChemistryGame
             Research = gameObject.AddComponent<ResearchUI>(); Research.Initialize(this);
             Collection = gameObject.AddComponent<CollectionUI>(); Collection.Initialize(this);
             Journal = gameObject.AddComponent<JournalUI>(); Journal.Initialize(this);
-            Games = gameObject.AddComponent<ExperimentGamesUI>(); Games.Initialize(this);
             Lessons = gameObject.AddComponent<CurriculumUI>(); Lessons.Initialize(this);
             player.gameObject.AddComponent<PlayerCosmetics>().Initialize(this);
             if (!GameSaveManager.Instance.Data.tutorialCompleted)
@@ -355,11 +353,12 @@ namespace ChemistryGame
                 case StationType.QuizDesk:
                 case StationType.VisualExperimentDesk: Challenges.Open(); break;
                 case StationType.ReactionTable: Lessons.Bench.Open(); break;
-                case StationType.AtomTable:
+                // Hands-on tables open their toy straight away; lessons are a button inside.
+                case StationType.AtomTable: Lessons.Tables.Open(Kits.Atoms); break;
+                case StationType.MoleculeTable: Lessons.Tables.Open(Kits.Molecules); break;
+                case StationType.AcidBaseStation: Lessons.Tables.Open(Kits.Potions); break;
+                case StationType.SolutionStation: Lessons.Tables.Open(Kits.Solutions); break;
                 case StationType.ElementStation:
-                case StationType.MoleculeTable:
-                case StationType.SolutionStation:
-                case StationType.AcidBaseStation:
                     Lessons.OpenStation(station.stationType, station.name);
                     break;
                 case StationType.CosmeticShopStation: OpenMenu(2); break;

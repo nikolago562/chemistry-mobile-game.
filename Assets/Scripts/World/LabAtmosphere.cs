@@ -317,9 +317,8 @@ namespace ChemistryGame
 
         /// <summary>An activity is on screen: a lesson, mini-game, lab activity, quiz or a mission experiment.</summary>
         private bool InActivity() =>
-            game.Lessons != null && game.Lessons.IsOpen || game.Games != null && game.Games.IsOpen ||
+            game.Lessons != null && (game.Lessons.IsOpen || game.Lessons.Tables.IsOpen) ||
             game.Challenges != null && game.Challenges.IsOpen || game.Quiz != null && game.Quiz.IsOpen ||
-            game.Personal != null && game.Personal.Activities != null && game.Personal.Activities.IsOpen ||
             game.ActOne != null && game.ActOne.Busy;
 
         /// <summary>Rings the bell and switches between lesson and break (also used by tests).</summary>
