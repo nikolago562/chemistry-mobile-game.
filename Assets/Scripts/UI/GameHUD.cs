@@ -58,7 +58,7 @@ namespace ChemistryGame
 
             stats.childForceExpandWidth = false;
             statsRect = (RectTransform)stats.transform;
-            // One objective and one progress bar; menus live in the world, so there is no dock.
+            // One objective and one progress bar; the main menus sit on a rail at the right edge.
             var tracker = LabUI.Card(LabUI.Root, "აქტიური მიზანი", LabUI.Paper, 14);
             Anchor(tracker.rectTransform, new Vector2(0, 1), new Vector2(16, -82), new Vector2(300, 112));
             LabUI.Shadow(tracker);
@@ -113,11 +113,37 @@ namespace ChemistryGame
             panels["identity"] = Compact(identity.rectTransform);
             panels["stats"] = Compact((RectTransform)stats.transform);
             panels["tracker"] = Compact(tracker.rectTransform);
+            panels["menu"] = Compact(MenuRail());
             toastCard.rectTransform.localScale = Vector3.one * 0.85f;
             GameSaveManager.Instance.Changed += Refresh;
             game.Tutorial.Changed += Refresh;
             displayedCoins = GameSaveManager.Instance.Data.chemCoins;
             Refresh();
+        }
+
+        /// <summary>Menus a phone player can't reach with keys, as big buttons on the right edge (the keys still work).</summary>
+        public static readonly (LabIcon icon, string label, int menu)[] RailMenus =
+        {
+            (LabIcon.Book, "გაკვეთილები", 9), (LabIcon.Trophy, "კოლექცია", 7), (LabIcon.Flask, "კვლევები", 6), (LabIcon.Coin, "მაღაზია", 2),
+        };
+        private RectTransform rail;
+        private RectTransform MenuRail()
+        {
+            var column = LabUI.Column(LabUI.Root, "მენიუ", 10);
+            rail = (RectTransform)column.transform;
+            Anchor(rail, new Vector2(1, 0.5f), new Vector2(-16, 50), new Vector2(96, RailMenus.Length * 106 - 10));
+            foreach (var (kind, label, menu) in RailMenus)
+            {
+                int m = menu;
+                var button = LabUI.Button(rail, label, () => game.OpenMenu(m), 96);
+                button.GetComponent<Image>().color = LabUI.Navy;
+                var art = LabUI.Icon(button.transform, kind, Color.white);
+                Anchor(art.rectTransform, new Vector2(0.5f, 1), new Vector2(0, -10), new Vector2(44, 44));
+                var text = button.GetComponentInChildren<TMP_Text>();
+                text.alignment = TextAlignmentOptions.Bottom; text.fontSizeMin = 10; text.fontSizeMax = 14;
+                text.rectTransform.offsetMin = new Vector2(4, 12); text.rectTransform.offsetMax = new Vector2(-4, -56);
+            }
+            return rail;
         }
 
         private TMP_Text Stat(Transform parent, LabIcon kind, Color accent, string label)
@@ -315,6 +341,8 @@ namespace ChemistryGame
         public void Refresh()
         {
             var save = GameSaveManager.Instance;
+            // The menu rail waits until the intro is done, so the first minute stays uncluttered.
+            if (rail != null && rail.gameObject.activeSelf != save.Data.tutorialCompleted) rail.gameObject.SetActive(save.Data.tutorialCompleted);
             targetCoins = save.Data.chemCoins;
             streak.text = save.Data.currentDailyStreak + " დღე";
             int daily = save.Data.dailyXP, goal = Mathf.Max(1, save.Data.xpGoal);

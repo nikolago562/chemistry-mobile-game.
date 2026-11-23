@@ -128,6 +128,7 @@ public static class LabGameChecks
     private static void TutorialContinue()
     {
         LabUI.CloseTop();
+        Ensure(!LabUI.Root.Find("მენიუ").gameObject.activeSelf, "The menu rail stays hidden during the intro");
         originalPosition = game.player.GetComponent<Rigidbody2D>().position;
         CheckReachability();
         CheckBenchWalking();
@@ -370,6 +371,12 @@ public static class LabGameChecks
     }
     private static void AfterTutorial()
     {
+        LabUI.CloseTop();
+        var rail = LabUI.Root.Find("მენიუ");
+        Ensure(rail.gameObject.activeSelf && rail.GetComponentsInChildren<Button>().Length == GameHUD.RailMenus.Length, "After the intro the main menus sit on a rail at the right edge");
+        Snapshot("08b-menu-rail");
+        rail.GetComponentsInChildren<Button>()[0].onClick.Invoke();
+        Ensure(game.Lessons.MapOpen, "The rail's first button opens the learning map");
         LabUI.CloseTop();
         Ensure(!LabUI.AnyOpen && TeacherGuide.Next != null && TeacherGuide.Next.ID == "tour", "A skipped lesson stays available at the teacher");
         CheckSafetyMission();
