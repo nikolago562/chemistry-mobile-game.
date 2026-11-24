@@ -16,11 +16,11 @@ namespace ChemistryGame
         { Fill(x0, y0, x1, y1, line); Fill(x0 + 1, y0 + 1, x1 - 1, y1 - 1, fill); }
         public void Disc(float cx, float cy, float r, Color32 c)
         { for (int y = 0; y < H; y++) for (int x = 0; x < W; x++) if ((x - cx) * (x - cx) + (y - cy) * (y - cy) <= r * r) Dot(x, y, c); }
-        public Sprite Build(string name, Vector2 pivot, float ppu)
+        public Sprite Build(string name, Vector2 pivot, float ppu, SpriteMeshType mesh = SpriteMeshType.Tight)
         {
             var texture = new Texture2D(W, H, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
             texture.SetPixels32(buffer); texture.Apply();
-            var sprite = Sprite.Create(texture, new Rect(0, 0, W, H), pivot, ppu);
+            var sprite = Sprite.Create(texture, new Rect(0, 0, W, H), pivot, ppu, 0, mesh);
             sprite.name = name;
             return sprite;
         }
@@ -169,23 +169,32 @@ namespace ChemistryGame
                 }
             }
         });
+        /// <summary>A deep green velvet sofa with rolled arms, buttoned back and walnut feet.</summary>
         public static Sprite Sofa() => Paint("sofa", 38, 22, p =>
         {
-            Color32 cloth = new Color32(120, 96, 170, 255), clothDark = new Color32(88, 66, 130, 255);
-            p.Box(0, 2, 37, 20, cloth, Line); p.Fill(1, 2, 36, 8, clothDark); p.Box(0, 2, 6, 14, cloth, Line); p.Box(31, 2, 37, 14, cloth, Line);
-            p.Fill(7, 9, 18, 13, new Color32(140, 116, 190, 255)); p.Fill(19, 9, 30, 13, new Color32(140, 116, 190, 255));
-            p.Fill(2, 0, 3, 1, WoodDark); p.Fill(34, 0, 35, 1, WoodDark);
+            Color32 ink = new Color32(46, 32, 30, 255), velvet = new Color32(72, 118, 88, 255), dark = new Color32(52, 90, 66, 255), light = new Color32(96, 146, 110, 255);
+            p.Fill(3, 0, 4, 2, ink); p.Fill(33, 0, 34, 2, ink);
+            p.Fill(1, 2, 36, 21, ink);
+            p.Fill(2, 10, 35, 20, velvet); p.Fill(2, 19, 35, 20, light);
+            for (int x = 7; x < 32; x += 6) { p.Dot(x, 15, dark); p.Dot(x + 3, 13, dark); }
+            p.Fill(2, 3, 35, 9, dark); p.Fill(7, 7, 30, 10, velvet); p.Fill(7, 10, 30, 10, light); p.Fill(18, 7, 19, 10, dark);
+            p.Box(1, 3, 6, 14, velvet, ink); p.Box(31, 3, 36, 14, velvet, ink); p.Fill(2, 13, 5, 13, light); p.Fill(32, 13, 35, 13, light);
         });
+        /// <summary>A small woven rug: coral border, cream field and a row of teal diamonds.</summary>
         public static Sprite Rug() => Paint("rug", 44, 18, p =>
         {
-            p.Box(0, 0, 43, 17, new Color32(200, 110, 90, 255), new Color32(150, 74, 60, 255));
-            p.Box(4, 3, 39, 14, new Color32(230, 190, 120, 255), new Color32(150, 74, 60, 255));
-            for (int x = 8; x < 36; x += 6) p.Fill(x, 8, x + 2, 9, new Color32(110, 160, 140, 255));
+            for (int x = 1; x < 43; x += 2) { p.Dot(x, 0, Paper); p.Dot(x, 17, Paper); }
+            p.Box(0, 1, 43, 16, new Color32(196, 108, 88, 255), new Color32(120, 60, 50, 255));
+            p.Box(3, 3, 40, 14, new Color32(238, 216, 170, 255), new Color32(150, 80, 64, 255));
+            for (int x = 8; x < 38; x += 6) { p.Dot(x, 9, new Color32(80, 150, 140, 255)); p.Fill(x - 1, 8, x + 1, 8, new Color32(80, 150, 140, 255)); p.Fill(x - 1, 10, x + 1, 10, new Color32(80, 150, 140, 255)); p.Dot(x - 2, 9, new Color32(80, 150, 140, 255)); p.Dot(x + 2, 9, new Color32(80, 150, 140, 255)); }
         }, 16, new Vector2(0.5f, 0.5f));
+        /// <summary>A brass floor lamp with a pleated cream shade.</summary>
         public static Sprite Lamp() => Paint("lamp", 12, 30, p =>
         {
-            p.Fill(3, 0, 8, 1, MetalDark); p.Fill(5, 2, 6, 21, MetalDark);
-            p.Box(1, 21, 10, 29, new Color32(250, 220, 150, 255), new Color32(170, 120, 70, 255));
+            Color32 ink = new Color32(46, 32, 30, 255), brass = new Color32(232, 186, 96, 255);
+            p.Fill(2, 0, 9, 2, ink); p.Fill(3, 1, 8, 1, brass); p.Fill(5, 2, 6, 21, ink); p.Fill(5, 3, 5, 20, brass);
+            p.Fill(0, 20, 11, 29, ink); p.Fill(1, 21, 10, 28, new Color32(252, 230, 176, 255)); p.Fill(1, 21, 10, 21, new Color32(255, 246, 214, 255));
+            for (int x = 2; x < 10; x += 2) p.Fill(x, 22, x, 28, new Color32(236, 206, 150, 255));
         });
 
         // ---------- greenhouse ----------
@@ -209,14 +218,6 @@ namespace ChemistryGame
         });
 
         // ---------- exhibition ----------
-        public static Sprite Pedestal(int variant) => Paint("pedestal" + variant, 20, 30, p =>
-        {
-            p.Box(2, 0, 17, 15, Paper, new Color32(150, 140, 160, 255));
-            p.Box(3, 16, 16, 28, Glass, new Color32(150, 160, 170, 255));
-            Color32 c = new[] { Violet, Mint, Coral, Gold }[variant % 4];
-            if (variant % 2 == 0) { p.Fill(8, 17, 11, 22, c); p.Fill(9, 23, 10, 25, new Color32(220, 230, 240, 255)); }
-            else { p.Disc(9.5f, 20, 3, c); p.Dot(9, 21, Color.white); }
-        });
         public static Sprite FairBooth() => Paint("booth", 52, 34, p =>
         {
             p.Box(0, 0, 51, 15, Wood, WoodDark); p.Fill(1, 12, 50, 15, WoodLight);

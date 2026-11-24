@@ -450,7 +450,7 @@ namespace ChemistryGame
         public Action Closed;
         public bool CanClose = true;
         private bool closing;
-        private float opened;
+        private float opened, lastScale = 1;
         private void Awake() => opened = Time.unscaledTime;
         public void Close()
         {
@@ -459,17 +459,30 @@ namespace ChemistryGame
             AudioManager.Instance?.Close();
             LabUI.Forget(this);
             Closed?.Invoke();
-            gameObject.SetActive(false);
-            Destroy(gameObject);
+            // Gone for input and game logic at once; the picture shrinks and fades for a moment.
+            var group = gameObject.GetComponent<CanvasGroup>();
+            if (group == null) group = gameObject.AddComponent<CanvasGroup>();
+            group.blocksRaycasts = false; group.interactable = false;
+            closedAt = Time.unscaledTime;
+            Destroy(gameObject, 0.12f);
         }
+        private float closedAt = -1;
         private void LateUpdate()
         {
+            if (closedAt >= 0)
+            {
+                float k = Mathf.Clamp01((Time.unscaledTime - closedAt) / 0.12f);
+                Card.localScale = Vector3.one * lastScale * Mathf.Lerp(1, 0.94f, k);
+                GetComponent<CanvasGroup>().alpha = 1 - k;
+                return;
+            }
             var parent = (RectTransform)transform;
             Vector2 size = parent.rect.size - new Vector2(34, 34);
             float fit = Mathf.Min(1, size.x / Card.sizeDelta.x, size.y / Card.sizeDelta.y);
             float t = Mathf.Clamp01((Time.unscaledTime - opened) / 0.28f);
             float spring = 1f + 2.70158f * Mathf.Pow(t - 1, 3) + 1.70158f * Mathf.Pow(t - 1, 2);
             Card.localScale = Vector3.one * (fit * Mathf.LerpUnclamped(0.9f, 1, spring));
+            lastScale = Card.localScale.x;
             if (Fade != null) Fade.alpha = Mathf.Clamp01(t * 2);
         }
         private void OnDestroy() => LabUI.Forget(this);

@@ -14,6 +14,9 @@ namespace ChemistryGame
         public static LabAtmosphere Instance { get; private set; }
         /// <summary>0 in daylight, 1 in the evening. Lamps and screens read this.</summary>
         public static float Evening { get; private set; }
+        /// <summary>Late evening (21:00–06:00): cool blue night instead of the amber dusk.</summary>
+        public static bool Night => SchoolCalendar.Part == DayPart.Evening && (SchoolCalendar.Now.Hour >= 21 || SchoolCalendar.Now.Hour < 6);
+        private bool appliedNight;
 
         private sealed class Pane { public SpriteRenderer Sky; public Vector2 Size; public List<Transform> Drops = new List<Transform>(); public List<SpriteRenderer> Stars = new List<SpriteRenderer>(); }
         private sealed class Glow { public SpriteRenderer Art; public float Base; public bool EveningOnly; public float Phase; }
@@ -59,8 +62,15 @@ namespace ChemistryGame
             AddFan(room, new Vector2(40.2f, 14.6f));
             LaboratoryArt.Draw(room, "ვენტილაცია", new Vector2(40.2f, 14.6f), DecorArt.VentGrille(), 4);
             // Dust only floats in the window light, so it never drifts over the benches.
-            AddDust(room, new Vector2(27, 11.2f), new Vector2(4, 2.2f));
-            AddDust(room, new Vector2(52, 11.2f), new Vector2(3, 2.2f));
+            AddDust(room, new Vector2(28.0f, 10.0f), new Vector2(2.4f, 3.6f));
+            AddDust(room, new Vector2(53.0f, 10.0f), new Vector2(2.4f, 3.6f));
+            // Glowing liquids on the academy shelves, the distillation set's bubbles and warm lamplight pools at evening.
+            foreach (var (point, color) in new[] { (new Vector2(31.65f, 12.4f), new Color(0.55f, 1f, 0.7f)), (new Vector2(33.15f, 12.5f), new Color(1f, 0.85f, 0.45f)),
+                (new Vector2(55.3f, 13.45f), new Color(0.5f, 1f, 0.8f)), (new Vector2(64.4f, -14.2f), new Color(0.8f, 0.6f, 1f)) })
+                AddGlow(room, point, color, 0.8f, false);
+            AddBubbles(room, new Vector2(64.4f, -13.7f), 8);
+            foreach (var point in new[] { new Vector2(30, 3), new Vector2(44.75f, -4), new Vector2(59.5f, 3), new Vector2(30, -14), new Vector2(59.5f, -14) })
+                AddGlow(room, point, new Color(1f, 0.78f, 0.45f), 7, true);
             foreach (var point in new[] { new Vector2(35.3f, 11.4f), new Vector2(36.8f, -3.8f), new Vector2(51.0f, 4.2f), new Vector2(53.3f, -11.8f) })
                 AddBubbles(room, point, 8);
             // A harmless background experiment on the teacher's desk: a flask that slowly changes colour.
@@ -184,6 +194,7 @@ namespace ChemistryGame
             {
                 savedCheck = Time.unscaledTime + 5;
                 if (SchoolCalendar.Refresh()) { Apply(false); GameSaveManager.Instance.Commit(); }
+                else if (Night != appliedNight) Apply(false);
             }
             var camera = Camera.main;
             if (camera != null)
@@ -244,7 +255,7 @@ namespace ChemistryGame
                     drop.localPosition = (Vector2)pane.Sky.transform.localPosition + p;
                 }
                 for (int i = 0; i < pane.Stars.Count; i++)
-                    if (pane.Stars[i] != null) pane.Stars[i].color = new Color(1, 1, 0.85f, SchoolCalendar.Part == DayPart.Evening && !rain ? 0.5f + 0.5f * Mathf.Sin(t * 2 + i * 2) : 0);
+                    if (pane.Stars[i] != null) pane.Stars[i].color = new Color(1, 1, 0.85f, Night && !rain ? 0.5f + 0.5f * Mathf.Sin(t * 2 + i * 2) : 0);
             }
             foreach (var source in bubbles)
             {
@@ -268,11 +279,15 @@ namespace ChemistryGame
             var part = SchoolCalendar.Part;
             bool rain = SchoolCalendar.Raining;
             Evening = part == DayPart.Evening ? 1 : 0;
-            Color grade = part == DayPart.Morning ? new Color(1f, 0.85f, 0.6f, 0.07f)
-                : part == DayPart.Afternoon ? new Color(1f, 0.95f, 0.85f, 0.0f) : new Color(0.16f, 0.13f, 0.36f, 0.33f);
+            appliedNight = Night;
+            // Golden morning, neutral afternoon, amber dusk, cool blue night.
+            Color grade = part == DayPart.Morning ? new Color(1f, 0.8f, 0.52f, 0.09f)
+                : part == DayPart.Afternoon ? new Color(1f, 0.95f, 0.85f, 0.02f)
+                : appliedNight ? new Color(0.1f, 0.12f, 0.34f, 0.38f) : new Color(0.66f, 0.3f, 0.26f, 0.2f);
             if (rain) grade = Color.Lerp(grade, new Color(0.3f, 0.36f, 0.48f, Mathf.Max(grade.a, 0.16f)), 0.55f);
             if (tint != null) tint.color = grade;
-            Color sky = part == DayPart.Morning ? new Color(1f, 0.86f, 0.66f) : part == DayPart.Afternoon ? new Color(0.62f, 0.82f, 1f) : new Color(0.14f, 0.12f, 0.32f);
+            Color sky = part == DayPart.Morning ? new Color(1f, 0.86f, 0.66f) : part == DayPart.Afternoon ? new Color(0.62f, 0.82f, 1f)
+                : appliedNight ? new Color(0.08f, 0.09f, 0.24f) : new Color(0.96f, 0.56f, 0.42f);
             if (rain) sky = Color.Lerp(sky, new Color(0.5f, 0.56f, 0.64f), 0.6f);
             foreach (var pane in panes) if (pane.Sky != null) pane.Sky.color = sky;
             AmbientAudio.Instance?.SetMood(part, rain);

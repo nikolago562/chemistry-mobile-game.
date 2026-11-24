@@ -6,7 +6,6 @@ namespace ChemistryGame
     public sealed class ChemistryClassroom : MonoBehaviour
     {
         public Sprite storageCupboard;
-        private static Sprite bench, sinkBench, rack, smallFlask;
         private static PhysicsMaterial2D benchMaterial;
         public void Build(LabGame game)
         {
@@ -28,7 +27,7 @@ namespace ChemistryGame
 
             Glassware(furniture.transform, new Vector2(35, 10.65f), true);
             // A runner down the middle aisle, then each table's own mat, sign and signature prop.
-            Mat(furniture.transform, new Vector2(44.75f, -7), new Vector2(3, 32), new Color32(150, 110, 80, 255), 1);
+            Mat(furniture.transform, new Vector2(44.75f, -7), new Vector2(3, 32), new Color32(176, 110, 84, 255), 1);
             foreach (var (at, color, name, prop) in Tables)
             {
                 Mat(furniture.transform, at + new Vector2(0, -0.7f), new Vector2(6.5f, 4.6f), color, 1);
@@ -37,6 +36,7 @@ namespace ChemistryGame
             }
             Cabinet(furniture.transform, new Vector2(63, -9), "ლაბორატორიის მარაგი");
             LaboratoryArt.Draw(furniture.transform, "საზომი ხელსაწყო", new Vector2(54.5f, 10.7f), LaboratoryArt.Device, 7);
+            AcademyArt.Dress(game, furniture.transform);
         }
 
         /// <summary>Each table's bench position, colour (its chapter's), sign text and signature prop.</summary>
@@ -50,16 +50,14 @@ namespace ChemistryGame
             (new Vector2(52, 2), new Color32(210, 90, 160, 255), "pH ნაყენები", 5),
         };
         private static readonly Sprite[] props = new Sprite[6];
-        private static Sprite matSprite, signSprite;
+        private static Sprite signSprite;
 
-        /// <summary>A floor mat: a soft fill with a darker 1px border, tinted by the table's colour.</summary>
+        /// <summary>A woven rug under a table, its colour softened toward cream so the room stays warm.</summary>
         private static void Mat(Transform parent, Vector2 centre, Vector2 size, Color color, int order)
         {
-            matSprite ??= Sliced(16, 16, (x, y) => x == 0 || y == 0 || x == 15 || y == 15 ? new Color(0.55f, 0.55f, 0.55f, 0.75f)
-                : x == 1 || y == 1 || x == 14 || y == 14 ? new Color(1, 1, 1, 0.5f) : new Color(1, 1, 1, 0.32f));
-            var art = LaboratoryArt.Draw(parent, "ხალიჩა", centre, matSprite, order);
-            art.color = color;
-            art.drawMode = SpriteDrawMode.Sliced;
+            var art = LaboratoryArt.Draw(parent, "ხალიჩა", centre, AcademyArt.Rug(), order);
+            art.color = Color.Lerp(color, new Color(0.96f, 0.9f, 0.8f), 0.35f);
+            art.drawMode = SpriteDrawMode.Tiled;
             art.size = size;
         }
 
@@ -173,9 +171,9 @@ namespace ChemistryGame
             var go = new GameObject(sink ? "ნიჟარიანი დახლი" : "ლაბორატორიული მაგიდა", typeof(SpriteRenderer), typeof(BoxCollider2D));
             go.transform.SetParent(parent, false);
             go.transform.localPosition = point;
-            go.GetComponent<SpriteRenderer>().sprite = LaboratoryArt.Bench();
+            go.GetComponent<SpriteRenderer>().sprite = AcademyArt.Desk(sink);
             go.GetComponent<SpriteRenderer>().sortingOrder = 6;
-            LaboratoryArt.CompleteBench(go.GetComponent<SpriteRenderer>());
+            AcademyArt.ContactShadow(parent, point, 4.4f);
             var shape = go.GetComponent<BoxCollider2D>();
             // The bench's floor footprint runs from the cabinet's front foot to the back edge of
             // the countertop, so the player can never stand on the drawn tabletop from behind.
@@ -197,50 +195,6 @@ namespace ChemistryGame
             go.GetComponent<SpriteRenderer>().sprite = tubes ? LaboratoryArt.Glassware : LaboratoryArt.Flask;
             go.GetComponent<SpriteRenderer>().sortingOrder = 7;
         }
-
-        private static Sprite Bench(bool sink)
-        {
-            if (sink && sinkBench != null) return sinkBench;
-            if (!sink && bench != null) return bench;
-            var sprite = PixelArt.Make(64, 28, (x, y) =>
-            {
-                if (x < 1 || x > 62 || y < 1) return Color.clear;
-                if (y <= 3) return new Color32(44, 63, 65, 255);
-                if (y < 19)
-                {
-                    if (x < 3 || x > 60 || x == 31 || x == 32) return new Color32(57, 87, 88, 255);
-                    if (y == 14 && (x == 25 || x == 38)) return new Color32(217, 205, 164, 255);
-                    return x < 32 ? new Color32(103, 144, 143, 255) : new Color32(88, 129, 131, 255);
-                }
-                if (sink && x >= 43 && x <= 56 && y >= 22 && y <= 25)
-                    return x == 43 || x == 56 || y == 22 || y == 25
-                        ? new Color32(130, 157, 162, 255) : new Color32(72, 103, 117, 255);
-                if (sink && x >= 48 && x <= 50 && y >= 26) return new Color32(100, 126, 138, 255);
-                if (y == 19 || y == 20 || x == 1 || x == 62) return new Color32(126, 139, 132, 255);
-                return new Color32(226, 228, 210, 255);
-            }, new Vector2(0.5f, 0));
-            if (sink) sinkBench = sprite;
-            else bench = sprite;
-            return sprite;
-        }
-
-        private static Sprite Rack() => rack ??= PixelArt.Make(18, 12, (x, y) =>
-        {
-            if (y <= 2 && x > 0 && x < 17 || y == 5 && x > 1 && x < 16) return new Color32(115, 85, 61, 255);
-            int tube = x % 5;
-            if (x < 2 || x > 15 || tube < 2 || tube > 3 || y < 3) return Color.clear;
-            if (y > 8) return new Color32(189, 218, 218, 255);
-            return x < 6 ? new Color32(111, 178, 157, 255)
-                : x < 11 ? new Color32(125, 158, 199, 255) : new Color32(210, 166, 104, 255);
-        }, new Vector2(0.5f, 0));
-
-        private static Sprite SmallFlask() => smallFlask ??= PixelArt.Make(10, 12, (x, y) =>
-        {
-            bool neck = x >= 4 && x <= 5 && y >= 7;
-            bool body = y >= 1 && y <= 7 && Mathf.Abs(x - 4.5f) < (10 - y) * 0.5f;
-            if (!neck && !body) return Color.clear;
-            return y < 5 ? new Color32(99, 170, 154, 255) : new Color32(196, 222, 218, 255);
-        }, new Vector2(0.5f, 0));
     }
 
     /// <summary>

@@ -180,6 +180,7 @@ namespace ChemistryGame
             if (teacherMaterial != null) renderer.sharedMaterial = teacherMaterial;
             // Solid feet so the player walks around her. No depth zone: she moves along the desk,
             // and the desk's own zone already covers the floor behind it.
+            AcademyArt.ContactShadow(npc.transform, Vector2.zero, 1.1f);
             var feet = npc.AddComponent<BoxCollider2D>();
             feet.size = new Vector2(0.8f, 0.35f);
             feet.offset = new Vector2(0, 0.15f);

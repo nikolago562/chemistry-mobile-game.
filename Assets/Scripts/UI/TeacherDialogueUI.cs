@@ -98,6 +98,10 @@ namespace ChemistryGame
         private GameObject snapFrame;
         private TMP_Text snapCaption;
         private RawImage snapPicture;
+        private Image portrait;
+        private string portraitId;
+        private Mood mood;
+        private bool mouthOpen;
 
         /// <summary>Types a sequence of lines and calls <paramref name="hook"/> as each line begins.</summary>
         public void Tour(Action then, string[] lines, Action<int> hook)
@@ -227,6 +231,7 @@ namespace ChemistryGame
         private void Begin(ISpeaker who, string title)
         {
             speaker = who;
+            portraitId = who is SchoolNPC npc ? npc.Def.ID : who is TeacherNPC ? "teacher" : null;
             BuildWindow(title);
             var camera = Camera.main != null ? Camera.main.GetComponent<ClassroomCamera>() : null;
             if (camera != null) camera.Focus(who.transform, new Vector2(0, -0.5f), FocusZoom);
@@ -343,6 +348,7 @@ namespace ChemistryGame
             string reward = ResearchProjects.Submit(state);
             if (reward == null) { MainMenu(); return; }
             game.HUD?.Notify("პროექტი \"" + project.Title + "\" ჩაბარებულია! " + reward);
+            ChemFx.ResearchDone(project, reward);
             Say(MainMenu, "\"" + project.Title + "\" კარგად შესრულებული ნაშრომია.",
                 state.mistakes == 0 ? "ერთი შეცდომაც არ დაგიშვია. ჯილდო: " + reward
                     : "შეცდომები სწავლის ნაწილია და მათგან ბევრი რამ ისწავლე. ჯილდო: " + reward,
@@ -470,6 +476,12 @@ namespace ChemistryGame
             shown = 0;
             nextLetter = Time.unscaledTime + 0.12f;
             hint.text = "";
+            if (portraitId != null)
+            {
+                mood = Portraits.Guess(pages[page]);
+                portrait.sprite = Portraits.Get(portraitId, mood, mouthOpen = false);
+                portrait.transform.localScale = Vector3.one * 0.9f;
+            }
             Resize(0);
             pageHook?.Invoke(page);
         }
@@ -480,6 +492,12 @@ namespace ChemistryGame
         {
             if (!IsOpen) return;
             UpdateStep();
+            if (portraitId != null && portrait != null)
+            {
+                bool open = Typing && Time.unscaledTime * 7 % 2 < 1;
+                if (open != mouthOpen) portrait.sprite = Portraits.Get(portraitId, mood, mouthOpen = open);
+                portrait.transform.localScale = Vector3.MoveTowards(portrait.transform.localScale, Vector3.one, Time.unscaledDeltaTime * 1.2f);
+            }
             if (Typing)
             {
                 while (Typing && Time.unscaledTime >= nextLetter)
@@ -617,6 +635,22 @@ namespace ChemistryGame
             captionRect.anchoredPosition = new Vector2(0, 4); captionRect.sizeDelta = new Vector2(-16, 28);
             snapFrame = frame.gameObject;
             snapFrame.SetActive(false);
+
+            // The speaker's portrait sits on the top-left corner of the box and changes expression line by line.
+            var face = LabUI.Panel(window.Card, "პორტრეტი", LabUI.Navy);
+            face.gameObject.AddComponent<LayoutElement>().ignoreLayout = true;
+            var faceRect = face.rectTransform;
+            faceRect.anchorMin = faceRect.anchorMax = new Vector2(0, 1); faceRect.pivot = new Vector2(0, 0);
+            faceRect.anchoredPosition = new Vector2(16, 6); faceRect.sizeDelta = new Vector2(176, 176);
+            LabUI.Shadow(face);
+            portrait = LabUI.Object(face.transform, "სახე", typeof(Image)).GetComponent<Image>();
+            portrait.raycastTarget = false; portrait.preserveAspect = true;
+            var portraitRect = portrait.rectTransform;
+            portraitRect.anchorMin = Vector2.zero; portraitRect.anchorMax = Vector2.one;
+            portraitRect.offsetMin = new Vector2(8, 8); portraitRect.offsetMax = new Vector2(-8, -8);
+            face.gameObject.SetActive(portraitId != null);
+            mood = Mood.Neutral; mouthOpen = false;
+            if (portraitId != null) portrait.sprite = Portraits.Get(portraitId, mood, false);
 
             hint = LabUI.Text(window.Body, "", 15, LabUI.Muted);
             hint.alignment = TextAlignmentOptions.Right;

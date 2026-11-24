@@ -187,7 +187,7 @@ namespace ChemistryGame
             Beaker(a, b, result);
             Juice.Bounce(stage);
             UIFx.Burst(stage, Vector2.zero, result?.Color ?? a.Color, 16);
-            if (fresh) StartCoroutine(NewCard(result, paid, newJar ? made : Mixing.UnlockedAt(Mixing.Discovered).FirstOrDefault()));
+            if (fresh) StartCoroutine(Discovered(result, paid, newJar ? made : Mixing.UnlockedAt(Mixing.Discovered).FirstOrDefault()));
             if (order != null) LabGame.Instance?.HUD.Refresh();
         }
 
@@ -294,7 +294,21 @@ namespace ChemistryGame
                     : "<b>" + Mixing.Get(r.A).Name + " + ???</b>\n<size=14>ჯერ არ გიცდია. რას შეურევდი?</size>", 17, owned ? LabUI.Ink : LabUI.Muted);
                 text.enableAutoSizing = true; text.fontSizeMin = 11; text.fontSizeMax = 17;
                 LabUI.Size(text.gameObject, 52, -1, 1);
+                // Found reactions with an equation can be watched again.
+                if (owned && r.Equation.Contains("→"))
+                {
+                    var result = r;
+                    var replay = LabUI.Secondary(row.transform, "▶", () => StartCoroutine(ChemFx.Reaction(book.Card, result.Equation)), 52);
+                    LabUI.Size(replay.gameObject, 52, 56, 0);
+                }
             }
+        }
+
+        /// <summary>A first discovery: watch the atoms regroup, then the gold card.</summary>
+        private IEnumerator Discovered(MixResult result, int paid, Reagent jar)
+        {
+            if (window != null) yield return ChemFx.Reaction(window.Card, result.Equation);
+            if (window != null) yield return NewCard(result, paid, jar);
         }
 
         /// <summary>A gold card pops over the bench for every first discovery, then fades away.</summary>

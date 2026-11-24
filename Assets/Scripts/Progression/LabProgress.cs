@@ -221,7 +221,10 @@ namespace ChemistryGame
             Data.collection.Add(id);
             var item = Catalog.FirstOrDefault(c => c.ID == id);
             if (item != null && item.Kind != CollectionKind.Reaction && LabGame.Instance != null && LabGame.Instance.HUD != null)
+            {
                 LabGame.Instance.HUD.Notify("კოლექციაში დაემატა: " + item.Name);
+                if (item.Kind == CollectionKind.Badge || item.Kind == CollectionKind.Award) UIArt.BadgeUnlocked(item.Name, item.Color);
+            }
             if (Items(CollectionKind.Mineral).All(m => Data.collection.Contains(m.ID))) Collect("badge:collector");
             return true;
         }

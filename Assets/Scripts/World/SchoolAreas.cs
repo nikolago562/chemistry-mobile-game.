@@ -70,7 +70,6 @@ namespace ChemistryGame
         public string ID, Name, Purpose;
         public Vector2 Origin;
         public int HalfWidth;
-        public Color Floor, Wall;
         public int Reputation;
     }
 
@@ -83,16 +82,11 @@ namespace ChemistryGame
         public const float BackWall = 5.5f;
         public static readonly AreaDef[] Defs =
         {
-            new AreaDef { ID = "hallway", Name = "დერეფანი", Purpose = "განცხადებების დაფა, ჯილდოების ვიტრინა და კლასელები", Origin = new Vector2(200, 0), HalfWidth = 15,
-                Floor = new Color(0.93f, 0.9f, 0.84f), Wall = new Color(0.86f, 0.92f, 1f) },
-            new AreaDef { ID = "storage", Name = "სათავსო", Purpose = "ყოველდღიური მასალები და ლაბორანტი ქეთევანი", Origin = new Vector2(260, 0), HalfWidth = 8,
-                Floor = new Color(0.86f, 0.82f, 0.76f), Wall = new Color(0.82f, 0.82f, 0.8f) },
-            new AreaDef { ID = "reading", Name = "კითხვის კუთხე", Purpose = "ქიმიური ფაქტები და წყნარი დასვენება", Origin = new Vector2(300, 0), HalfWidth = 8,
-                Floor = new Color(1f, 0.88f, 0.74f), Wall = new Color(1f, 0.9f, 0.78f) },
-            new AreaDef { ID = "greenhouse", Name = "სათბური", Purpose = "მცენარეების მორწყვა, მოსავალი და წვიმის წყალი", Origin = new Vector2(340, 0), HalfWidth = 9,
-                Floor = new Color(0.8f, 0.92f, 0.78f), Wall = new Color(0.78f, 0.95f, 0.9f) },
-            new AreaDef { ID = "exhibition", Name = "გამოფენის დარბაზი", Purpose = "სამეცნიერო ბაზრობა და მოგზაური მკვლევარი", Origin = new Vector2(390, 0), HalfWidth = 11,
-                Floor = new Color(0.9f, 0.86f, 0.95f), Wall = new Color(0.9f, 0.85f, 1f), Reputation = 1 },
+            new AreaDef { ID = "hallway", Name = "დერეფანი", Purpose = "განცხადებების დაფა, ჯილდოების ვიტრინა და კლასელები", Origin = new Vector2(200, 0), HalfWidth = 15 },
+            new AreaDef { ID = "storage", Name = "სათავსო", Purpose = "ყოველდღიური მასალები და ლაბორანტი ქეთევანი", Origin = new Vector2(260, 0), HalfWidth = 8 },
+            new AreaDef { ID = "reading", Name = "კითხვის კუთხე", Purpose = "ქიმიური ფაქტები და წყნარი დასვენება", Origin = new Vector2(300, 0), HalfWidth = 8 },
+            new AreaDef { ID = "greenhouse", Name = "სათბური", Purpose = "მცენარეების მორწყვა, მოსავალი და წვიმის წყალი", Origin = new Vector2(340, 0), HalfWidth = 9 },
+            new AreaDef { ID = "exhibition", Name = "გამოფენის დარბაზი", Purpose = "სამეცნიერო ბაზრობა და მოგზაური მკვლევარი", Origin = new Vector2(390, 0), HalfWidth = 11, Reputation = 1 },
         };
         // Doors on the hallway's back wall, left to right.
         private static readonly (string to, float x)[] HallwayDoors =
@@ -122,6 +116,7 @@ namespace ChemistryGame
             BuildGreenhouse(roots["greenhouse"]);
             BuildExhibition(roots["exhibition"]);
             BuildClassroomExtras();
+            foreach (var def in Defs) RoomArt.Dress(def.ID, roots[def.ID], BackWall, Prop);
             ShowCurrentRoom();
         }
 
@@ -192,13 +187,7 @@ namespace ChemistryGame
             var room = new GameObject(def.Name).transform;
             room.position = def.Origin;
             int w = def.HalfWidth;
-            for (int x = -w; x < w; x++)
-            for (int y = -5; y <= 5; y++)
-            {
-                var tile = LaboratoryArt.Draw(room, "ფილა", new Vector2(x + 0.5f, y), LaboratoryArt.Floor, -300);
-                tile.color = def.Floor;
-            }
-            for (int x = -w; x < w; x++) WallColumn(room, x + 0.5f, def.Wall);
+            RoomArt.Build(def.ID, room, w, BackWall);
             Solid(room, new Vector2(0, BackWall + 0.15f), new Vector2(w * 2 + 2, 0.3f));
             Solid(room, new Vector2(0, -5.7f), new Vector2(w * 2 + 2, 0.5f), true);
             Solid(room, new Vector2(-w - 0.25f, 0), new Vector2(0.5f, 14), true);
@@ -207,30 +196,15 @@ namespace ChemistryGame
             return room;
         }
 
-        private static void WallColumn(Transform room, float x, Color tint)
-        {
-            void Piece(float h, Sprite sprite, float scaleY = 1, int order = -290)
-            {
-                var art = LaboratoryArt.Draw(room, "კედელი", new Vector2(x, BackWall + h), sprite, order);
-                art.transform.localScale = new Vector3(1, scaleY, 1);
-                art.color = tint;
-            }
-            Piece(0, LaboratoryArt.WallBase);
-            Piece(0.25f, LaboratoryArt.WallLower);
-            Piece(1.25f, LaboratoryArt.WallPaint);
-            Piece(2.25f, LaboratoryArt.WallPaint);
-            Piece(3.25f, LaboratoryArt.WallPaint, 0.5f);
-            Piece(3.75f, LaboratoryArt.WallCap, 1, -289);
-        }
-
         private static void Solid(Transform room, Vector2 point, Vector2 size, bool cap = false)
         {
             var go = new GameObject("კედლის საზღვარი", typeof(BoxCollider2D));
             go.transform.SetParent(room, false); go.transform.localPosition = point;
             go.GetComponent<BoxCollider2D>().size = size;
             if (!cap) return;
-            var edge = LaboratoryArt.Draw(go.transform, "კედლის კიდე", Vector2.zero, LaboratoryArt.WallCap, -289);
-            edge.transform.localScale = new Vector3(size.x, size.y * 4, 1);
+            var edge = LaboratoryArt.Draw(go.transform, "კედლის კიდე", Vector2.zero, DecorArt.Square(), -289);
+            edge.transform.localScale = new Vector3(size.x * 16, size.y * 16, 1);
+            edge.color = new Color32(92, 56, 36, 255);
         }
 
         private void Door(Transform room, float x, string to, string sign)
@@ -251,7 +225,7 @@ namespace ChemistryGame
             }
         }
 
-        private SpriteRenderer Prop(Transform room, string name, Vector2 local, Sprite sprite, Vector2 footprint, int order = 6)
+        private static SpriteRenderer Prop(Transform room, string name, Vector2 local, Sprite sprite, Vector2 footprint, int order = 6)
         {
             var art = LaboratoryArt.Draw(room, name, local, sprite, order);
             if (footprint != Vector2.zero)
@@ -406,7 +380,7 @@ namespace ChemistryGame
         private void BuildExhibition(Transform room)
         {
             for (int i = 0; i < 4; i++)
-                Prop(room, "საგამოფენო სტენდი", new Vector2(-7.5f + i * 5, 0.6f), DecorArt.Pedestal(i), new Vector2(1.4f, 0.6f));
+                Prop(room, "საგამოფენო სტენდი", new Vector2(-7.5f + i * 5, 0.6f), RoomArt.DisplayCase(i), new Vector2(1.4f, 0.6f));
             Prop(room, "ბაზრობის სტენდი", new Vector2(-6, BackWall - 1.5f), DecorArt.FairBooth(), new Vector2(3f, 0.6f));
             WorldInteractable.Create(room, new Vector2(-6, BackWall - 2.7f), new Vector2(3.6f, 1.4f), 2.8f, () => "[E] სამეცნიერო ბაზრობა", () => game.Journal.OpenFair());
             LaboratoryArt.Draw(room, "ბანერი", new Vector2(4, BackWall + 2.6f), DecorArt.Banner(), -287);

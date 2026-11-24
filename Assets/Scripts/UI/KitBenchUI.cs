@@ -139,7 +139,12 @@ namespace ChemistryGame
             if (kit.Lab) { if (result.Boom) StopLoop(); else Draw(); }
             if (result.Boom) { AudioManager.Instance?.Wrong(); Play(Burst()); if (kit.Lab) game.Mishaps?.Spawn(FxKind.Smoke); }
             else if (result.Find != null) { if (fresh) AmbientAudio.Instance?.Sparkle(); else AudioManager.Instance?.Correct(); Play(Glow(result.Find.Color)); }
-            if (fresh) { StartCoroutine(NewCard(result.Find)); Juice.Confetti(stage, 4, 160); }
+            if (fresh)
+            {
+                if (kit == Kits.Atoms) StartCoroutine(ChemFx.Element(window.Card, counts[0], result.Find.Formula, result.Find.Title, result.Find.Color, "+" + Pay + " ქიმქოინი • +" + XP + " XP"));
+                else StartCoroutine(Discovered(result.Find, kit == Kits.Molecules ? Joined() : null));
+                Juice.Confetti(stage, 4, 160);
+            }
             else if (result.Find != null) Juice.Sparkle(stage, 12);
             if (fresh) Missions.Refresh(); // the first potion is a story step
             Refresh(false);
@@ -393,6 +398,15 @@ namespace ChemistryGame
             }
         }
 
+        /// <summary>The parts on the stage as the left side of an equation: "2H + O → H2O".</summary>
+        private string Joined() => string.Join(" + ", kit.Parts.Select((p, i) => counts[i] == 0 ? null : (counts[i] > 1 ? counts[i].ToString() : "") + p.Symbol).Where(s => s != null));
+
+        private IEnumerator Discovered(KitFind find, string from)
+        {
+            if (from != null && window != null) yield return ChemFx.Reaction(window.Card, from + " → " + find.Formula);
+            if (window != null) yield return NewCard(find);
+        }
+
         private IEnumerator NewCard(KitFind find)
         {
             var card = LabUI.Panel(window.Card, "ახალი აღმოჩენა", LabUI.Gold);
@@ -401,6 +415,8 @@ namespace ChemistryGame
             var group = card.gameObject.AddComponent<CanvasGroup>(); group.blocksRaycasts = false;
             var swatch = LabUI.Panel(card.transform, "ფერი", find.Color); swatch.sprite = Disc;
             Place(swatch.rectTransform, new Vector2(0, 0.5f), new Vector2(70, 0), new Vector2(92, 92));
+            // A molecule shows its ball-and-stick model instead of a colour coin.
+            if (kit == Kits.Molecules && ChemFx.Molecule(card.transform, find.Formula, new Vector2(-160, 0), 1.1f)) swatch.color = Color.clear;
             var text = LabUI.Text(card.transform, "<size=30><b>ახალი აღმოჩენა!</b></size>\n<b>" + find.Title + "</b>\n" + find.Formula + "\n<size=17>+" + Pay + " ქიმქოინი  •  +" + XP + " XP</size>", 21, LabUI.Ink);
             text.enableAutoSizing = true; text.fontSizeMin = 12; text.fontSizeMax = 21;
             LabUI.Fill(text.rectTransform, 14); text.rectTransform.offsetMin = new Vector2(132, 14);

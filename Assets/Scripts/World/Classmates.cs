@@ -411,8 +411,9 @@ namespace ChemistryGame
             var group = root.AddComponent<UnityEngine.Rendering.SortingGroup>(); group.sortingOrder = 7;
             var animator = root.AddComponent<Animator>();
             animator.runtimeAnimatorController = lab.player.GetComponent<Animator>().runtimeAnimatorController;
+            HeadAccessory.Attach(root.transform, animator, def.ID);
             var shadow = LaboratoryArt.Draw(root.transform, "ჩრდილი", new Vector2(0, 0.05f), PixelArt.Make(18, 6, (x, y) =>
-                Mathf.Pow((x - 8.5f) / 8f, 2) + Mathf.Pow((y - 2.5f) / 2.5f, 2) < 1 ? new Color(0.07f, 0.06f, 0.13f, 0.2f) : Color.clear), -1);
+                Mathf.Pow((x - 8.5f) / 8f, 2) + Mathf.Pow((y - 2.5f) / 2.5f, 2) < 1 ? new Color(0.12f, 0.07f, 0.06f, 0.32f) : Color.clear), -1);
 
             var label = new GameObject("სახელი", typeof(RectTransform), typeof(Canvas));
             label.transform.SetParent(root.transform, false);

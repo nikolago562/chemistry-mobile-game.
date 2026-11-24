@@ -20,7 +20,7 @@ namespace ChemistryGame
             var shadow = Renderer("ფეხების ჩრდილი", transform, new Vector3(0, 0.05f), 0);
             shadow.sprite = PixelArt.Make(18, 6, (x, y) =>
                 Mathf.Pow((x - 8.5f) / 8f, 2) + Mathf.Pow((y - 2.5f) / 2.5f, 2) < 1
-                    ? new Color(0.07f, 0.06f, 0.13f, 0.20f) : Color.clear);
+                    ? new Color(0.12f, 0.07f, 0.06f, 0.32f) : Color.clear);
             accessory = Renderer("სათვალე ან ქუდი", transform, Vector3.zero, 7);
             desk = Renderer("პირადი მაგიდის დეკორი", game.classroom, new Vector3(52, -12.5f), 7);
             var label = new GameObject("მოთამაშის წოდება", typeof(RectTransform), typeof(Canvas));

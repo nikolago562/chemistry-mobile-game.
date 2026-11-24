@@ -51,38 +51,90 @@ namespace ChemistryGame
             Render();
         }
 
+        private static readonly Color Ink = new Color32(70, 48, 34, 255);
+
+        /// <summary>One project in the index: its flask (a dark silhouette while locked), title, status and progress.</summary>
+        private void IndexEntry(Transform parent, ResearchProject project)
+        {
+            var state = ResearchProjects.State(project.ID);
+            bool unlocked = ResearchProjects.Unlocked(project), active = state != null && !state.completed;
+            string tag = !unlocked ? "დაკეტილია • " + LabProgress.ReputationTitles[project.ReputationLevel] : state == null ? "ახალი" : active ? "მიმდინარე • " + (state.stage + 1) + "/" + project.Stages.Length : "დასრულებულია ×" + state.timesCompleted;
+            var id = project.ID;
+            var button = LabUI.Button(parent, "", () => { selected = id; Render(); }, 70);
+            button.GetComponent<Image>().color = selected == id ? Color.Lerp(project.Color, Color.white, 0.45f) : unlocked ? LabUI.Paper : new Color32(214, 210, 196, 255);
+            var label = button.GetComponentInChildren<TMP_Text>(); label.gameObject.SetActive(false);
+            var flask = UIArt.Picture(button.transform, "კოლბა", Glassware.Get(Glassware.ShapeFor(project.ID), project.Color, active ? 0.6f : 0.4f), new Vector2(40, 50), unlocked ? Color.white : new Color(0.25f, 0.3f, 0.28f, 0.55f));
+            flask.rectTransform.anchorMin = flask.rectTransform.anchorMax = new Vector2(0, 0.55f); flask.rectTransform.anchoredPosition = new Vector2(30, 0);
+            var text = LabUI.Text(button.transform, "<b>" + project.Title + "</b>\n<size=13>" + tag + "</size>", 16, unlocked ? Ink : LabUI.Muted);
+            text.enableAutoSizing = true; text.fontSizeMin = 10; text.fontSizeMax = 16;
+            LabUI.Fill(text.rectTransform, 6); text.rectTransform.offsetMin = new Vector2(58, 14);
+            if (active)
+            {
+                var bar = LabUI.Progress(button.transform, state.stage / (float)project.Stages.Length, project.Color, 6);
+                var r = bar.transform.parent.GetComponent<RectTransform>(); r.anchorMin = new Vector2(0, 0); r.anchorMax = new Vector2(1, 0); r.pivot = new Vector2(0.5f, 0);
+                r.offsetMin = new Vector2(58, 12); r.offsetMax = new Vector2(-10, 18);
+            }
+        }
+
+        /// <summary>The stage list as a checklist: ticked, current (coral arrow) or still to come.</summary>
+        private static void StageLine(Transform parent, ProjectStage stage, int index, bool done, bool current)
+        {
+            var row = LabUI.Row(parent, "ეტაპი", 10); LabUI.Size(row.gameObject, 34);
+            var box = LabUI.Panel(row.transform, "ნიშანი", done ? LabUI.Mint : current ? LabUI.Coral : new Color32(236, 228, 206, 255));
+            LabUI.Size(box.gameObject, 26, 26, 0);
+            if (done) LabUI.Fill(LabUI.Icon(box.transform, LabIcon.Check, Color.white).rectTransform, 3);
+            else { var n = LabUI.Text(box.transform, current ? "→" : (index + 1).ToString(), 15, current ? Color.white : LabUI.Muted); n.alignment = TextAlignmentOptions.Center; n.fontStyle = FontStyles.Bold; LabUI.Fill(n.rectTransform); }
+            var text = LabUI.Text(row.transform, "<b>" + stage.Title + "</b>  <size=13>" + stage.Text + "</size>", 15, done ? LabUI.Muted : current ? Ink : new Color32(110, 96, 84, 255));
+            if (done) text.text = "<s>" + text.text + "</s>";
+            text.enableAutoSizing = true; text.fontSizeMin = 10; text.fontSizeMax = 15;
+            LabUI.Size(text.gameObject, 34, -1, 1);
+        }
+
         private void Render()
         {
             Ui.Clear(window.Body);
             var split = LabUI.Row(window.Body, "კვლევები", 18); LabUI.FlexibleHeight(split.gameObject);
-            var list = LabUI.Card(split.transform, "პროექტები", LabUI.Soft, 12); LabUI.Size(list.gameObject, 480, 330, 0);
-            Ui.Line(list.transform, "კვლევითი პროექტები", 19, LabUI.Ink, 28, true);
+            split.childControlHeight = true; split.childForceExpandHeight = true;
+            // Left: the journal's index of projects, like a leather cover with tabs.
+            var list = LabUI.Card(split.transform, "პროექტები", UIArt.Walnut, 12); LabUI.Size(list.gameObject, 480, 330, 0);
+            Ui.Line(list.transform, "პროექტების სარჩევი", 19, LabUI.Paper, 28, true);
             var scroll = LabUI.Scroll(list.transform);
-            foreach (var project in ResearchProjects.All)
-            {
-                var state = ResearchProjects.State(project.ID);
-                bool unlocked = ResearchProjects.Unlocked(project);
-                string tag = !unlocked ? "დაკეტილია" : state == null ? "ახალი" : !state.completed ? "მიმდინარე • " + (state.stage + 1) + "/" + project.Stages.Length : "დასრულებულია ×" + state.timesCompleted;
-                var id = project.ID;
-                var button = LabUI.Button(scroll, project.Title + "\n<size=13>" + tag + "</size>", () => { selected = id; Render(); }, 56);
-                button.GetComponent<Image>().color = selected == id ? Color.Lerp(project.Color, LabUI.Ink, 0.45f) : unlocked ? LabUI.Navy : LabUI.Muted;
-            }
-            var detail = LabUI.Column(split.transform, "დეტალები", 8); LabUI.Size(detail.gameObject, 480, -1, 1);
+            foreach (var project in ResearchProjects.All) IndexEntry(scroll, project);
+            // Right: the open page of the journal.
+            var page = UIArt.Paper(split.transform, "ჟურნალის გვერდი"); LabUI.Size(page.gameObject, 480, -1, 1);
+            var detail = page.gameObject.AddComponent<VerticalLayoutGroup>();
+            detail.padding = new RectOffset(62, 18, 14, 14); detail.spacing = 6;
+            detail.childControlWidth = detail.childControlHeight = true; detail.childForceExpandWidth = true; detail.childForceExpandHeight = false;
             var p = ResearchProjects.Get(selected);
             var s = ResearchProjects.State(selected);
-            var title = Ui.Line(detail.transform, p.Title, 26, Color.Lerp(p.Color, LabUI.Ink, 0.55f), 36, true);
-            Ui.Line(detail.transform, p.Summary, 16, LabUI.Ink, 50);
-            Ui.Line(detail.transform, "ჯილდო: " + p.Coins + " ქიმქოინი • " + p.Reputation + " რეპუტაცია" + (SchoolCalendar.ThemeProject == p.ID ? " • თვის თემა: ბონუსი!" : "") +
-                "  •  ოსტატობა: " + LabProgress.Stars(LabProgress.MasteryLevel("project:" + p.ID)), 15, LabUI.Muted, 24);
-            var stages = LabUI.Card(detail.transform, "ეტაპები", LabUI.Paper, 10); LabUI.FlexibleHeight(stages.gameObject);
-            for (int i = 0; i < p.Stages.Length; i++)
+            bool open = ResearchProjects.Unlocked(p);
+            var head = LabUI.Row(page.transform, "სათაური", 14); LabUI.Size(head.gameObject, 92);
+            var plate = LabUI.Panel(head.transform, "ილუსტრაცია", Color.Lerp(p.Color, Color.white, 0.6f)); LabUI.Size(plate.gameObject, 84, 84, 0);
+            var art = UIArt.Picture(plate.transform, "კოლბა", Glassware.Get(Glassware.ShapeFor(p.ID), p.Color, 0.6f), new Vector2(54, 68), open ? Color.white : new Color(0.25f, 0.3f, 0.28f, 0.6f));
+            Juice.Bounce(art.transform);
+            var words = LabUI.Column(head.transform, "სიტყვები", 2); LabUI.Size(words.gameObject, 92, -1, 1);
+            Ui.Line(words.transform, p.Title, 25, Color.Lerp(p.Color, LabUI.Ink, 0.6f), 34, true);
+            Ui.Line(words.transform, p.Summary, 15, Ink, 54);
+            var chips = LabUI.Row(page.transform, "ჯილდოები", 8); LabUI.Size(chips.gameObject, 34);
+            UIArt.Chip(chips.transform, LabIcon.Coin, p.Coins.ToString(), LabUI.Gold);
+            UIArt.Chip(chips.transform, LabIcon.Trophy, "+" + p.Reputation, new Color32(240, 214, 170, 255));
+            UIArt.Chip(chips.transform, LabIcon.Book, LabProgress.Stars(LabProgress.MasteryLevel("project:" + p.ID)), new Color32(214, 230, 214, 255));
+            if (SchoolCalendar.ThemeProject == p.ID) UIArt.Chip(chips.transform, LabIcon.Flame, "თვის თემა", LabUI.Coral);
+            // What it needs from the storage room, with how many you have.
+            var needs = p.Stages.Where(st => st.Kind == StageKind.Gather && LabProgress.Material(st.Target) != null).ToList();
+            if (needs.Count > 0)
             {
-                var stage = p.Stages[i];
-                bool done = s != null && (s.completed || i < s.stage);
-                bool isCurrent = s != null && !s.completed && i == s.stage;
-                string text = (i + 1) + ". " + stage.Title + ": " + stage.Text;
-                var line = Ui.Line(stages.transform, done ? "<s>" + text + "</s>" : isCurrent ? "→ " + text : text, 14, done ? LabUI.Muted : isCurrent ? LabUI.Coral : LabUI.Ink, 22, isCurrent);
+                var need = LabUI.Row(page.transform, "მასალები", 8); LabUI.Size(need.gameObject, 34);
+                Ui.Line(need.transform, "საჭიროა:", 15, LabUI.Muted, 30).GetComponent<LayoutElement>().preferredWidth = 74;
+                foreach (var st in needs)
+                {
+                    int have = LabProgress.Has(st.Target);
+                    UIArt.Chip(need.transform, LabIcon.Flask, LabProgress.Material(st.Target).Name + " " + have + "/" + st.Count, have >= st.Count ? new Color32(200, 236, 210, 255) : new Color32(246, 214, 200, 255));
+                }
             }
+            var stages = LabUI.Scroll(page.transform);
+            for (int i = 0; i < p.Stages.Length; i++)
+                StageLine(stages, p.Stages[i], i, s != null && (s.completed || i < s.stage), s != null && !s.completed && i == s.stage);
             status = Ui.Line(detail.transform, "", 16, LabUI.Green, 40);
             var actions = LabUI.Row(detail.transform, "მოქმედებები", 8); LabUI.Size(actions.gameObject, 48);
             if (!ResearchProjects.Unlocked(p))
@@ -314,8 +366,10 @@ namespace ChemistryGame
         {
             var tile = LabUI.Button(grid, "", () => { shown = item; Fill(); }, 86);
             tile.GetComponent<Image>().color = owned ? FoundTile : MissingTile;
-            var icon = owned ? ItemIcon(tile.transform, item, 56) : LabUI.Icon(tile.transform, LabIcon.Lock, LabUI.Gold);
-            if (!owned) { icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(0.5f, 0.55f); icon.rectTransform.sizeDelta = Vector2.one * 40; }
+            // Undiscovered things show as silhouettes (medals and glassware) so you can guess what's missing.
+            bool shape = Medal(item) || item.Kind == CollectionKind.Reaction || item.Kind == CollectionKind.Sample;
+            var icon = owned || shape ? ItemIcon(tile.transform, item, 56, owned) : LabUI.Icon(tile.transform, LabIcon.Lock, LabUI.Gold);
+            if (!owned && !shape) { icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(0.5f, 0.55f); icon.rectTransform.sizeDelta = Vector2.one * 40; }
             if (shown != null && shown.ID == item.ID)
             {
                 var mark = LabUI.Object(tile.transform, "არჩეული", typeof(Image)).GetComponent<Image>();
@@ -326,12 +380,13 @@ namespace ChemistryGame
         }
 
         /// <summary>A reaction or sample shows as glassware in its colour; everything else as a coloured medal.</summary>
-        private static Image ItemIcon(Transform parent, CollectionItem item, float size)
+        private static bool Medal(CollectionItem item) => item.Kind == CollectionKind.Badge || item.Kind == CollectionKind.Award;
+        private static Image ItemIcon(Transform parent, CollectionItem item, float size, bool owned = true)
         {
             var image = LabUI.Object(parent, "ხატულა", typeof(Image)).GetComponent<Image>();
             bool glass = item.Kind == CollectionKind.Reaction || item.Kind == CollectionKind.Sample;
-            image.sprite = glass ? Glassware.Get(Glassware.ShapeFor(item.ID), item.Color, 0.5f) : DecorArt.Disc();
-            image.color = glass ? Color.white : item.Color;
+            image.sprite = Medal(item) ? (owned ? UIArt.Medal : UIArt.LockedMedal) : glass ? Glassware.Get(Glassware.ShapeFor(item.ID), item.Color, 0.5f) : DecorArt.Disc();
+            image.color = Medal(item) ? (owned ? Color.Lerp(Color.white, item.Color, 0.25f) : Color.white) : !owned ? new Color(0.2f, 0.26f, 0.23f, 0.55f) : glass ? Color.white : item.Color;
             image.preserveAspect = true; image.raycastTarget = false;
             var rect = image.rectTransform; rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f); rect.sizeDelta = Vector2.one * size;
             return image;
@@ -375,6 +430,15 @@ namespace ChemistryGame
                 LabUI.Fill(name.rectTransform, 8);
                 var note = Ui.Line(rightPage, item.Description, 16, InkBrown, 54);
                 note.alignment = TextAlignmentOptions.Center;
+            }
+            else if (item != null)
+            {   // Not found yet: its silhouette, and for badges what earns it.
+                var ghost = ItemIcon(glassPane.transform, item, 110, false);
+                ghost.rectTransform.anchoredPosition = new Vector2(0, 14);
+                var name = LabUI.Text(glassPane.transform, "<b>???</b>", 18, InkBrown);
+                name.alignment = TextAlignmentOptions.Bottom; LabUI.Fill(name.rectTransform, 8);
+                var hint = Ui.Line(rightPage, Medal(item) ? "როგორ მოვიპოვო: " + item.Description : "ჯერ არ გაქვს აღმოჩენილი. განაგრძე ცდები!", 16, LabUI.Muted, 54);
+                hint.alignment = TextAlignmentOptions.Center;
             }
             else
             {
@@ -604,7 +668,7 @@ namespace ChemistryGame
                     LabUI.Button(window.Body, "ჯერ ჩააბარე: " + ResearchProjects.Get(submittable.id).Title, () =>
                     {
                         string reward = ResearchProjects.Submit(submittable);
-                        if (reward != null) game.HUD.Notify("პროექტი ჩაბარებულია! " + reward);
+                        if (reward != null) { game.HUD.Notify("პროექტი ჩაბარებულია! " + reward); ChemFx.ResearchDone(ResearchProjects.Get(submittable.id), reward); }
                         OpenFair();
                     }, 46);
                 var done = ResearchProjects.All.Where(p => ResearchProjects.State(p.ID)?.timesCompleted > 0).ToList();

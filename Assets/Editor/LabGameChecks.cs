@@ -966,7 +966,48 @@ public static class LabGameChecks
     {
         Snapshot("10-lab-room");
         SnapshotRoom("19-classroom-overview", game.classroom.TransformPoint(new Vector3(45.5f, -4)), 22, 1280, 1280);
-        Schedule(LifeSimStart, 0.3);
+        // The same room on a clear morning, once the sun shafts have faded in.
+        var data = GameSaveManager.Instance.Data;
+        string weather = data.weather, weatherDay = data.weatherDay;
+        SchoolCalendar.Override = Day(0, 10);
+        data.weatherDay = SchoolCalendar.DayKey; data.weather = "clear";
+        game.Atmosphere.Apply(true);
+        Schedule(() =>
+        {
+            SnapshotRoom("19b-classroom-day", game.classroom.TransformPoint(new Vector3(45.5f, -4)), 22, 1280, 1280);
+            SnapshotRoom("19c-classroom-day-close", game.classroom.TransformPoint(new Vector3(40, 6)), 6, 1280, 720);
+            data.weather = weather; data.weatherDay = weatherDay; SchoolCalendar.Override = null;
+            game.Atmosphere.Apply(true);
+            Schedule(ChemistryShow, 0.3);
+        }, 5.5);
+    }
+
+    // ---------------- chemistry you can watch ----------------
+    private static LabWindow showWindow;
+    private static void ChemistryShow()
+    {
+        Ensure(ChemFx.Atoms("Cu(OH)2").SequenceEqual(new[] { "Cu", "O", "H", "O", "H" }) && ChemFx.Atoms("CaCO3").Count == 5 && ChemFx.Atoms("მარილი") == null && ChemFx.Atoms("Xy2") == null,
+            "Formulas parse into atoms (groups, counts) and words are not formulas");
+        Ensure(ChemFx.Pretty("2H2 + O2 → 2H2O") == "2H<sub>2</sub> + O<sub>2</sub> → 2H<sub>2</sub>O", "Counts become subscripts, coefficients stay");
+        showWindow = LabUI.Window("ქიმიის ჩვენება", 900, 560);
+        game.StartCoroutine(ChemFx.Reaction(showWindow.Card, "CaCO3 + 2HCl → CaCl2 + H2O + CO2↑"));
+        Schedule(() => { Snapshot("67-reaction-mid"); Schedule(ReactionEnd, 0.6); }, 1.25);
+    }
+    private static void ReactionEnd()
+    {
+        Snapshot("67b-reaction-products");
+        game.StartCoroutine(ChemFx.Element(showWindow.Card, 8, "O", "ჟანგბადი", new Color32(230, 80, 80, 255), "+5 ქიმქოინი • +5 XP"));
+        Schedule(() =>
+        {
+            Snapshot("68-element-reveal");
+            ChemFx.ResearchDone(ResearchProjects.Get("crystals"), "+40 ქიმქოინი • +10 რეპუტაცია • უშეცდომო ბონუსი");
+            Schedule(() =>
+            {
+                Snapshot("69-research-done");
+                for (int k = 0; k < 10 && LabUI.AnyOpen; k++) LabUI.CloseTop();
+                Schedule(LifeSimStart, 3.0);
+            }, 1.3);
+        }, 1.4);
     }
 
     // ---------------- life-sim expansion ----------------
@@ -1184,9 +1225,14 @@ public static class LabGameChecks
     private static void CollectionReactions()
     {
         Snapshot("41c-collection-reactions");
-        LabUI.CloseTop();
-        game.Journal.Open();
-        Schedule(JournalView, 0.4);
+        game.Collection.OpenTab("Badge");
+        Schedule(() =>
+        {
+            Snapshot("41d-collection-badges");
+            LabUI.CloseTop();
+            game.Journal.Open();
+            Schedule(JournalView, 0.4);
+        }, 0.5);
     }
     private static void JournalView()
     {

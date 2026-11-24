@@ -56,41 +56,66 @@ namespace ChemistryGame
             window.Closed = () => window = null;
             var split = LabUI.Row(window.Body, "რვეულის გვერდები", 22);
             LabUI.FlexibleHeight(split.gameObject);
-            var sidebar = LabUI.Card(split.transform, "სარჩევი", LabUI.Navy, 18);
-            LabUI.Size(sidebar.gameObject, 460, 240, 0);
+            // A leather cover on the left with coloured sticky tabs; the ruled page on the right.
+            var sidebar = LabUI.Card(split.transform, "სარჩევი", UIArt.Walnut, 18);
+            LabUI.Size(sidebar.gameObject, 460, 250, 0);
             var icon = LabUI.Icon(sidebar.transform, LabIcon.Book, LabUI.Gold);
-            LabUI.Size(icon.gameObject, 74);
-            LabUI.Size(LabUI.Text(sidebar.transform, "შენი გზამკვლევი", 20, Color.white).gameObject, 34);
+            LabUI.Size(icon.gameObject, 54);
+            var cover = LabUI.Text(sidebar.transform, "<b>შენი გზამკვლევი</b>", 20, LabUI.Paper);
+            cover.alignment = TextAlignmentOptions.Center; LabUI.Size(cover.gameObject, 32);
             tabs.Clear();
             for (int i = 0; i < names.Count; i++)
             {
                 int index = i;
-                tabs.Add(LabUI.Button(sidebar.transform, names[i], () => ShowPage(index), 60));
+                var tab = LabUI.Button(sidebar.transform, names[i], () => ShowPage(index), 46);
+                tab.GetComponentInChildren<TMP_Text>().color = new Color32(70, 48, 34, 255);
+                tabs.Add(tab);
             }
-            var note = LabUI.Text(sidebar.transform, "რვეული ცდის დროსაც შეგიძლია გამოიყენო.", 16, new Color32(188, 193, 224, 255));
-            LabUI.Size(note.gameObject, 66);
-            var right = LabUI.Column(split.transform, "ჩანაწერები");
+            var note = LabUI.Text(sidebar.transform, "რვეული ცდის დროსაც შეგიძლია გამოიყენო.", 15, new Color32(232, 214, 186, 255));
+            note.alignment = TextAlignmentOptions.Center;
+            LabUI.Size(note.gameObject, 40);
+            var right = UIArt.Paper(split.transform, "რვეულის გვერდი");
             LabUI.Size(right.gameObject, 460, -1, 1);
+            var pad = right.gameObject.AddComponent<UnityEngine.UI.VerticalLayoutGroup>();
+            pad.padding = new RectOffset(62, 14, 12, 12);
+            pad.childControlWidth = pad.childControlHeight = true; pad.childForceExpandWidth = pad.childForceExpandHeight = true;
             content = LabUI.Scroll(right.transform);
             ShowPage(Mathf.Clamp(page, 0, pages.Length - 1));
         }
+        private static readonly Color[] TabColours = { new Color32(239, 194, 102, 255), new Color32(130, 200, 160, 255), new Color32(236, 150, 130, 255), new Color32(180, 160, 220, 255), new Color32(130, 190, 220, 255) };
+        /// <summary>An equation line (has an arrow and no Georgian words), shown on a highlighter stripe.</summary>
+        private static bool Formula(string line) => line.Contains("→") && !line.Any(c => c >= 'ა' && c <= 'ჿ');
         private void ShowPage(int index)
         {
             foreach (Transform child in content) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
             for (int i = 0; i < tabs.Count; i++)
-                tabs[i].GetComponent<UnityEngine.UI.Image>().color = i == index ? LabUI.Green : new Color32(57, 64, 106, 255);
+            {
+                var colour = TabColours[i % TabColours.Length];
+                tabs[i].GetComponent<UnityEngine.UI.Image>().color = i == index ? colour : Color.Lerp(colour, new Color32(110, 70, 44, 255), 0.45f);
+                tabs[i].transform.localScale = i == index ? new Vector3(1.05f, 1, 1) : Vector3.one;
+            }
+            // Handwritten-style entries: a green heading, ink text, formulas on a highlighter stripe.
             foreach (string paragraph in pages[index].Split(new[] { "\n\n" }, System.StringSplitOptions.RemoveEmptyEntries))
             {
-                var card = LabUI.Card(content, "ჩანაწერი", LabUI.Soft, 20);
+                var entry = LabUI.Column(content, "ჩანაწერი", 4);
                 int newline = paragraph.IndexOf('\n');
                 string heading = newline < 0 ? "" : paragraph.Substring(0, newline);
                 string body = newline < 0 ? paragraph : paragraph.Substring(newline + 1);
                 if (heading.Length > 0)
                 {
-                    var title = LabUI.Text(card.transform, heading, 24, LabUI.Green);
-                    title.fontStyle = FontStyles.Bold;
+                    var title = LabUI.Text(entry.transform, heading, 24, LabUI.Green);
+                    title.fontStyle = FontStyles.Bold | FontStyles.Underline;
                 }
-                LabUI.Text(card.transform, body, 21);
+                foreach (string line in body.Split('\n'))
+                {
+                    if (!Formula(line)) { LabUI.Text(entry.transform, line, 20, new Color32(52, 50, 70, 255)); continue; }
+                    var stripe = LabUI.Panel(entry.transform, "ფორმულა", new Color32(255, 234, 140, 200));
+                    var formula = LabUI.Text(stripe.transform, ChemFx.Pretty(line), 21, new Color32(52, 50, 70, 255));
+                    formula.fontStyle = FontStyles.Bold; LabUI.Fill(formula.rectTransform, 6);
+                    formula.enableAutoSizing = true; formula.fontSizeMin = 12; formula.fontSizeMax = 21;
+                    LabUI.Size(stripe.gameObject, 38);
+                }
+                LabUI.Size(LabUI.Object(entry.transform, "ცარიელი"), 10);
             }
             content.GetComponentInParent<UnityEngine.UI.ScrollRect>().verticalNormalizedPosition = 1;
         }
