@@ -187,7 +187,7 @@ namespace ChemistryGame
             var ball = LabUI.Panel(tile.transform, "ნიშანი", part.Color); ball.sprite = Disc;
             bool narrow = kit.Parts.Length > 6;
             Place(ball.rectTransform, new Vector2(0.5f, 1), new Vector2(0, narrow ? -56 : -42), Vector2.one * (narrow ? 44 : 56));
-            var symbol = LabUI.Text(ball.transform, part.Symbol, 20, part.Color.grayscale > 0.6f ? LabUI.Ink : Color.white);
+            var symbol = Outlined(LabUI.Text(ball.transform, part.Symbol, 20, Color.white));
             symbol.alignment = TextAlignmentOptions.Center; symbol.fontStyle = FontStyles.Bold; LabUI.Fill(symbol.rectTransform);
             var label = tile.GetComponentInChildren<TMP_Text>();
             label.text = part.Name; label.color = LabUI.Ink; label.alignment = TextAlignmentOptions.Bottom; label.fontSizeMin = 14; label.fontSizeMax = 20;
@@ -226,7 +226,7 @@ namespace ChemistryGame
             Place(image.rectTransform, new Vector2(0.5f, 0.5f), at, Vector2.one * size);
             if (text != "")
             {
-                var label = LabUI.Text(image.transform, text, size * 0.4f, color.grayscale > 0.6f ? LabUI.Ink : Color.white);
+                var label = Outlined(LabUI.Text(image.transform, text, size * 0.4f, Color.white));
                 label.alignment = TextAlignmentOptions.Center; label.fontStyle = FontStyles.Bold; LabUI.Fill(label.rectTransform);
             }
             return image;
@@ -415,7 +415,25 @@ namespace ChemistryGame
         }
 
         private static Sprite disc, ring;
-        private static Sprite Disc => disc ??= PixelArt.Make(32, 32, (x, y) => Vector2.Distance(new Vector2(x, y), new Vector2(15.5f, 15.5f)) < 15.5f ? Color.white : Color.clear);
+        /// <summary>A coin: dark outline, a darker inner ring, a lit face and a small shine (tinted by the part colour).</summary>
+        private static Sprite Disc => disc ??= PixelArt.Make(32, 32, (x, y) =>
+        {
+            float d = Vector2.Distance(new Vector2(x, y), new Vector2(15.5f, 15.5f));
+            if (d >= 15.5f) return Color.clear;
+            if (d >= 14f) return new Color(0.12f, 0.1f, 0.14f, 1);
+            if (d >= 11.5f) return new Color(0.72f, 0.72f, 0.72f, 1);
+            if (Vector2.Distance(new Vector2(x, y), new Vector2(10, 21)) < 2.2f) return Color.white;
+            return new Color(0.93f, 0.93f, 0.93f, 1);
+        });
+
+        /// <summary>White letters with a dark outline, readable on any coin colour.</summary>
+        private static TMP_Text Outlined(TMP_Text text)
+        {
+            text.fontStyle = FontStyles.Bold;
+            text.outlineWidth = 0.28f;
+            text.outlineColor = new Color32(24, 20, 30, 255);
+            return text;
+        }
         private static Sprite RingSprite => ring ??= PixelArt.Make(64, 64, (x, y) =>
         {
             float d = Vector2.Distance(new Vector2(x, y), new Vector2(31.5f, 31.5f));

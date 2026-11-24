@@ -1172,6 +1172,18 @@ public static class LabGameChecks
     private static void CollectionView2()
     {
         Snapshot("41-collection");
+        // Switching ribbons turns the page: mid-turn the pages are folded toward the spine.
+        game.Collection.OpenTab("Reaction");
+        Schedule(CollectionTurning, 0.08);
+    }
+    private static void CollectionTurning()
+    {
+        Snapshot("41b-collection-turn");
+        Schedule(CollectionReactions, 0.5);
+    }
+    private static void CollectionReactions()
+    {
+        Snapshot("41c-collection-reactions");
         LabUI.CloseTop();
         game.Journal.Open();
         Schedule(JournalView, 0.4);

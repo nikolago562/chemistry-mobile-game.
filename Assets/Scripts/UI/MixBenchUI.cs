@@ -239,12 +239,11 @@ namespace ChemistryGame
             var tile = LabUI.Button(shelf, "", () => Pick(id), 100);
             tile.GetComponent<Image>().color = selected ? LabUI.Mint : locked ? new Color32(205, 205, 196, 255) : LabUI.Paper;
             spots[id] = (RectTransform)tile.transform;
-            var liquid = LabUI.Object(tile.transform, "სითხე", typeof(Image)).GetComponent<Image>();
-            liquid.sprite = Glass(true); liquid.color = r.Color; liquid.raycastTarget = false;
-            Place(liquid.rectTransform, new Vector2(0.5f, 1), new Vector2(0, -30), new Vector2(38, 46));
+            // Pastel pixel glassware: each jar keeps its own shape (flask, round flask or tube).
             var glass = LabUI.Object(tile.transform, "მინა", typeof(Image)).GetComponent<Image>();
-            glass.sprite = Glass(false); glass.raycastTarget = false;
-            Place(glass.rectTransform, new Vector2(0.5f, 1), new Vector2(0, -30), new Vector2(38, 46));
+            glass.sprite = Glassware.Get(Glassware.ShapeFor(id), r.Color, Mixing.Stock(id) > 0 ? 0.5f : 0.08f); glass.raycastTarget = false;
+            glass.preserveAspect = true;
+            Place(glass.rectTransform, new Vector2(0.5f, 1), new Vector2(0, -30), new Vector2(40, 50));
             var label = tile.GetComponentInChildren<TMP_Text>();
             label.text = r.Name; label.color = LabUI.Ink; label.fontStyle = FontStyles.Bold;
             label.fontSizeMin = 11; label.fontSizeMax = 15; label.alignment = TextAlignmentOptions.Bottom;

@@ -216,7 +216,7 @@ namespace ChemistryGame
             var floor = new GameObject("იატაკი").transform; floor.SetParent(Room, false);
             for (int x = -9; x <= right; x++)
             for (int y = -6; y <= top; y++)
-                LaboratoryArt.Draw(floor, "ფილა", new Vector2(x + 0.5f, y), LaboratoryArt.Floor, -300);
+                LaboratoryArt.Draw(floor, "ფილა", new Vector2(x + 0.5f, y), CozyLabArt.Floor, -300);
             Wall(new Vector2(-9.5f, (top - 3) / 2f), new Vector2(0.5f, top + 10));
             Wall(new Vector2(right + 1.5f, (top - 3) / 2f), new Vector2(0.5f, top + 10));
             Wall(new Vector2((right - 8) / 2f, BackWallY + 0.15f), new Vector2(right + 11, 0.3f));
@@ -231,9 +231,9 @@ namespace ChemistryGame
             LaboratoryArt.Draw(Room, "გასასვლელი კარი", new Vector2(0, BackWallY), LaboratoryArt.LabDoor, -288);
             var exit = Portal(Room, ExitPosition - RoomOrigin, true);
             DoorSign(Room, "კლასი", new Vector2(0, BackWallY + 3.3f), -287, 2.2f);
-            LaboratoryArt.Draw(Room, "კედლის პლაკატი", new Vector2(5, BackWallY + 1.2f), PixelArt.Poster(), -288);
-            // A window to the sky outside and warm evening light, so time of day reaches the lab too.
-            LabAtmosphere.Instance?.AddWindow(Room, new Vector2(-5, BackWallY + 2.2f), new Vector2(1.6f, 1.4f));
+            // A window to the sky outside, so time of day reaches the lab too.
+            LabAtmosphere.Instance?.AddWindow(Room, new Vector2(-2.7f, BackWallY + 2.2f), new Vector2(1.4f, 1.4f));
+            BuildCozyWall(right);
             LabAtmosphere.Instance?.AddGlow(Room, new Vector2(-2, BackWallY - 3), new Color(1f, 0.72f, 0.4f), 9, true);
             LabAtmosphere.Instance?.AddDust(Room, new Vector2(-5, BackWallY - 3), new Vector2(6, 5));
             // Optional support is furniture: the notebook on a lectern, the shop and room plan on a clipboard stand.
@@ -242,6 +242,54 @@ namespace ChemistryGame
             BuildEquipment();
             Room.gameObject.SetActive(Inside);
         }
+        /// <summary>
+        /// The cozy back wall: a copper boiler puffing steam, a long honey-wood counter with glassware,
+        /// an arched bookshelf, a clock, a doodle screen, a vial shelf and a hanging plant, lit warm.
+        /// </summary>
+        private void BuildCozyWall(int right)
+        {
+            float wall = BackWallY;
+            SpriteRenderer Prop(string name, Vector2 at, Sprite sprite, int order) => LaboratoryArt.Draw(Room, name, at, sprite, order);
+            int Floor(float y) => -50 - Mathf.RoundToInt(y * 10);
+            void Solid(Vector2 centre, Vector2 size)
+            {
+                var go = new GameObject("ავეჯის საზღვარი", typeof(BoxCollider2D)); go.transform.SetParent(Room, false);
+                go.transform.localPosition = centre; go.GetComponent<BoxCollider2D>().size = size;
+            }
+
+            // Left: the boiler with a glowing bulb and steam.
+            Prop("ორთქლის ქვაბი", new Vector2(-5.4f, wall - 1.3f), CozyLabArt.Boiler, Floor(wall - 1.3f));
+            Solid(new Vector2(-5.4f, wall - 0.8f), new Vector2(3.2f, 1f));
+            CozyLabArt.Steam(Room, new Vector2(-3.8f, wall + 1.4f), -286);
+            LabAtmosphere.Instance?.AddGlow(Room, new Vector2(-4.0f, wall + 1.2f), new Color(0.45f, 0.75f, 1f), 2.4f, false);
+            Prop("ჩამოკიდებული მცენარე", new Vector2(-7.0f, wall + 2.0f), CozyLabArt.HangingPlant, -286);
+
+            // Right of the door: the long counter, with the shelf, clock, screen and vials on the wall above it.
+            // The counter is built from whole 2-unit pieces, so it really ends at the last full piece.
+            float from = 1.9f, to = from + 2 * Mathf.Floor((right - 1.6f - from) / 2);
+            for (float x = from + 1; x < to; x += 2)
+                Prop("დახლი", new Vector2(x, wall - 1.4f), CozyLabArt.Counter, Floor(wall - 1.4f));
+            Solid(new Vector2((from + to) / 2, wall - 0.9f), new Vector2(to - from, 1f));
+            int top = Floor(wall - 1.4f) + 1;
+            Prop("საათი", new Vector2(2.9f, wall + 3.0f), CozyLabArt.Clock, -286);
+            Prop("ეკრანი", new Vector2(2.9f, wall + 1.5f), CozyLabArt.Screen, -286);
+            Prop("წიგნების თარო", new Vector2(5.4f, wall + 0.1f), CozyLabArt.Bookshelf, -287);
+            for (float x = 7.6f; x < right - 1.6f; x += 6)
+            {
+                Prop("ბოთლების თარო", new Vector2(x, wall + 1.8f), CozyLabArt.VialShelf, -286);
+                LabAtmosphere.Instance?.AddGlow(Room, new Vector2(x, wall + 2.2f), new Color(1f, 0.85f, 0.55f), 1.8f, false);
+            }
+            // Glassware on the counter, in the pastel colours of the reference shelf.
+            var glass = new (float x, GlassShape shape, Color color)[]
+            {
+                (2.2f, GlassShape.Erlenmeyer, new Color32(120, 220, 160, 255)), (3.3f, GlassShape.Round, new Color32(244, 196, 150, 255)),
+                (4.5f, GlassShape.Tube, new Color32(110, 210, 220, 255)), (5.3f, GlassShape.Round, new Color32(240, 140, 180, 255)),
+            };
+            foreach (var (x, shape, color) in glass)
+                if (x < to - 0.4f) Prop("მინის ჭურჭელი", new Vector2(x, wall + 0.05f), Glassware.Get(shape, color, 0.45f, 26), top);
+            LabAtmosphere.Instance?.AddGlow(Room, new Vector2(4.5f, wall + 0.6f), new Color(1f, 0.78f, 0.45f), 5f, false);
+        }
+
         private void Furniture(Vector2 local, Sprite sprite, string prompt, System.Action use, Glow glow)
         {
             var art = LaboratoryArt.Draw(Room, prompt, local, sprite, -50 - Mathf.RoundToInt(local.y * 10));
@@ -255,12 +303,12 @@ namespace ChemistryGame
                 var art = LaboratoryArt.Draw(Room, name, new Vector2(x, BackWallY + height), sprite, order);
                 art.transform.localScale = new Vector3(width, scaleY, 1);
             }
-            Piece("კედლის ცოკოლი", 0, LaboratoryArt.WallBase);
-            Piece("კედლის ქვედა პანელი", 0.25f, LaboratoryArt.WallLower);
-            Piece("კედლის ზედა პანელი", 1.25f, LaboratoryArt.WallPaint);
-            Piece("კედლის ზედა პანელი", 2.25f, LaboratoryArt.WallPaint);
-            Piece("კედლის ზედა პანელი", 3.25f, LaboratoryArt.WallPaint, 0.5f);
-            Piece("კედლის ზედა კიდე", 3.75f, LaboratoryArt.WallCap, 1, -289);
+            Piece("კედლის ცოკოლი", 0, CozyLabArt.Skirting);
+            Piece("კედლის ქვედა პანელი", 0.25f, CozyLabArt.WallLow);
+            Piece("კედლის ზედა პანელი", 1.25f, CozyLabArt.WallPanel);
+            Piece("კედლის ზედა პანელი", 2.25f, CozyLabArt.WallPanel);
+            Piece("კედლის ზედა პანელი", 3.25f, CozyLabArt.WallPanel, 0.5f);
+            Piece("კედლის ზედა კიდე", 3.75f, CozyLabArt.WallTop, 1, -289);
         }
         private void Wall(Vector2 point, Vector2 size)
         {
@@ -268,7 +316,7 @@ namespace ChemistryGame
             go.transform.SetParent(Room, false); go.transform.localPosition = point; go.GetComponent<BoxCollider2D>().size = size;
             // Back-wall collision is hidden behind the painted face; other edges are cutaway caps.
             if (point.y > BackWallY) return;
-            var edge = LaboratoryArt.Draw(go.transform, "კედლის კიდე", new Vector2(0, -size.y * 0.5f), LaboratoryArt.WallCap, -289);
+            var edge = LaboratoryArt.Draw(go.transform, "კედლის კიდე", new Vector2(0, -size.y * 0.5f), CozyLabArt.SideWall, -289);
             edge.transform.localScale = new Vector3(size.x, size.y * 4, 1);
         }
         private void BuildEquipment()
@@ -279,8 +327,7 @@ namespace ChemistryGame
             {
                 var item = Catalog.First(c => c.ID == placement.itemID);
                 if (item.Decor) { BuildDecor(item, placement); continue; }
-                var art = LaboratoryArt.Draw(equipmentRoot, item.Name, Cell(placement.column, placement.row), LaboratoryArt.Bench(true), 4);
-                LaboratoryArt.CompleteBench(art, true);
+                var art = LaboratoryArt.Draw(equipmentRoot, item.Name, Cell(placement.column, placement.row), CozyLabArt.Table, 4);
                 art.gameObject.AddComponent<UnityEngine.Rendering.SortingGroup>().sortingOrder = -50 - Mathf.RoundToInt((Cell(placement.column, placement.row).y + 0.65f) * 10);
                 // Cover the full footprint up to the countertop's back edge (sprite is 1.5 units tall).
                 var shape = art.gameObject.AddComponent<BoxCollider2D>(); shape.size = new Vector2(2.6f, 1.3f);
@@ -288,8 +335,9 @@ namespace ChemistryGame
                 shape.sharedMaterial = game.player.GetComponent<BoxCollider2D>().sharedMaterial;
                 var tool = LaboratoryArt.Draw(art.transform, item.Name, new Vector2(0, 1.1f),
                     item.ID == "atom" || item.ID == "membrane" || item.ID == "gas" ? LaboratoryArt.Device :
-                    item.ID == "chromatography" ? PixelArt.Poster() : item.ID == "molecule" ? PixelArt.Globe() : LaboratoryArt.Glassware, 6);
-                tool.color = Color.Lerp(Color.white, item.Color, 0.35f);
+                    item.ID == "chromatography" ? PixelArt.Poster() : item.ID == "molecule" ? PixelArt.Globe() : Glassware.Get(Glassware.ShapeFor(item.ID), item.Color, 0.5f, 24), 6);
+                if (tool.sprite.name.StartsWith("glass:")) tool.transform.localPosition = new Vector2(0, 1.3f);
+                else tool.color = Color.Lerp(Color.white, item.Color, 0.35f);
                 LabAtmosphere.Instance?.AddGlow(art.transform, new Vector2(0, 1.6f), Color.Lerp(item.Color, Color.white, 0.4f), 1.4f, true);
                 var zone = new GameObject("ცდის დაწყება", typeof(BoxCollider2D), typeof(PersonalEquipment));
                 zone.transform.SetParent(art.transform, false); zone.transform.localPosition = new Vector2(0, -0.5f);

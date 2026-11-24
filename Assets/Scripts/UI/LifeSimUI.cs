@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -155,41 +157,262 @@ namespace ChemistryGame
     {
         private LabGame game;
         private LabWindow window;
-        private string tab = "Mineral";
+        private string tab = "Reaction";
         public bool IsOpen => window != null;
         public void Initialize(LabGame lab) => game = lab;
-        public void Toggle() { if (window != null) window.Close(); else Open(CollectionKind.Mineral); }
+        public void Toggle() { if (window != null) window.Close(); else Open(CollectionKind.Reaction); }
 
-        private static readonly (string id, string name)[] Tabs =
+        /// <summary>Ribbon tabs down the book's left edge: id, label and ribbon colour.</summary>
+        private static readonly (string id, string name, Color32 color)[] Tabs =
         {
-            ("Mineral", "მინერალები"), ("Sample", "ნიმუშები"), ("Photo", "ფოტოები"), ("Reaction", "რეაქციები"), ("Fact", "ფაქტები"), ("Badge", "ნიშნები"),
-            ("FurnitureSet", "ავეჯის ნაკრები"), ("Seasonal", "სეზონური"), ("Award", "ჯილდოები"), ("materials", "მასალები"), ("progress", "პროგრესი"),
+            ("Reaction", "რეაქციები", new Color32(236, 168, 92, 255)), ("Mineral", "მინერალები", new Color32(120, 186, 230, 255)),
+            ("Sample", "ნიმუშები", new Color32(132, 200, 150, 255)), ("Fact", "ფაქტები", new Color32(232, 202, 110, 255)),
+            ("Photo", "ფოტოები", new Color32(196, 158, 222, 255)), ("Badge", "ნიშნები", new Color32(240, 148, 128, 255)),
+            ("Award", "ჯილდოები", new Color32(250, 210, 92, 255)), ("Seasonal", "სეზონური", new Color32(140, 208, 208, 255)),
+            ("FurnitureSet", "ავეჯი", new Color32(204, 168, 128, 255)), ("materials", "მასალები", new Color32(168, 180, 204, 255)),
+            ("progress", "პროგრესი", new Color32(156, 208, 166, 255)),
         };
+        private static readonly Color32 Leather = new Color32(112, 72, 48, 255), PageColor = new Color32(246, 236, 212, 255),
+            Spine = new Color32(120, 92, 60, 70), InkBrown = new Color32(92, 70, 52, 255), FoundTile = new Color32(186, 228, 192, 255),
+            MissingTile = new Color32(70, 100, 78, 255), Frame = new Color32(128, 86, 54, 255);
+
+        private RectTransform leftPage, rightPage, ribbons;
+        private readonly Dictionary<string, RibbonSlide> ribbonSlides = new Dictionary<string, RibbonSlide>();
+        private CollectionItem shown;
+        private static Sprite ring;
 
         public void Open(CollectionKind kind) => OpenTab(kind.ToString());
+        /// <summary>Opens the book on a tab; switching tabs in an open book turns the page.</summary>
         public void OpenTab(string id)
         {
-            tab = id;
-            if (window == null) { window = LabUI.Window("კოლექცია და პროგრესი", 1120, 650); window.Closed = () => window = null; }
-            Render();
+            if (window == null || leftPage == null) { BuildBook(); tab = id; shown = null; Fill(); return; }
+            if (id == tab) return;
+            tab = id; shown = null;
+            foreach (var pair in ribbonSlides) pair.Value.Out = pair.Key == tab; // the ribbon moves at once, the page follows
+            StopAllCoroutines();
+            StartCoroutine(TurnPage());
         }
 
-        private void Render()
+        private void BuildBook()
         {
-            Ui.Clear(window.Body);
-            for (int row = 0; row < 2; row++)
+            window = LabUI.Window("კოლექცია", 1180, 680);
+            window.Closed = () => { window = null; ribbonSlides.Clear(); };
+            var card = window.Card;
+            card.GetComponent<Image>().color = Leather;
+            card.GetChild(0).gameObject.SetActive(false); // the green title banner: a book needs none
+            card.GetComponent<VerticalLayoutGroup>().padding = new RectOffset(18, 34, 30, 26);
+            var close = LabUI.Button(card, "×", window.Close, 64);
+            close.GetComponent<Image>().color = LabUI.Coral;
+            close.gameObject.GetComponent<LayoutElement>().ignoreLayout = true;
+            var closeRect = (RectTransform)close.transform;
+            closeRect.anchorMin = closeRect.anchorMax = Vector2.one; closeRect.pivot = new Vector2(0.5f, 0.5f);
+            closeRect.anchoredPosition = new Vector2(-14, -14); closeRect.sizeDelta = new Vector2(64, 64);
+            close.GetComponentInChildren<TMP_Text>().fontSizeMax = 34;
+
+            var spread = LabUI.Row(window.Body, "გაშლილი წიგნი", 0);
+            LabUI.FlexibleHeight(spread.gameObject);
+            spread.childForceExpandHeight = true;
+            ribbons = (RectTransform)LabUI.Column(spread.transform, "ჩანართები", 4).transform;
+            LabUI.Size(ribbons.gameObject, -1, 150, 0);
+            foreach (var (id, name, color) in Tabs) Ribbon(id, name, color);
+            leftPage = Page(spread.transform, "მარცხენა გვერდი", new Vector2(1, 0.5f));
+            rightPage = Page(spread.transform, "მარჯვენა გვერდი", new Vector2(0, 0.5f));
+        }
+
+        private RectTransform Page(Transform parent, string name, Vector2 pivot)
+        {
+            var page = LabUI.Panel(parent, name, PageColor);
+            LabUI.Size(page.gameObject, -1, 0, 1); // zero preferred width: the two pages split the spread evenly
+            var rect = page.rectTransform; rect.pivot = pivot;
+            var column = page.gameObject.AddComponent<VerticalLayoutGroup>();
+            column.padding = new RectOffset(26, 26, 18, 18); column.spacing = 10;
+            column.childControlHeight = column.childControlWidth = true; column.childForceExpandHeight = false; column.childForceExpandWidth = true;
+            return rect;
+        }
+
+        /// <summary>A soft shadow where a page meets the spine.</summary>
+        private static void SpineShade(RectTransform page)
+        {
+            float side = page.pivot.x;
+            var shade = LabUI.Object(page, "ხერხემლის ჩრდილი", typeof(Image)).GetComponent<Image>();
+            shade.color = Spine; shade.raycastTarget = false;
+            shade.gameObject.AddComponent<LayoutElement>().ignoreLayout = true;
+            shade.rectTransform.anchorMin = new Vector2(side, 0); shade.rectTransform.anchorMax = new Vector2(side, 1);
+            shade.rectTransform.pivot = new Vector2(side, 0.5f); shade.rectTransform.sizeDelta = new Vector2(16, 0);
+        }
+
+        private void Ribbon(string id, string name, Color color)
+        {
+            var holder = LabUI.Object(ribbons, name);
+            LabUI.Size(holder, 46);
+            var button = LabUI.Button(holder.transform, name, () => OpenTab(id), 46);
+            button.GetComponent<LayoutElement>().ignoreLayout = true;
+            button.GetComponent<Image>().color = color;
+            var label = button.GetComponentInChildren<TMP_Text>(); label.fontSizeMin = 11; label.fontSizeMax = 16; label.color = InkBrown;
+            var rect = (RectTransform)button.transform;
+            rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one; rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.offsetMin = new Vector2(26, 0); rect.offsetMax = new Vector2(10, 0);
+            ribbonSlides[id] = button.gameObject.AddComponent<RibbonSlide>();
+        }
+
+        /// <summary>Folds both pages to the spine, swaps their content and opens them again.</summary>
+        private IEnumerator TurnPage()
+        {
+            AudioManager.Instance?.Click();
+            for (float t = 0; t < 0.13f; t += Time.unscaledDeltaTime) { Squash(1 - Mathf.SmoothStep(0, 1, t / 0.13f)); yield return null; }
+            Squash(0);
+            Fill();
+            for (float t = 0; t < 0.18f; t += Time.unscaledDeltaTime) { Squash(Mathf.SmoothStep(0, 1, t / 0.18f)); yield return null; }
+            Squash(1);
+        }
+        private void Squash(float s)
+        {
+            if (leftPage == null) return;
+            leftPage.localScale = new Vector3(Mathf.Max(0.001f, s), 1, 1);
+            rightPage.localScale = new Vector3(Mathf.Max(0.001f, s), 1, 1);
+        }
+
+        private List<CollectionItem> ItemsOf(string id)
+        {
+            if (id == "Reaction")
+                return LabProgress.Items(CollectionKind.Reaction).Concat(game.questions.Where(q => q != null).Select(q =>
+                    new CollectionItem(CollectionKind.Reaction, "reaction:" + q.questionID, q.equationPrompt.Replace("?", q.correctAnswer), q.CategoryName + " • " + q.hintText, LabUI.Mint))).ToList();
+            return LabProgress.Items((CollectionKind)Enum.Parse(typeof(CollectionKind), id)).ToList();
+        }
+
+        /// <summary>Draws the current tab: ribbons, the item grid on the left, progress and the display case on the right.</summary>
+        private void Fill()
+        {
+            foreach (var pair in ribbonSlides) pair.Value.Out = pair.Key == tab;
+            Ui.Clear(leftPage); Ui.Clear(rightPage);
+            SpineShade(leftPage); SpineShade(rightPage);
+            var tabInfo = Tabs.First(t => t.id == tab);
+            if (tab == "materials" || tab == "progress")
             {
-                var tabs = LabUI.Row(window.Body, "ჩანართები", 6); LabUI.Size(tabs.gameObject, 40);
-                foreach (var t in Tabs.Skip(row * 6).Take(6)) { var id = t.id; Ui.Tab(tabs.transform, t.name, tab == id, () => { tab = id; Render(); }); }
+                Ui.Line(leftPage, tabInfo.name, 26, InkBrown, 36, true);
+                var list = LabUI.Scroll(leftPage);
+                if (tab == "materials") Materials(list); else Progress(list);
+                Overview(null);
+                return;
             }
-            var content = LabUI.Scroll(window.Body);
-            if (tab == "progress") { Progress(content); return; }
-            if (tab == "materials") { Materials(content); return; }
-            var kind = (CollectionKind)Enum.Parse(typeof(CollectionKind), tab);
-            if (kind == CollectionKind.Reaction) { Reactions(content); return; }
-            var items = LabProgress.Items(kind).ToList();
-            Ui.Line(content, "შეგროვებულია: " + items.Count(i => LabProgress.Owns(i.ID)) + " / " + items.Count, 17, LabUI.Muted, 26);
-            foreach (var item in items) Card(content, item, LabProgress.Owns(item.ID));
+            var items = ItemsOf(tab);
+            int owned = items.Count(i => LabProgress.Owns(i.ID));
+            var header = LabUI.Row(leftPage, "სათაური", 10); LabUI.Size(header.gameObject, 40);
+            var title = LabUI.Text(header.transform, "<b>" + tabInfo.name + "</b>", 26, InkBrown); LabUI.Size(title.gameObject, 40, -1, 1);
+            var count = LabUI.Text(header.transform, owned + "/" + items.Count, 22, InkBrown); count.alignment = TextAlignmentOptions.Right; LabUI.Size(count.gameObject, 40, 110, 0);
+            var scroll = LabUI.Scroll(leftPage);
+            var grid = LabUI.Object(scroll, "ბადე", typeof(GridLayoutGroup)).GetComponent<GridLayoutGroup>();
+            grid.cellSize = new Vector2(86, 86); grid.spacing = new Vector2(10, 10);
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount; grid.constraintCount = 4;
+            if (items.Count == 0) Ui.Line(scroll, "აქ ჯერ არაფერია.", 17, LabUI.Muted, 30);
+            shown ??= items.FirstOrDefault(i => LabProgress.Owns(i.ID));
+            foreach (var item in items) Tile(grid.transform, item, LabProgress.Owns(item.ID));
+            Overview(items);
+        }
+
+        private void Tile(Transform grid, CollectionItem item, bool owned)
+        {
+            var tile = LabUI.Button(grid, "", () => { shown = item; Fill(); }, 86);
+            tile.GetComponent<Image>().color = owned ? FoundTile : MissingTile;
+            var icon = owned ? ItemIcon(tile.transform, item, 56) : LabUI.Icon(tile.transform, LabIcon.Lock, LabUI.Gold);
+            if (!owned) { icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(0.5f, 0.55f); icon.rectTransform.sizeDelta = Vector2.one * 40; }
+            if (shown != null && shown.ID == item.ID)
+            {
+                var mark = LabUI.Object(tile.transform, "არჩეული", typeof(Image)).GetComponent<Image>();
+                mark.sprite = LabUI.Ring(); mark.type = Image.Type.Sliced; mark.pixelsPerUnitMultiplier = 1 / LabUI.PixelScale;
+                mark.color = LabUI.Coral; mark.raycastTarget = false;
+                LabUI.Fill(mark.rectTransform, -4);
+            }
+        }
+
+        /// <summary>A reaction or sample shows as glassware in its colour; everything else as a coloured medal.</summary>
+        private static Image ItemIcon(Transform parent, CollectionItem item, float size)
+        {
+            var image = LabUI.Object(parent, "ხატულა", typeof(Image)).GetComponent<Image>();
+            bool glass = item.Kind == CollectionKind.Reaction || item.Kind == CollectionKind.Sample;
+            image.sprite = glass ? Glassware.Get(Glassware.ShapeFor(item.ID), item.Color, 0.5f) : DecorArt.Disc();
+            image.color = glass ? Color.white : item.Color;
+            image.preserveAspect = true; image.raycastTarget = false;
+            var rect = image.rectTransform; rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f); rect.sizeDelta = Vector2.one * size;
+            return image;
+        }
+
+        /// <summary>The right page: overall progress as a ring, counts per shelf and the display case.</summary>
+        private void Overview(List<CollectionItem> items)
+        {
+            var kinds = new[] { "Reaction", "Mineral", "Sample", "Fact", "Award" };
+            int all = 0, got = 0;
+            var counts = new List<string>();
+            foreach (string k in kinds)
+            {
+                var list = ItemsOf(k);
+                int n = list.Count(i => LabProgress.Owns(i.ID));
+                all += list.Count; got += n;
+                counts.Add(Tabs.First(t => t.id == k).name + "  " + n + "/" + list.Count);
+            }
+            var pill = LabUI.Pill(rightPage, "კოლექციის პროგრესი", Frame);
+            pill.fontStyle = FontStyles.Bold;
+            var row = LabUI.Row(rightPage, "პროგრესი", 18); LabUI.Size(row.gameObject, 170);
+            var dial = LabUI.Object(row.transform, "რგოლი"); LabUI.Size(dial, 170, 170, 0);
+            Ring(dial.transform, 1, new Color32(222, 208, 180, 255));
+            Ring(dial.transform, all == 0 ? 0 : (float)got / all, LabUI.Gold);
+            var percent = LabUI.Text(dial.transform, "<size=40><b>" + (all == 0 ? 0 : got * 100 / all) + "%</b></size>\n" + got + "/" + all, 22, InkBrown);
+            percent.alignment = TextAlignmentOptions.Center; LabUI.Fill(percent.rectTransform);
+            var lines = LabUI.Text(row.transform, string.Join("\n", counts), 18, InkBrown);
+            lines.alignment = TextAlignmentOptions.Left; lines.lineSpacing = 12; LabUI.Size(lines.gameObject, 170, -1, 1);
+            Ui.Line(rightPage, "•••  ვიტრინა  •••", 20, InkBrown, 30, true).alignment = TextAlignmentOptions.Center;
+            // The display case: a wooden frame holding the chosen find.
+            var frame = LabUI.Panel(rightPage, "ვიტრინა", Frame); LabUI.Size(frame.gameObject, 200);
+            var glassPane = LabUI.Panel(frame.transform, "მინა", new Color32(240, 232, 214, 255)); LabUI.Fill(glassPane.rectTransform, 12);
+            var item = items != null ? shown : null;
+            if (item != null && LabProgress.Owns(item.ID))
+            {
+                var big = ItemIcon(glassPane.transform, item, 110);
+                big.rectTransform.anchoredPosition = new Vector2(0, 14);
+                Juice.Bounce(big.transform);
+                var name = LabUI.Text(glassPane.transform, "<b>" + item.Name + "</b>", 18, InkBrown);
+                name.alignment = TextAlignmentOptions.Bottom; name.enableAutoSizing = true; name.fontSizeMin = 11; name.fontSizeMax = 18;
+                LabUI.Fill(name.rectTransform, 8);
+                var note = Ui.Line(rightPage, item.Description, 16, InkBrown, 54);
+                note.alignment = TextAlignmentOptions.Center;
+            }
+            else
+            {
+                var empty = LabUI.Text(glassPane.transform, items == null ? "აირჩიე თარო მარცხნივ" : "შეეხე აღმოჩენას, რომ აქ გამოჩნდეს", 17, LabUI.Muted);
+                empty.alignment = TextAlignmentOptions.Center; LabUI.Fill(empty.rectTransform, 12);
+            }
+        }
+
+        private static void Ring(Transform parent, float amount, Color color)
+        {
+            ring ??= PixelArt.Make(64, 64, (x, y) =>
+            {
+                float d = Vector2.Distance(new Vector2(x, y), new Vector2(31.5f, 31.5f));
+                return d < 31.5f && d > 24 ? Color.white : Color.clear;
+            });
+            var image = LabUI.Object(parent, "რკალი", typeof(Image)).GetComponent<Image>();
+            image.sprite = ring; image.color = color; image.raycastTarget = false;
+            image.type = Image.Type.Filled; image.fillMethod = Image.FillMethod.Radial360; image.fillOrigin = (int)Image.Origin360.Top; image.fillClockwise = true;
+            image.fillAmount = amount;
+            LabUI.Fill(image.rectTransform);
+        }
+
+        /// <summary>A ribbon slides out of the book when its tab is open and tucks back when it isn't.</summary>
+        private sealed class RibbonSlide : MonoBehaviour
+        {
+            public bool Out;
+            private float at = -1;
+            private void Update()
+            {
+                float want = Out ? 1 : 0;
+                at = at < 0 ? want : Mathf.MoveTowards(at, want, Time.unscaledDeltaTime * 6);
+                var rect = (RectTransform)transform;
+                float k = Mathf.SmoothStep(0, 1, at);
+                rect.offsetMin = new Vector2(Mathf.Lerp(26, 0, k), 0);
+                rect.offsetMax = new Vector2(Mathf.Lerp(10, 24, k), 0);
+                var label = GetComponentInChildren<TMP_Text>();
+                if (label != null) label.fontStyle = Out ? FontStyles.Bold : FontStyles.Normal;
+            }
         }
 
         private static void Card(Transform parent, CollectionItem item, bool owned)
@@ -200,20 +423,6 @@ namespace ChemistryGame
             var text = LabUI.Text(row.transform, owned ? "<b>" + item.Name + "</b>\n<size=14>" + item.Description + "</size>" : "<b>???</b>\n<size=14>" + (item.Kind == CollectionKind.Badge || item.Kind == CollectionKind.FurnitureSet ? item.Description : "ჯერ არ გაქვს აღმოჩენილი.") + "</size>", 17, owned ? LabUI.Ink : LabUI.Muted);
             text.enableAutoSizing = true; text.fontSizeMin = 11; text.fontSizeMax = 17;
             LabUI.Size(text.gameObject, 48, -1, 1);
-        }
-
-        private void Reactions(Transform content)
-        {
-            var questions = game.questions.Where(q => q != null).ToList();
-            Ui.Line(content, "აღმოჩენილი რეაქციები: " + questions.Count(q => LabProgress.Owns("reaction:" + q.questionID)) + " / " + questions.Count, 17, LabUI.Muted, 26);
-            foreach (var q in questions)
-            {
-                bool owned = LabProgress.Owns("reaction:" + q.questionID);
-                Card(content, new CollectionItem(CollectionKind.Reaction, q.questionID, q.equationPrompt.Replace("?", q.correctAnswer), q.CategoryName + " • " + q.hintText, LabUI.Mint), owned);
-            }
-            var mixes = LabProgress.Items(CollectionKind.Reaction).ToList();
-            Ui.Line(content, "შერევის მაგიდის აღმოჩენები: " + mixes.Count(m => LabProgress.Owns(m.ID)) + " / " + mixes.Count, 17, LabUI.Muted, 26);
-            foreach (var m in mixes) Card(content, m, LabProgress.Owns(m.ID));
         }
 
         private void Materials(Transform content)
