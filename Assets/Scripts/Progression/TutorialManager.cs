@@ -135,7 +135,7 @@ namespace ChemistryGame
         public void Initialize(LabGame lab)
         {
             game = lab;
-            Vector2 from = new Vector2(48.5f, 7.2f), to = game.lockerPosition + new Vector2(-1.8f, -1.1f);
+            Vector2 from = SchoolLayout.PlayerStart + new Vector2(2, 0.4f), to = game.lockerPosition + new Vector2(-1.8f, -1.1f);
             float angle = Mathf.Atan2(to.y - from.y, to.x - from.x) * Mathf.Rad2Deg;
             for (int i = 0; i < 6; i++)
             {

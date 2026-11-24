@@ -109,11 +109,11 @@ namespace ChemistryGame
             if (relocated) GameSaveManager.Instance.Commit();
             var depth = game.player.gameObject.AddComponent<PersonalLabDepth>(); depth.Initialize(this);
             BuildRoom();
-            var portal = Portal(game.classroom, new Vector2(46.5f, 10.1f), false);
-            var door = LaboratoryArt.Draw(game.classroom, "პირადი ლაბორატორიის კარი", new Vector2(46.5f, 11), LaboratoryArt.Door, 5);
+            var portal = Portal(game.classroom, SchoolLayout.LabDoor, false);
+            var door = LaboratoryArt.Draw(game.classroom, "პირადი ლაბორატორიის კარი", new Vector2(SchoolLayout.LabDoor.x, 11), LaboratoryArt.Door, 5);
             door.transform.localScale = new Vector3(1.5f, 1, 1);
             // Framed name plate on the door's upper panel (the door reaches the top of the wall).
-            DoorSign(game.classroom, "ჩემი ლაბორატორია", new Vector2(46.5f, 14.15f), 6, 2.8f);
+            DoorSign(game.classroom, "ჩემი ლაბორატორია", new Vector2(SchoolLayout.LabDoor.x, 14.15f), 6, 2.8f);
         }
         private GameObject Portal(Transform parent, Vector2 point, bool exit)
         {
@@ -137,7 +137,7 @@ namespace ChemistryGame
             if (exit != Inside) return false;
             if (!exit && !GameSaveManager.Instance.Data.tutorialCompleted)
             { game.HUD.Notify("ჯერ მასწავლებელთან პირველი ცდა დაასრულე. შემდეგ საკუთარი ლაბორატორია გელოდება!"); return false; }
-            if (!exit) returnPoint = game.classroom.TransformPoint(new Vector3(46.5f, 8.3f));
+            if (!exit) returnPoint = game.classroom.TransformPoint(SchoolLayout.LabDoor + new Vector2(0, -1.8f));
             Inside = !exit;
             // The lab room (~480 sprites) is only active while the player is in it.
             Room.gameObject.SetActive(Inside);

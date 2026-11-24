@@ -358,6 +358,8 @@ namespace ChemistryGame
             Size(label.gameObject, 40, -1, 1);
             var close = Button(header.transform, "×", window.Close, 40);
             close.GetComponent<Image>().color = Coral;
+            // A thumb-sized hit area (about 48 dp) around the small × without making it look bigger.
+            close.GetComponent<Image>().raycastPadding = new Vector4(-24, -24, -24, -24);
             close.gameObject.SetActive(closable);
             Size(close.gameObject, 40, 44, 0);
             var body = Column(card.transform, "შიგთავსი", 14);

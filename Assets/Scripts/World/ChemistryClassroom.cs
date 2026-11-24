@@ -12,45 +12,43 @@ namespace ChemistryGame
             DepthOccluders.Clear();
             var furniture = new GameObject("ქიმიის ოთახის ავეჯი");
             furniture.transform.SetParent(game.classroom, false);
-            MakeBench(furniture.transform, new Vector2(36, 9.2f), false);
+            MakeBench(furniture.transform, SchoolLayout.TeacherBench, false);
             // The lesson table stands right of the teacher's own desk along the back wall, so
             // talking to her and starting a lesson are two separate spots.
-            MakeBench(furniture.transform, new Vector2(40.3f, 9.2f), false);
-            Glassware(furniture.transform, new Vector2(39.3f, 10.65f), false);
-            MakeBench(furniture.transform, new Vector2(55, 9.2f), true);
-            foreach (float y in new[] { 2f, -6f, -14f })
-            foreach (float x in new[] { 37.5f, 52f })
-                MakeBench(furniture.transform, new Vector2(x, y), false);
+            MakeBench(furniture.transform, SchoolLayout.LessonBench, false);
+            Glassware(furniture.transform, SchoolLayout.LessonBench + new Vector2(-1, 1.45f), false);
+            MakeBench(furniture.transform, SchoolLayout.SinkBench, true);
+            foreach (var table in Tables) MakeBench(furniture.transform, table.at, false);
             // The advanced challenge desk sits apart, near the front, as a later goal.
-            MakeBench(furniture.transform, new Vector2(37.5f, -21f), false);
-            LaboratoryArt.Draw(furniture.transform, "გამოწვევების თასი", new Vector2(36.4f, -19.45f), LaboratoryArt.Device, 7);
+            MakeBench(furniture.transform, SchoolLayout.QuizBench, false);
+            LaboratoryArt.Draw(furniture.transform, "გამოწვევების თასი", SchoolLayout.QuizBench + new Vector2(-1.1f, 1.55f), LaboratoryArt.Device, 7);
 
-            Glassware(furniture.transform, new Vector2(35, 10.65f), true);
+            Glassware(furniture.transform, SchoolLayout.TeacherBench + new Vector2(-1, 1.45f), true);
             // A runner down the middle aisle, then each table's own mat, sign and signature prop.
-            Mat(furniture.transform, new Vector2(44.75f, -7), new Vector2(3, 32), new Color32(176, 110, 84, 255), 1);
+            Mat(furniture.transform, new Vector2(45.5f, (SchoolLayout.FloorMinY + 8.6f) / 2), new Vector2(2.6f, 8.6f - SchoolLayout.FloorMinY), new Color32(176, 110, 84, 255), 1);
             foreach (var (at, color, name, prop) in Tables)
             {
-                Mat(furniture.transform, at + new Vector2(0, -0.7f), new Vector2(6.5f, 4.6f), color, 1);
-                Sign(furniture.transform, at + new Vector2(0, 2.75f), name, color);
-                LaboratoryArt.Draw(furniture.transform, name + " • ნიშანი", at + new Vector2(0, 1.5f), Prop(prop), 8);
+                Mat(furniture.transform, at + new Vector2(0, -0.7f), SchoolLayout.MatSize, color, 1);
+                // No floating name plate: the animated prop says what the table is; the prompt shows in range.
+                var art = LaboratoryArt.Draw(furniture.transform, name + " • ნიშანი", at + new Vector2(0, 1.5f), Prop(prop), 8);
+                art.gameObject.AddComponent<StationIdle>().Kind = prop;
             }
-            Cabinet(furniture.transform, new Vector2(63, -9), "ლაბორატორიის მარაგი");
-            LaboratoryArt.Draw(furniture.transform, "საზომი ხელსაწყო", new Vector2(54.5f, 10.7f), LaboratoryArt.Device, 7);
+            Cabinet(furniture.transform, SchoolLayout.SupplyCabinet, "ლაბორატორიის მარაგი");
+            LaboratoryArt.Draw(furniture.transform, "საზომი ხელსაწყო", SchoolLayout.SinkBench + new Vector2(-0.5f, 1.5f), LaboratoryArt.Device, 7);
             AcademyArt.Dress(game, furniture.transform);
         }
 
         /// <summary>Each table's bench position, colour (its chapter's), sign text and signature prop.</summary>
         private static readonly (Vector2 at, Color32 color, string name, int prop)[] Tables =
         {
-            (new Vector2(37.5f, 2), new Color32(70, 140, 210, 255), "ატომის სამჭედლო", 0),
-            (new Vector2(52, -14), new Color32(150, 100, 200, 255), "ელემენტები", 1),
-            (new Vector2(37.5f, -6), new Color32(220, 90, 90, 255), "შერევის მაგიდა", 2),
-            (new Vector2(52, -6), new Color32(40, 160, 160, 255), "მოლეკულები", 3),
-            (new Vector2(37.5f, -14), new Color32(60, 170, 220, 255), "ხსნარები", 4),
-            (new Vector2(52, 2), new Color32(210, 90, 160, 255), "pH ნაყენები", 5),
+            (SchoolLayout.AtomBench, new Color32(70, 140, 210, 255), "ატომის სამჭედლო", 0),
+            (SchoolLayout.ElementBench, new Color32(150, 100, 200, 255), "ელემენტები", 1),
+            (SchoolLayout.MixBench, new Color32(220, 90, 90, 255), "შერევის მაგიდა", 2),
+            (SchoolLayout.MoleculeBench, new Color32(40, 160, 160, 255), "მოლეკულები", 3),
+            (SchoolLayout.SolutionBench, new Color32(60, 170, 220, 255), "ხსნარები", 4),
+            (SchoolLayout.PotionBench, new Color32(210, 90, 160, 255), "pH ნაყენები", 5),
         };
         private static readonly Sprite[] props = new Sprite[6];
-        private static Sprite signSprite;
 
         /// <summary>A woven rug under a table, its colour softened toward cream so the room stays warm.</summary>
         private static void Mat(Transform parent, Vector2 centre, Vector2 size, Color color, int order)
@@ -60,33 +58,6 @@ namespace ChemistryGame
             art.drawMode = SpriteDrawMode.Tiled;
             art.size = size;
         }
-
-        /// <summary>A hanging name plate in the table's colour with an outlined label.</summary>
-        private static void Sign(Transform parent, Vector2 point, string text, Color color)
-        {
-            signSprite ??= Sliced(16, 8, (x, y) =>
-            {
-                if ((x == 0 || x == 15) && (y == 0 || y == 7)) return Color.clear;
-                if (x == 0 || x == 15 || y == 0 || y == 7) return new Color(0.25f, 0.25f, 0.28f);
-                return y == 1 ? new Color(0.75f, 0.75f, 0.75f) : Color.white;
-            });
-            var plate = LaboratoryArt.Draw(parent, text + " • დაფა", point, signSprite, 9);
-            plate.color = color;
-            plate.drawMode = SpriteDrawMode.Sliced;
-            plate.size = new Vector2(3.6f, 0.8f);
-            foreach (float side in new[] { -1.4f, 1.4f })
-                LaboratoryArt.Draw(plate.transform, "ჯაჭვი", new Vector2(side, 0.4f), Chain, 9);
-            PersonalLab.Label(plate.transform, text, new Vector2(0, 0.02f), Color.white);
-        }
-        private static Sprite Sliced(int w, int h, System.Func<int, int, Color> draw)
-        {
-            var texture = new Texture2D(w, h, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
-            for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) texture.SetPixel(x, y, draw(x, y));
-            texture.Apply();
-            return Sprite.Create(texture, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 16, 0, SpriteMeshType.FullRect, Vector4.one * 3);
-        }
-        private static Sprite chain;
-        private static Sprite Chain => chain ??= PixelArt.Make(1, 12, (x, y) => y % 3 == 0 ? Color.clear : new Color(0.3f, 0.3f, 0.32f), new Vector2(0.5f, 0), 16);
 
         /// <summary>Signature props drawn in pixels: atom model, element chart, bubbling flask, ball-and-stick water, beakers, pH tubes.</summary>
         private static Color C(byte r, byte g, byte b, byte a = 255) => new Color32(r, g, b, a);
@@ -194,6 +165,56 @@ namespace ChemistryGame
             go.transform.localPosition = point;
             go.GetComponent<SpriteRenderer>().sprite = tubes ? LaboratoryArt.Glassware : LaboratoryArt.Flask;
             go.GetComponent<SpriteRenderer>().sortingOrder = 7;
+        }
+    }
+
+    /// <summary>Small idle motion on a table's signature prop: orbiting electrons, rising bubbles, shifting pH colours, a bobbing molecule, a twinkle.</summary>
+    public sealed class StationIdle : MonoBehaviour
+    {
+        public int Kind;
+        private SpriteRenderer art;
+        private readonly SpriteRenderer[] dots = new SpriteRenderer[3];
+        private Vector3 home;
+        private static Sprite dot;
+        private void Start()
+        {
+            art = GetComponent<SpriteRenderer>();
+            home = transform.localPosition;
+            dot ??= PixelArt.Make(2, 2, (x, y) => Color.white, new Vector2(0.5f, 0.5f), 16);
+            for (int i = 0; i < dots.Length; i++)
+            {
+                dots[i] = LaboratoryArt.Draw(transform, "ნაწილაკი", Vector2.zero, dot, art.sortingOrder + 1);
+                dots[i].color = Color.clear;
+            }
+        }
+        private void Update()
+        {
+            float t = Time.time + home.x * 0.37f;
+            float h = art.sprite.bounds.size.y;
+            for (int i = 0; i < dots.Length; i++)
+            {
+                float u = (t * 0.7f + i / 3f) % 1;
+                switch (Kind)
+                {
+                    case 0: // electrons on the two orbits
+                        float a = t * 2.4f + i * 2.1f;
+                        dots[i].transform.localPosition = i % 2 == 0 ? new Vector3(Mathf.Cos(a) * 0.62f, h / 2 + Mathf.Sin(a) * 0.24f) : new Vector3(Mathf.Cos(a) * 0.24f, h / 2 + Mathf.Sin(a) * 0.62f);
+                        dots[i].color = new Color(0.55f, 0.85f, 1, i < 2 ? 1 : 0);
+                        break;
+                    case 2: case 4: // bubbles rising out of the glass
+                        dots[i].transform.localPosition = new Vector3((i - 1) * 0.22f + Mathf.Sin(u * 9 + i) * 0.05f, h * 0.7f + u * 0.8f);
+                        dots[i].color = new Color(0.75f, 1, 0.85f, Mathf.Sin(u * Mathf.PI) * 0.9f);
+                        break;
+                    case 1: // a twinkle over the chart
+                        dots[i].transform.localPosition = new Vector3((Mathf.Repeat(i * 0.37f + Mathf.Floor(t * 0.7f + i / 3f) * 0.61f, 1) - 0.5f) * 1.2f, h * (0.35f + i * 0.2f));
+                        dots[i].color = new Color(1, 0.95f, 0.7f, Mathf.Max(0, Mathf.Sin(u * Mathf.PI * 2)));
+                        break;
+                    default: dots[i].color = Color.clear; break;
+                }
+            }
+            // The molecule bobs as if its bonds were springs; the pH tubes slowly shift colour.
+            if (Kind == 3) transform.localPosition = home + Vector3.up * Mathf.Round(Mathf.Sin(t * 2.2f) * 1.5f) / 16f;
+            if (Kind == 5) art.color = Color.HSVToRGB(Mathf.Repeat(t * 0.08f, 1), 0.18f, 1);
         }
     }
 

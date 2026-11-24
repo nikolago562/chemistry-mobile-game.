@@ -5,7 +5,7 @@ namespace ChemistryGame
 {
     /// <summary>
     /// Each school room's own identity, painted in code at 16 px per unit in the academy palette:
-    /// hallway (cream and sage checker stone, oak and parchment walls), storage (worn concrete, brick,
+    /// hallway (soft cream flagstones, oak and parchment walls), storage (worn concrete, brick,
     /// metal and crates, a little darker), reading corner (basket-weave parquet, green damask, lamps),
     /// greenhouse (mossy flagstones, glass wall, plants and sun) and exhibition hall (lilac marble,
     /// plum walls, gold trim and spotlit cases). Floors and walls are one tiled sprite each.
@@ -35,12 +35,13 @@ namespace ChemistryGame
             {
                 for (int y = 0; y < 32; y++) for (int x = 0; x < 32; x++)
                 {
-                    bool light = (x / 16 + y / 16) % 2 == 0;
-                    Color32 c = light ? C(234, 222, 196) : C(176, 186, 160);
-                    int lx = x % 16, ly = y % 16;
-                    if (lx == 0 || ly == 0) c = C(150, 136, 112);
-                    else if (lx == 1 || ly == 15) c = Shade(c, 10);
-                    else if (lx == 15 || ly == 1) c = Shade(c, -12);
+                    // Soft staggered flagstones: neighbours differ by a few shades, so no checkerboard.
+                    int sx = x + (y / 16 % 2) * 8;
+                    Color32 c = Shade(C(212, 204, 184), Hash(sx / 16 % 2, y / 16) % 3 * 3 - 3);
+                    int lx = sx % 16, ly = y % 16;
+                    if (lx == 0 || ly == 0) c = C(190, 180, 160);
+                    else if (lx == 1 || ly == 15) c = Shade(c, 4);
+                    else if (lx == 15 || ly == 1) c = Shade(c, -5);
                     else if (Hash(x, y) % 23 == 0) c = Shade(c, -10);
                     p.Dot(x, y, c);
                 }
@@ -326,10 +327,12 @@ namespace ChemistryGame
         public delegate SpriteRenderer PropMaker(Transform room, string name, Vector2 local, Sprite sprite, Vector2 footprint, int order = 6);
 
         /// <summary>Adds the room's floor and wall art (replacing the old tinted tiles) and its furnishings.</summary>
-        public static void Build(string id, Transform room, int halfWidth, float backWall)
+        public static void Build(string id, Transform room, int halfWidth, float backWall, float front = -5.7f)
         {
-            var floor = LaboratoryArt.Draw(room, "იატაკი", new Vector2(0, 0.5f), Floor(id), -300);
-            floor.drawMode = SpriteDrawMode.Tiled; floor.size = new Vector2(halfWidth * 2, 11);
+            // From just above the front wall to half a unit under the back wall's foot.
+            float bottom = front + 0.7f, top = backWall + 0.5f;
+            var floor = LaboratoryArt.Draw(room, "იატაკი", new Vector2(0, (bottom + top) / 2), Floor(id), -300);
+            floor.drawMode = SpriteDrawMode.Tiled; floor.size = new Vector2(halfWidth * 2, top - bottom);
             // A soft band of shade along the foot of the back wall.
             var occlusion = LaboratoryArt.Draw(room, "კედლის ჩრდილი", new Vector2(0, backWall - 0.35f), AcademyArt.Shadow, -299);
             occlusion.transform.localScale = new Vector3(halfWidth, 1.4f, 1);
@@ -362,11 +365,11 @@ namespace ChemistryGame
             switch (id)
             {
                 case "hallway":
-                    Runner(new Vector2(0, 0.2f), new Vector2(27, 2.2f), new Color(0.62f, 0.36f, 0.32f));
-                    foreach (float x in new[] { -13.6f, -7.6f, 1.6f, 7.6f, 13.6f }) Lamp(new Vector2(x, backWall + 2.3f), 1);
-                    ambience.Sway(Thing("დიდი მცენარე", new Vector2(-9, 4.25f), AcademyArt.BigPlant, 0.9f).transform);
-                    ambience.Sway(Thing("დიდი მცენარე", new Vector2(9, 4.25f), AcademyArt.BigPlant, 0.9f).transform);
-                    Loose("წიგნები", new Vector2(-12.6f, -4.3f), BookStack);
+                    Runner(new Vector2(0, 0.9f), new Vector2(SchoolLayout.HallHalfWidth * 2 - 3, 2.0f), new Color(0.62f, 0.36f, 0.32f));
+                    foreach (float x in new[] { -6.75f, 2.25f, -10.4f, 10.4f }) Lamp(new Vector2(x, backWall + 2.3f), 1);
+                    ambience.Sway(Thing("დიდი მცენარე", new Vector2(-10.1f, SchoolLayout.HallFront + 0.9f), AcademyArt.BigPlant, 0.9f).transform);
+                    ambience.Sway(Thing("დიდი მცენარე", new Vector2(10.1f, SchoolLayout.HallFront + 0.9f), AcademyArt.BigPlant, 0.9f).transform);
+                    Loose("წიგნები", new Vector2(-8.4f, SchoolLayout.HallFront + 0.8f), BookStack);
                     break;
                 case "storage":
                     Wall("ნიშანი", new Vector2(-6, backWall + 3.0f), Sign(0));

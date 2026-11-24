@@ -94,7 +94,8 @@ public static class LabGameChecks
     {
         var dialogueType = typeof(TeacherDialogueUI);
         var pages = (string[])dialogueType.GetField("pages", Hidden).GetValue(game.Dialogue);
-        Ensure(pages.Length >= 8 && pages.Length <= 14 && pages.Any(p => p.Contains("დღესვე")) && pages.Any(p => p.Contains("მომავალში")), "Welcome shows what you can do today and what opens later, then the closet");
+        Ensure(pages.Length >= 3 && pages.Length <= 5 && pages.Any(p => p.Contains("დღესვე")), "Welcome is short: what you do today, the controls, then the closet");
+        Ensure(TeacherGuide.Lessons.Single(l => l.ID == "tour").Steps.Any(st => st.Text.Contains("მომავალში")), "What opens later waits in the optional tour talk");
         ShowPage(1);
         Schedule(TutorialToday, 1.6);
     }
@@ -108,20 +109,14 @@ public static class LabGameChecks
     private static void TutorialToday()
     {
         Snapshot("01a-welcome-today");
-        ShowPage(6);
-        Schedule(TutorialFuture, 1.6);
-    }
-    private static void TutorialFuture()
-    {
-        Ensure(game.Personal.Room.gameObject.activeSelf, "The teacher's picture of the lab wakes the lab room");
-        Snapshot("01b-welcome-future");
         ShowPage(-1);
         Schedule(TutorialPanView, 1.6);
     }
     private static void TutorialPanView()
     {
         var closet = UnityEngine.Object.FindObjectsByType<InteractableStation>(FindObjectsSortMode.None).Single(s => s.supplyCloset);
-        Ensure(Vector2.Distance(Camera.main.transform.position, closet.transform.position) < 3, "Camera pans to the locker while the teacher talks about it");
+        var seen = Camera.main.WorldToViewportPoint(closet.transform.position);
+        Ensure(seen.x > 0.1f && seen.x < 0.9f && seen.y > 0.1f && seen.y < 0.9f && Vector2.Distance(Camera.main.transform.position, closet.transform.position) < 9, "Camera pans to the locker while the teacher talks about it");
         Snapshot("01-tutorial");
         Schedule(TutorialContinue, 0.1);
     }
@@ -215,8 +210,8 @@ public static class LabGameChecks
         Physics2D.SyncTransforms();
         var body = game.player.GetComponent<Rigidbody2D>();
         var collider = game.player.GetComponent<BoxCollider2D>();
-        Vector2 min = game.classroom.TransformPoint(new Vector3(24, -23));
-        Vector2 max = game.classroom.TransformPoint(new Vector3(66, 11));
+        Vector2 min = game.classroom.TransformPoint(new Vector3(SchoolLayout.FloorMinX - 1, SchoolLayout.FloorMinY));
+        Vector2 max = game.classroom.TransformPoint(new Vector3(SchoolLayout.FloorMaxX + 1, SchoolLayout.FloorMaxY + 1));
         const float step = 0.5f;
         var start = Vector2Int.RoundToInt(((Vector2)body.position + collider.offset - min) / step);
         var visited = new HashSet<Vector2Int>();
@@ -241,6 +236,21 @@ public static class LabGameChecks
             var trigger = station.GetComponent<BoxCollider2D>();
             Ensure(visited.Any(node => trigger.OverlapPoint(min + (Vector2)node * step)), "Unreachable station " + station.name);
         }
+        bool Walkable(Vector2 world) => visited.Any(node => Vector2.Distance(min + (Vector2)node * step, world) < 0.6f);
+        // The compact room: about a third smaller each way, and everything that moves or opens still reachable.
+        int area = (SchoolLayout.FloorMaxX - SchoolLayout.FloorMinX + 1) * (SchoolLayout.FloorMaxY - SchoolLayout.FloorMinY + 1);
+        Ensure(area <= 0.55f * 42 * 35, "The classroom floor is compact (" + area + " cells)");
+        foreach (var classmate in ChemistryGame.Classmates.All)
+            foreach (var (place, spot) in classmate.Schedule)
+            {
+                if (place == "classroom")
+                    Ensure(Walkable(game.classroom.TransformPoint(spot)), classmate.Name + "'s classroom spot is on open, reachable floor");
+                else if (place == "hallway")
+                    Ensure(Mathf.Abs(spot.x) < SchoolLayout.HallHalfWidth - 0.6f && spot.y > SchoolLayout.HallFront + 0.6f && spot.y < SchoolAreas.BackWall - 0.5f, classmate.Name + "'s hallway spot is inside the hallway");
+            }
+        Ensure(Walkable(game.classroom.TransformPoint(SchoolAreas.ClassroomDoor + new Vector2(0, 0.6f))), "The hallway door can be walked to");
+        Ensure(Walkable(game.classroom.TransformPoint(SchoolLayout.LabDoor + new Vector2(0, -0.6f))), "The personal-lab door can be walked to");
+        foreach (var door in SchoolLayout.HallDoors) Ensure(Mathf.Abs(door.x) + 1.2f <= SchoolLayout.HallHalfWidth, "Hallway door to " + door.to + " fits the hallway");
         Debug.Log("STATION_PATHS_CHECKED_" + visited.Count);
     }
 
@@ -253,10 +263,10 @@ public static class LabGameChecks
         Physics2D.simulationMode = SimulationMode2D.Script;
         try
         {
-            foreach (float y in new[] { 2f, -6f, -14f })
-            foreach (float x in new[] { 37.5f, 52f })
+            foreach (var bench in new[] { SchoolLayout.AtomBench, SchoolLayout.PotionBench, SchoolLayout.MixBench, SchoolLayout.MoleculeBench, SchoolLayout.SolutionBench, SchoolLayout.ElementBench })
             {
-                Vector2 origin = game.classroom.TransformPoint(new Vector3(x, y));
+                float x = bench.x, y = bench.y;
+                Vector2 origin = game.classroom.TransformPoint(bench);
                 Vector2[] ring = { new Vector2(-2.4f, -0.4f), new Vector2(2.4f, -0.4f),
                     new Vector2(2.4f, 2.25f), new Vector2(-2.4f, 2.25f), new Vector2(-2.4f, -0.4f) };
                 body.position = origin + ring[0] - feet.offset;
@@ -373,8 +383,16 @@ public static class LabGameChecks
     {
         LabUI.CloseTop();
         var rail = LabUI.Root.Find("მენიუ");
-        Ensure(rail.gameObject.activeSelf && rail.GetComponentsInChildren<Button>().Length == GameHUD.RailMenus.Length, "After the intro the main menus sit on a rail at the right edge");
+        var drawer = LabUI.Root.Find("მენიუს ღილაკი");
+        Ensure(drawer.gameObject.activeSelf && !rail.gameObject.activeSelf, "After the intro one menu button waits top-right; the menus stay folded");
+        drawer.GetComponent<Button>().onClick.Invoke();
+        Ensure(rail.gameObject.activeSelf && rail.GetComponentsInChildren<Button>().Length == GameHUD.RailMenus.Length, "The menu button folds out the main menus");
         Snapshot("08b-menu-rail");
+        var mixFocus = UnityEngine.Object.FindObjectsByType<InteractableStation>(FindObjectsSortMode.None).First(st => st.stationType == StationType.ReactionTable).GetComponent<Focus>();
+        Ensure(Focus.At(mixFocus.Spot + new Vector2(0.5f, 1.2f)) == mixFocus, "A tap on (or just above) a table picks it for tap-to-walk");
+        // Every visible classroom thing is the pick for a tap on its own spot, even in the busy back-wall row.
+        foreach (var f in UnityEngine.Object.FindObjectsByType<Focus>(FindObjectsSortMode.None).Where(f => f.transform.position.x < 100 && f.Kind() != Glow.Hidden))
+            Ensure(Focus.At(f.Spot) == f, "A tap on " + f.name + " picks it");
         rail.GetComponentsInChildren<Button>()[0].onClick.Invoke();
         Ensure(game.Lessons.MapOpen, "The rail's first button opens the learning map");
         LabUI.CloseTop();
@@ -805,7 +823,7 @@ public static class LabGameChecks
         Ensure(Mathf.Abs(game.player.Movement.magnitude - 1) < 0.001f, "Diagonal speed normalization");
         var fixedTick = typeof(PlayerController).GetMethod("FixedUpdate", Hidden);
         for (int i = 0; i < 20; i++) fixedTick.Invoke(game.player, null);
-        Ensure(Mathf.Abs(body.linearVelocity.magnitude - 4.25f) < 0.01f, "Calibrated diagonal walking pace");
+        Ensure(Mathf.Abs(body.linearVelocity.magnitude - 5.25f) < 0.01f, "Calibrated diagonal walking pace");
         game.player.SetMovement(Vector2.zero);
         for (int i = 0; i < 20; i++) fixedTick.Invoke(game.player, null);
         Ensure(body.linearVelocity == Vector2.zero, "Stopping reaches rest without residual sliding");
@@ -824,7 +842,7 @@ public static class LabGameChecks
     private static void TeacherTalk()
     {
         normalCameraSize = Camera.main.orthographicSize;
-        MoveTo(game.classroom.TransformPoint(new Vector3(36.5f, 6.6f)));
+        MoveTo(game.classroom.TransformPoint(SchoolLayout.TeacherBench + new Vector2(-0.7f, -2.6f)));
         var station = UnityEngine.Object.FindObjectsByType<InteractableStation>(FindObjectsSortMode.None)
             .First(s => s.stationType == StationType.TeacherNPC);
         Ensure(game.Tutorial.Allows(station), "Teacher can always be talked to");
@@ -927,7 +945,7 @@ public static class LabGameChecks
             ChemistrySandbox.PH(0, 50, 100) > 12, "Acid/base model and neutrality");
         Ensure(ChemistrySandbox.PH(50, 0, 1000) > ChemistrySandbox.PH(50, 0, 100), "Dilution raises acidic pH");
         Ensure(Mathf.Abs(ChemistrySandbox.Concentration(0.5f, 1) - 0.5f) < 0.001f, "Concentration model");
-        MoveTo(game.classroom.TransformPoint(new Vector3(46.5f, 10.1f)));
+        MoveTo(game.classroom.TransformPoint(SchoolLayout.LabDoor));
         Schedule(InsidePersonalLab, 0.6);
     }
     private static void InsidePersonalLab()
@@ -959,13 +977,19 @@ public static class LabGameChecks
     {
         Ensure(!game.Personal.Inside && game.player.transform.position.x < 100, "Door returns to classroom without a teleport loop");
         Debug.Log("PERSONAL_LAB_PURCHASE_PLACEMENT_ACTIVITIES_AND_DOORS_PASSED");
-        MoveTo(game.classroom.TransformPoint(new Vector3(45, -5)));
+        MoveTo(game.classroom.TransformPoint(SchoolLayout.P(45, -5)));
         Schedule(RoomView, 0.7);
     }
     private static void RoomView()
     {
         Snapshot("10-lab-room");
-        SnapshotRoom("19-classroom-overview", game.classroom.TransformPoint(new Vector3(45.5f, -4)), 22, 1280, 1280);
+        // Camera framing: the view stays inside the room's limits and the room is no more than ~1.5 screens across.
+        var view = Camera.main; float halfH = view.orthographicSize, halfW = halfH * view.aspect;
+        Vector2 lo = game.classroom.TransformPoint(SchoolLayout.CameraMin), hi = game.classroom.TransformPoint(SchoolLayout.CameraMax);
+        Vector2 eye = view.transform.position;
+        Ensure(eye.x - halfW >= lo.x - 0.05f && eye.x + halfW <= hi.x + 0.05f && eye.y - halfH >= lo.y - 0.05f && eye.y + halfH <= hi.y + 0.05f, "The classroom camera stays inside the room");
+        Ensure((hi.x - lo.x) <= halfW * 2 * 1.6f, "The compact classroom is about one and a half screens wide");
+        SnapshotRoom("19-classroom-overview", game.classroom.TransformPoint(SchoolLayout.RoomCentre), 15, 1280, 1280);
         // The same room on a clear morning, once the sun shafts have faded in.
         var data = GameSaveManager.Instance.Data;
         string weather = data.weather, weatherDay = data.weatherDay;
@@ -974,8 +998,8 @@ public static class LabGameChecks
         game.Atmosphere.Apply(true);
         Schedule(() =>
         {
-            SnapshotRoom("19b-classroom-day", game.classroom.TransformPoint(new Vector3(45.5f, -4)), 22, 1280, 1280);
-            SnapshotRoom("19c-classroom-day-close", game.classroom.TransformPoint(new Vector3(40, 6)), 6, 1280, 720);
+            SnapshotRoom("19b-classroom-day", game.classroom.TransformPoint(SchoolLayout.RoomCentre), 15, 1280, 1280);
+            SnapshotRoom("19c-classroom-day-close", game.classroom.TransformPoint(SchoolLayout.AtomBench + new Vector2(0, 3)), 6, 1280, 720);
             data.weather = weather; data.weatherDay = weatherDay; SchoolCalendar.Override = null;
             game.Atmosphere.Apply(true);
             Schedule(ChemistryShow, 0.3);
@@ -1027,7 +1051,7 @@ public static class LabGameChecks
     {
         Ensure(game.Areas.Current == "hallway", "Classroom doormat leads to the hallway");
         Snapshot("30-hallway");
-        SnapshotRoom("31-hallway-overview", SchoolAreas.Def("hallway").Origin + new Vector2(0, 1.5f), 9, 1600, 900);
+        SnapshotRoom("31-hallway-overview", SchoolAreas.Def("hallway").Origin + new Vector2(0, 1.5f), 7, 1600, 900);
         Schedule(ToStorage, 1.1);
     }
     private static void ToStorage()
@@ -1264,7 +1288,7 @@ public static class LabGameChecks
         Ensure(PersonalDecor.Calm >= 5, "Decorations raise the calm of the lab");
         save.Data.weatherDay = LabProgress.Today; save.Data.weather = "rain";
         game.Atmosphere.Apply(true);
-        MoveTo(game.classroom.TransformPoint(new Vector3(46.5f, 10.1f)));
+        MoveTo(game.classroom.TransformPoint(SchoolLayout.LabDoor));
         Schedule(EveningLab, 0.8);
     }
     private static void EveningLab()

@@ -146,7 +146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChemistryGame.PlayerController
   canMove: 1
-  speed: 4.25
+  speed: 5.25
   acceleration: 28
   deceleration: 40
 --- !u!210 &4908377156230380936

@@ -16,7 +16,7 @@ namespace ChemistryGame
     public sealed class PerfWalk : MonoBehaviour
     {
         public static bool Requested => System.Environment.GetCommandLineArgs().Contains("-perf-walk");
-        private static readonly Vector2[] Path = { new Vector2(44.75f, 6), new Vector2(44.75f, -3), new Vector2(60, -3), new Vector2(60, -11), new Vector2(30, -11), new Vector2(30, -3), new Vector2(44.75f, -3) };
+        private static readonly Vector2[] Path = System.Array.ConvertAll(new[] { new Vector2(44.75f, 6), new Vector2(44.75f, -3), new Vector2(60, -3), new Vector2(60, -11), new Vector2(30, -11), new Vector2(30, -3), new Vector2(44.75f, -3) }, SchoolLayout.P);
         private LabGame game;
         private bool walking;
         private int waypoint;

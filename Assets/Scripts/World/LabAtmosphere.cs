@@ -51,31 +51,31 @@ namespace ChemistryGame
 
             var room = lab.classroom;
             // Classroom windows, clock and props (measured from the classroom wall art).
-            AddWindow(room, new Vector2(27.0f, 13.17f), new Vector2(1.84f, 1.68f), false);
-            AddWindow(room, new Vector2(52.0f, 13.17f), new Vector2(1.84f, 1.68f), false);
-            hour = Hand(room, new Vector2(30.03f, 13.95f), 9);
-            minute = Hand(room, new Vector2(30.03f, 13.95f), 13);
-            monitor = LaboratoryArt.Draw(room, "მონიტორის ციმციმი", new Vector2(54.49f, 11.33f), DecorArt.Square(), 8);
+            foreach (float x in SchoolLayout.Windows) AddWindow(room, new Vector2(x, 13.17f), new Vector2(1.84f, 1.68f), false);
+            hour = Hand(room, new Vector2(SchoolLayout.ClockX, 13.95f), 9);
+            minute = Hand(room, new Vector2(SchoolLayout.ClockX, 13.95f), 13);
+            var screen = SchoolLayout.SinkBench + new Vector2(-0.51f, 2.13f);
+            monitor = LaboratoryArt.Draw(room, "მონიტორის ციმციმი", screen, DecorArt.Square(), 8);
             monitor.transform.localScale = new Vector3(13, 9, 1);
-            AddGlow(room, new Vector2(54.49f, 11.4f), new Color(0.5f, 0.9f, 1f), 1.4f, false);
-            AddSafetyLight(room, new Vector2(49.0f, 14.6f));
-            AddFan(room, new Vector2(40.2f, 14.6f));
-            LaboratoryArt.Draw(room, "ვენტილაცია", new Vector2(40.2f, 14.6f), DecorArt.VentGrille(), 4);
+            AddGlow(room, screen + new Vector2(0, 0.07f), new Color(0.5f, 0.9f, 1f), 1.4f, false);
+            AddSafetyLight(room, new Vector2(SchoolLayout.SafetyLightX, 14.6f));
+            AddFan(room, new Vector2(SchoolLayout.VentX, 14.6f));
+            LaboratoryArt.Draw(room, "ვენტილაცია", new Vector2(SchoolLayout.VentX, 14.6f), DecorArt.VentGrille(), 4);
             // Dust only floats in the window light, so it never drifts over the benches.
-            AddDust(room, new Vector2(28.0f, 10.0f), new Vector2(2.4f, 3.6f));
-            AddDust(room, new Vector2(53.0f, 10.0f), new Vector2(2.4f, 3.6f));
+            foreach (float x in SchoolLayout.Windows) AddDust(room, new Vector2(x + 1, 10.0f), new Vector2(2.4f, 3.6f));
             // Glowing liquids on the academy shelves, the distillation set's bubbles and warm lamplight pools at evening.
-            foreach (var (point, color) in new[] { (new Vector2(31.65f, 12.4f), new Color(0.55f, 1f, 0.7f)), (new Vector2(33.15f, 12.5f), new Color(1f, 0.85f, 0.45f)),
-                (new Vector2(55.3f, 13.45f), new Color(0.5f, 1f, 0.8f)), (new Vector2(64.4f, -14.2f), new Color(0.8f, 0.6f, 1f)) })
+            var still = new Vector2(SchoolLayout.RightWall - 0.3f, SchoolLayout.P(0, -16).y);
+            foreach (var (point, color) in new[] { (new Vector2(SchoolLayout.VialShelfX - 0.75f, 12.3f), new Color(0.55f, 1f, 0.7f)), (new Vector2(SchoolLayout.VialShelfX + 0.75f, 12.4f), new Color(1f, 0.85f, 0.45f)),
+                (new Vector2(SchoolLayout.WallShelfX + 0.7f, 13.45f), new Color(0.5f, 1f, 0.8f)), (still + new Vector2(-0.7f, 1.8f), new Color(0.8f, 0.6f, 1f)) })
                 AddGlow(room, point, color, 0.8f, false);
-            AddBubbles(room, new Vector2(64.4f, -13.7f), 8);
-            foreach (var point in new[] { new Vector2(30, 3), new Vector2(44.75f, -4), new Vector2(59.5f, 3), new Vector2(30, -14), new Vector2(59.5f, -14) })
-                AddGlow(room, point, new Color(1f, 0.78f, 0.45f), 7, true);
-            foreach (var point in new[] { new Vector2(35.3f, 11.4f), new Vector2(36.8f, -3.8f), new Vector2(51.0f, 4.2f), new Vector2(53.3f, -11.8f) })
+            AddBubbles(room, still + new Vector2(-0.7f, 2.3f), 8);
+            foreach (var point in new[] { SchoolLayout.P(30, 3), SchoolLayout.P(44.75f, -4), SchoolLayout.P(59.5f, 3), SchoolLayout.P(30, -14), SchoolLayout.P(59.5f, -14) })
+                AddGlow(room, point, new Color(1f, 0.78f, 0.45f), 5, true);
+            foreach (var point in new[] { SchoolLayout.TeacherBench + new Vector2(-0.7f, 2.2f), SchoolLayout.MixBench + new Vector2(-0.7f, 2.2f), SchoolLayout.PotionBench + new Vector2(-1, 2.2f), SchoolLayout.ElementBench + new Vector2(1.3f, 2.2f) })
                 AddBubbles(room, point, 8);
             // A harmless background experiment on the teacher's desk: a flask that slowly changes colour.
-            experiment = LaboratoryArt.Draw(room, "ფონური ცდა", new Vector2(37.3f, 11.15f), DecorArt.Flask(), 7);
-            AddBubbles(room, new Vector2(37.3f, 11.75f), 8);
+            experiment = LaboratoryArt.Draw(room, "ფონური ცდა", SchoolLayout.TeacherBench + new Vector2(1.3f, 1.95f), DecorArt.Flask(), 7);
+            AddBubbles(room, SchoolLayout.TeacherBench + new Vector2(1.3f, 2.55f), 8);
             Apply(true);
         }
 

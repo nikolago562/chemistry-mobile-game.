@@ -319,20 +319,12 @@ namespace ChemistryGame
             var card = LabUI.Panel(window.Card, "ახალი აღმოჩენა", LabUI.Gold);
             card.gameObject.AddComponent<LayoutElement>().ignoreLayout = true;
             Place(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0, 30), new Vector2(460, 210));
-            var group = card.gameObject.AddComponent<CanvasGroup>(); group.blocksRaycasts = false;
             var swatch = LabUI.Panel(card.transform, "ფერი", result.Color);
             Place(swatch.rectTransform, new Vector2(0, 0.5f), new Vector2(70, 0), new Vector2(92, 92));
             var text = LabUI.Text(card.transform, "<size=30><b>ახალი აღმოჩენა!</b></size>\n<b>" + result.Title + "</b>\n" + Mixing.SignName(result.Sign) + "\n<size=17>" + (jar != null ? "<b>ახალი ქილა თაროზე: " + jar.Name + "!</b>" : "+" + paid + " ქიმქოინი  •  +" + DiscoveryXP + " XP") + "</size>", 21, LabUI.Ink);
             text.enableAutoSizing = true; text.fontSizeMin = 12; text.fontSizeMax = 21;
             LabUI.Fill(text.rectTransform, 14); text.rectTransform.offsetMin = new Vector2(132, 14);
-            for (float t = 0; t < 2.6f && card != null; t += Time.unscaledDeltaTime)
-            {
-                float pop = t < 0.3f ? Mathf.LerpUnclamped(0.6f, 1, 1 + 2.7f * Mathf.Pow(t / 0.3f - 1, 3) + 1.7f * Mathf.Pow(t / 0.3f - 1, 2)) : 1;
-                card.transform.localScale = Vector3.one * pop;
-                group.alpha = t > 2.2f ? 1 - (t - 2.2f) / 0.4f : 1;
-                yield return null;
-            }
-            if (card != null) Destroy(card.gameObject);
+            yield return Juice.Popup(window.Card, card.rectTransform);
         }
 
         // ------------------------------------------------------------ the beaker

@@ -15,10 +15,10 @@ namespace ChemistryGame
         public LabThemeSO visualTheme;
         public Sprite teacherSprite;
         public Material teacherMaterial;
-        public Vector2 lockerPosition = new Vector2(61, 9.2f);
+        public Vector2 lockerPosition = SchoolLayout.Locker;
         /// <summary>The lesson table (chapter one is played here), right of the teacher's own desk so their prompts never overlap.</summary>
         public Vector2 teacherDeskPosition = LessonTable;
-        public static readonly Vector2 LessonTable = new Vector2(40.1f, 8.7f);
+        public static readonly Vector2 LessonTable = SchoolLayout.LessonTable;
         public PlayerController player;
         public Transform classroom;
         public AudioClip[] sounds;
@@ -52,6 +52,8 @@ namespace ChemistryGame
             Instance = this;
             // The scene still stores the old spot on the teacher's own desk; the lesson table lives here now.
             teacherDeskPosition = LessonTable;
+            lockerPosition = SchoolLayout.Locker; // the scene still stores the old, larger room's spot
+            Camera.main.GetComponent<ClassroomCamera>().SetHome(classroom.TransformPoint(SchoolLayout.CameraMin), classroom.TransformPoint(SchoolLayout.CameraMax));
             AddRuntimeCosmetics();
             gameObject.AddComponent<GameSaveManager>();
 
@@ -73,7 +75,7 @@ namespace ChemistryGame
             TouchControls.Create();
             Coach.Create(this);
             Visuals = gameObject.AddComponent<VisualExperiment>();
-            Visuals.Initialize(classroom.TransformPoint(new Vector3(36.9f, 11.15f, 0)));
+            Visuals.Initialize(classroom.TransformPoint(SchoolLayout.TeacherBench + new Vector2(0.9f, 1.95f)));
             var furnishings = GetComponent<ChemistryClassroom>();
             if (furnishings != null) furnishings.Build(this);
             gameObject.AddComponent<AmbientAudio>().Initialize(this);
@@ -85,20 +87,20 @@ namespace ChemistryGame
             Lessons = gameObject.AddComponent<CurriculumUI>(); Lessons.Initialize(this);
             player.gameObject.AddComponent<PlayerCosmetics>().Initialize(this);
             if (!GameSaveManager.Instance.Data.tutorialCompleted)
-                player.transform.localPosition = new Vector3(46.5f, 6.8f, 0);
+                player.transform.localPosition = SchoolLayout.PlayerStart;
 
-            CreateStation("დამცავი აღჭურვილობის კარადა", lockerPosition.x, lockerPosition.y, StationType.CosmeticShopStation, "[E] დამცავი აღჭურვილობა", true);
-            CreateStation("მასწავლებლის მაგიდა", teacherDeskPosition.x, teacherDeskPosition.y, StationType.TutorialStation);
+            CreateStation("დამცავი აღჭურვილობის კარადა", lockerPosition, StationType.CosmeticShopStation, "[E] დამცავი აღჭურვილობა", true);
+            CreateStation("მასწავლებლის მაგიდა", teacherDeskPosition, StationType.TutorialStation);
             // Each bench teaches one part of the curriculum; the advanced desk opens last.
-            CreateStation("ატომების მაგიდა", 37.5f, 1, StationType.AtomTable);
-            CreateStation("ელემენტების სადგური", 52, -15, StationType.ElementStation);
-            CreateStation("რეაქციების მაგიდა", 37.5f, -7, StationType.ReactionTable);
-            CreateStation("მოლეკულების მაგიდა", 52, -7, StationType.MoleculeTable);
-            CreateStation("ხსნარების სადგური", 37.5f, -15, StationType.SolutionStation);
-            CreateStation("მჟავა-ფუძის მაგიდა", 52, 1, StationType.AcidBaseStation);
-            CreateStation("რთული გამოწვევების მაგიდა", 37.5f, -22, StationType.QuizDesk);
-            CreateStation("კოსმეტიკის თარო", 63, -10, StationType.CosmeticShopStation, "[E] ლაბორატორიის მაღაზია");
-            CreateStation("კვირის რეიტინგის დაფა", 55, 8.5f, StationType.LeaderboardBoard, "[E] კვირის რეიტინგი");
+            CreateStation("ატომების მაგიდა", SchoolLayout.AtomBench + SchoolLayout.Use, StationType.AtomTable);
+            CreateStation("ელემენტების სადგური", SchoolLayout.ElementBench + SchoolLayout.Use, StationType.ElementStation);
+            CreateStation("რეაქციების მაგიდა", SchoolLayout.MixBench + SchoolLayout.Use, StationType.ReactionTable);
+            CreateStation("მოლეკულების მაგიდა", SchoolLayout.MoleculeBench + SchoolLayout.Use, StationType.MoleculeTable);
+            CreateStation("ხსნარების სადგური", SchoolLayout.SolutionBench + SchoolLayout.Use, StationType.SolutionStation);
+            CreateStation("მჟავა-ფუძის მაგიდა", SchoolLayout.PotionBench + SchoolLayout.Use, StationType.AcidBaseStation);
+            CreateStation("რთული გამოწვევების მაგიდა", SchoolLayout.QuizBench + SchoolLayout.Use, StationType.QuizDesk);
+            CreateStation("კოსმეტიკის თარო", SchoolLayout.ShopShelf, StationType.CosmeticShopStation, "[E] ლაბორატორიის მაღაზია");
+            CreateStation("კვირის რეიტინგის დაფა", SchoolLayout.SinkBench + new Vector2(0, -0.7f), StationType.LeaderboardBoard, "[E] კვირის რეიტინგი");
             CreateTeacher();
             CreateChalkboardLettering();
             Personal = gameObject.AddComponent<PersonalLab>();
@@ -110,7 +112,6 @@ namespace ChemistryGame
             ActOne = gameObject.AddComponent<ActOne>();
             ActOne.Initialize(this);
             foreach (var classmate in ChemistryGame.Classmates.All) Classmates.Add(SchoolNPC.Spawn(this, classmate));
-            HUD.AddLifeSimPanel();
             WelcomeBack();
 
             if (!string.IsNullOrEmpty(GameSaveManager.Instance.Status)) HUD.Notify(GameSaveManager.Instance.Status);
@@ -121,12 +122,12 @@ namespace ChemistryGame
         /// <summary>World position of the first station of this type (where its lessons are played).</summary>
         public Vector3 StationPoint(StationType kind) => stationPoints.TryGetValue(kind, out var p) ? p : classroom.TransformPoint(teacherDeskPosition);
 
-        private void CreateStation(string name, float x, float y, StationType kind,
+        private void CreateStation(string name, Vector2 at, StationType kind,
             string prompt = "[E] ექსპერიმენტის დაწყება", bool closet = false)
         {
             var go = new GameObject(name, typeof(BoxCollider2D), typeof(InteractableStation));
             go.transform.SetParent(classroom, false);
-            go.transform.localPosition = new Vector3(x, y);
+            go.transform.localPosition = at;
             go.GetComponent<BoxCollider2D>().size = new Vector2(3.4f, 2.7f);
             var station = go.GetComponent<InteractableStation>();
             station.stationType = kind;
@@ -168,7 +169,7 @@ namespace ChemistryGame
             var npc = new GameObject("ქიმიის მასწავლებელი");
             npc.transform.SetParent(classroom, false);
             // In front of her own desk (the back-wall bench with the tubes and the colour-changing flask).
-            npc.transform.localPosition = new Vector3(35.1f, 8.6f);
+            npc.transform.localPosition = SchoolLayout.TeacherSpots[0];
             // The sprite lives on a child so talking animations never scale the labels.
             var body = new GameObject("სხეული", typeof(SpriteRenderer));
             body.transform.SetParent(npc.transform, false);
@@ -275,7 +276,7 @@ namespace ChemistryGame
         {
             var board = new GameObject("დაფის ფორმულები", typeof(RectTransform), typeof(Canvas));
             board.transform.SetParent(classroom, false);
-            board.transform.localPosition = new Vector3(36, 13.4f);
+            board.transform.localPosition = new Vector3(SchoolLayout.ChalkboardX, 13.4f);
             board.transform.localScale = Vector3.one / 48;
             board.GetComponent<RectTransform>().sizeDelta = new Vector2(170, 92);
             board.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;

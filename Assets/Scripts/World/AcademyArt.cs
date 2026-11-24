@@ -25,7 +25,7 @@ namespace ChemistryGame
 
         // ---------- floor ----------
 
-        private static readonly Color32[] plankTones = { C(201, 148, 98), C(190, 138, 90), C(208, 156, 104), C(186, 134, 87) };
+        private static readonly Color32[] plankTones = { C(196, 152, 110), C(191, 148, 106), C(200, 156, 113), C(188, 145, 104) }; // low contrast so people and props read on a phone
         public const int FloorW = 8, FloorH = 4;
         /// <summary>One cell of a continuous 8 x 4 cell oak floor (index = x + 8 y). Boards run across cells,
         /// so plank ends and tone changes never line up with the tile grid.</summary>
@@ -34,7 +34,7 @@ namespace ChemistryGame
             for (int y = 0; y < 16; y++) for (int x = 0; x < 16; x++)
             {
                 int X = index % FloorW * 16 + x, Y = index / FloorW * 16 + y, row = Y / 8, ly = Y % 8;
-                if (ly == 0) { p.Dot(x, y, C(140, 94, 60)); continue; }
+                if (ly == 0) { p.Dot(x, y, C(168, 126, 88)); continue; }
                 // two or three board ends per 128 px row, wrapping so the pattern tiles seamlessly
                 int count = 2 + row % 2, seg = 0; bool end = false, after = false;
                 for (int j = 0; j < count; j++)
@@ -45,10 +45,10 @@ namespace ChemistryGame
                 }
                 if (seg == count) seg = 0;
                 var tone = plankTones[(row * 3 + seg * 5 + row * seg) % 4];
-                if (end) { p.Dot(x, y, C(140, 94, 60)); continue; }
-                Color32 c = ly == 7 || after ? Lighter(tone, 10) : tone;
+                if (end) { p.Dot(x, y, C(168, 126, 88)); continue; }
+                Color32 c = ly == 7 || after ? Lighter(tone, 5) : tone;
                 int grain = (X / 5 * 13 + Y * 7 + seg * 3) % 19;
-                if (grain == 0 && ly > 1 && ly < 6) c = Darker(tone, 10);
+                if (grain == 0 && ly > 1 && ly < 6) c = Darker(tone, 6);
                 if ((X * 7 + row * 29) % 211 == 5 && ly == 4) c = C(150, 100, 64);
                 p.Dot(x, y, c);
             }
@@ -356,10 +356,10 @@ namespace ChemistryGame
         {
             var room = game.classroom;
             RetileClassroom(room);
-            for (float x = 26; x <= 66; x += 2) Draw(root, "კედელი", new Vector2(x, 11), Wall, 0);
+            for (float x = SchoolLayout.FloorMinX + 1; x <= SchoolLayout.FloorMaxX; x += 2) Draw(root, "კედელი", new Vector2(x, 11), Wall, 0);
 
             var ambience = root.gameObject.AddComponent<AcademyAmbience>();
-            foreach (float x in new[] { 27f, 52f })
+            foreach (float x in SchoolLayout.Windows)
             {
                 var view = Draw(root, "ხედი ფანჯრიდან", new Vector2(x, 13.17f), View, 2);
                 ambience.Views.Add(view);
@@ -371,38 +371,41 @@ namespace ChemistryGame
                 patch.transform.localScale = new Vector3(1, 1.25f, 1);
                 ambience.Beams.Add((patch, 0.4f));
             }
-            Draw(root, "საათი", new Vector2(30.03f, 13.95f), Clock, 4);
-            Draw(root, "დაფა", new Vector2(36, 13.35f), Chalkboard, 3);
-            Draw(root, "განცხადებების დაფა", new Vector2(42.9f, 13.0f), DecorArt.Noticeboard(), 3);
-            Draw(root, "ბოთლების თარო", new Vector2(32.4f, 12.0f), CozyLabArt.VialShelf, 3);
-            Draw(root, "სურათი: კოლბა", new Vector2(39.85f, 12.95f), Picture(1), 3);
-            Draw(root, "სურათი: წყლის მოლეკულა", new Vector2(49.3f, 12.85f), Picture(2), 3);
-            Draw(root, "კედლის თარო", new Vector2(54.6f, 13.1f), WallShelf, 3);
-            Draw(root, "სურათი: ატომი", new Vector2(61, 13.5f), Picture(0), 3);
-            ambience.Sway(Draw(root, "ჩამოკიდებული მცენარე", new Vector2(64.8f, 12.9f), CozyLabArt.HangingPlant, 3).transform);
+            // Back wall, left to right (the noticeboard and periodic chart are drawn with their interactables).
+            Draw(root, "საათი", new Vector2(SchoolLayout.ClockX, 13.95f), Clock, 4);
+            Draw(root, "დაფა", new Vector2(SchoolLayout.ChalkboardX, 13.35f), Chalkboard, 3);
+            Draw(root, "ბოთლების თარო", new Vector2(SchoolLayout.VialShelfX, 11.75f), CozyLabArt.VialShelf, 3);
+            Draw(root, "სურათი: კოლბა", new Vector2(SchoolLayout.FlaskPictureX, 12.95f), Picture(1), 3);
+            Draw(root, "სურათი: წყლის მოლეკულა", new Vector2(SchoolLayout.MoleculePictureX, 12.85f), Picture(2), 3);
+            Draw(root, "კედლის თარო", new Vector2(SchoolLayout.WallShelfX, 13.1f), WallShelf, 3);
 
-            // Perimeter furniture, flush with the side walls and clear of the aisles at x 30 and 60.
-            Furniture(root, "წიგნების კარადა", new Vector2(26.3f, 3.2f), CozyLabArt.Bookshelf, 1.8f);
-            ambience.Sway(Furniture(root, "დიდი მცენარე", new Vector2(26.0f, -1.4f), BigPlant, 1.0f).transform);
-            var scope = Furniture(root, "მიკროსკოპის მაგიდა", new Vector2(26.9f, -9f), CozyLabArt.Table, 2.8f);
+            // Side-wall furniture, flush with the walls and clear of the table aisles.
+            float left = SchoolLayout.LeftWall, right = SchoolLayout.RightWall;
+            Furniture(root, "წიგნების კარადა", new Vector2(left, 3.2f), CozyLabArt.Bookshelf, 1.8f);
+            ambience.Sway(Furniture(root, "დიდი მცენარე", new Vector2(left - 0.1f, 1.5f), BigPlant, 1.0f).transform);
+            var scope = Furniture(root, "მიკროსკოპის მაგიდა", new Vector2(left + 0.5f, -3.9f), CozyLabArt.Table, 2.8f);
             Draw(scope.transform, "მიკროსკოპი", new Vector2(-0.6f, 1.1f), Microscope, 7);
             Draw(scope.transform, "მოლეკულის მოდელი", new Vector2(0.7f, 1.1f), MoleculeModel, 7);
             ambience.Blink(Draw(scope.transform, "ინდიკატორი", new Vector2(-1.15f, 0.82f), DecorArt.Square(), 7), new Color(0.4f, 1f, 0.6f), 1.6f);
-            Furniture(root, "წიგნების კარადა", new Vector2(65.7f, 3.0f), CozyLabArt.Bookshelf, 1.8f);
-            ambience.Sway(Furniture(root, "დიდი მცენარე", new Vector2(65.9f, -3.2f), BigPlant, 1.0f).transform);
-            var still = Furniture(root, "გამოხდის მაგიდა", new Vector2(65.1f, -16f), CozyLabArt.Table, 2.8f);
+            Furniture(root, "წიგნების კარადა", new Vector2(right, 3.2f), CozyLabArt.Bookshelf, 1.8f);
+            ambience.Sway(Furniture(root, "დიდი მცენარე", new Vector2(right + 0.1f, 1.5f), BigPlant, 1.0f).transform);
+            var still = Furniture(root, "გამოხდის მაგიდა", new Vector2(right - 0.3f, SchoolLayout.P(0, -16).y), CozyLabArt.Table, 2.8f);
             Draw(still.transform, "გამოხდის აპარატი", new Vector2(0, 1.1f), Still, 7);
             ambience.Blink(Draw(still.transform, "ინდიკატორი", new Vector2(1.2f, 0.82f), DecorArt.Square(), 7), new Color(1f, 0.6f, 0.3f), 2.3f);
-            ambience.Sway(Furniture(root, "დიდი მცენარე", new Vector2(26.0f, -18.5f), BigPlant, 1.0f).transform);
+            ambience.Sway(Furniture(root, "დიდი მცენარე", new Vector2(left - 0.1f, SchoolLayout.FloorMinY + 0.4f), BigPlant, 1.0f).transform);
 
             // Soft contact shadows under the furniture other code builds (closet, collection and shop cabinets).
             ContactShadow(root, game.lockerPosition, 2.2f);
-            ContactShadow(root, new Vector2(28.4f, 9.3f), 2.1f);
-            ContactShadow(root, new Vector2(63, -9), 2.2f);
+            ContactShadow(root, SchoolLayout.CollectionCabinet, 2.1f);
+            ContactShadow(root, SchoolLayout.SupplyCabinet, 2.2f);
+            AlchemyArt.Dress(root, ambience, Furniture);
         }
 
-        /// <summary>Oak planks with gentle per-cell colour drift and darker cells along the walls; the back wall and its
-        /// old decor tiles fade out (their colliders stay), and the new painted wall takes their place.</summary>
+        /// <summary>
+        /// Rebuilds the scene's classroom tilemaps for the compact room in <see cref="SchoolLayout"/>: oak planks with gentle
+        /// colour drift on the floor, the old back-wall tiles kept only as invisible colliders over the new width, the old
+        /// decor tiles removed, and the wooden trim (with its colliders) laid around the new edge.
+        /// </summary>
         private static void RetileClassroom(Transform room)
         {
             var planks = new Tile[AcademyArt.FloorW * AcademyArt.FloorH];
@@ -411,31 +414,48 @@ namespace ChemistryGame
                 planks[i] = ScriptableObject.CreateInstance<Tile>();
                 planks[i].sprite = Floor(i); planks[i].colliderType = Tile.ColliderType.None; planks[i].flags = TileFlags.None;
             }
+            const int minX = SchoolLayout.FloorMinX, maxX = SchoolLayout.FloorMaxX, minY = SchoolLayout.FloorMinY, maxY = SchoolLayout.FloorMaxY;
             foreach (var map in Object.FindObjectsByType<Tilemap>(FindObjectsSortMode.None))
             {
-                bool floor = map.name == "Floor", hide = map.name == "Wall" || map.name == "Decor";
-                if (!floor && !hide) continue;
+                if (map.name != "Floor" && map.name != "Wall" && map.name != "Decor" && map.name != "border") continue;
+                Vector3Int Cell(int x, int y) => map.WorldToCell(room.TransformPoint(new Vector3(x + 0.5f, y + 0.5f)));
+                // The trim's pieces differ by side and by parity; remember one of each from the old edge before clearing it.
+                TileBase Old(int x, int y) => map.GetTile(Cell(x, y));
+                var top = new[] { Old(26, 15), Old(27, 15) }; var bottom = new[] { Old(26, -25), Old(27, -25) };
+                var leftSide = new[] { Old(24, -2), Old(24, -1) }; var rightSide = new[] { Old(67, -2), Old(67, -1) };
+                var corners = new[] { Old(24, 15), Old(67, 15), Old(24, -25), Old(67, -25) };
                 foreach (var cell in map.cellBounds.allPositionsWithin)
                 {
                     if (!map.HasTile(cell)) continue;
                     Vector2 local = room.InverseTransformPoint(map.GetCellCenterWorld(cell));
-                    if (local.x < 24.5f || local.x > 67.5f) continue;
-                    if (floor)
+                    if (local.x < 23.5f || local.x > 68.5f || local.y < -26 || local.y > 16) continue; // other rooms share these maps
+                    int cx = Mathf.FloorToInt(local.x), cy = Mathf.FloorToInt(local.y);
+                    bool inside = cx >= minX && cx <= maxX;
+                    if (map.name == "Floor" && inside && cy >= minY && cy <= maxY)
                     {
-                        int cx = Mathf.FloorToInt(local.x), cy = Mathf.FloorToInt(local.y);
                         map.SetTile(cell, planks[Mod(cx, FloorW) + FloorW * Mod(cy, FloorH)]);
                         float shade = 0.94f + Mathf.PerlinNoise(cx * 0.17f, cy * 0.17f) * 0.08f;
-                        if (cy >= 10) shade *= 0.8f; else if (cy == 9) shade *= 0.92f;
-                        if (cx <= 25 || cx >= 66) shade *= 0.9f;
-                        if (cy <= -24) shade *= 0.93f;
+                        if (cy >= maxY) shade *= 0.8f; else if (cy == maxY - 1) shade *= 0.92f;
+                        if (cx == minX || cx == maxX) shade *= 0.9f;
+                        if (cy == minY) shade *= 0.93f;
                         map.SetColor(cell, new Color(shade, shade * 0.985f, shade * 0.97f));
                     }
-                    else if (local.y > 10.9f)
-                    {
+                    else if (map.name == "Wall" && inside)
+                    {   // the painted wall draws over it; the tile stays for its collider
                         map.SetTileFlags(cell, TileFlags.None);
                         map.SetColor(cell, Color.clear);
                     }
+                    else map.SetTile(cell, null);
                 }
+                if (map.name == "border")
+                {
+                    for (int x = minX; x <= maxX; x++) { map.SetTile(Cell(x, SchoolLayout.WallMaxY + 1), top[Mod(x, 2)]); map.SetTile(Cell(x, minY - 1), bottom[Mod(x, 2)]); }
+                    for (int y = minY; y <= SchoolLayout.WallMaxY; y++) { map.SetTile(Cell(minX - 1, y), leftSide[Mod(y, 2)]); map.SetTile(Cell(maxX + 1, y), rightSide[Mod(y, 2)]); }
+                    map.SetTile(Cell(minX - 1, SchoolLayout.WallMaxY + 1), corners[0]); map.SetTile(Cell(maxX + 1, SchoolLayout.WallMaxY + 1), corners[1]);
+                    map.SetTile(Cell(minX - 1, minY - 1), corners[2]); map.SetTile(Cell(maxX + 1, minY - 1), corners[3]);
+                }
+                if (map.TryGetComponent<TilemapCollider2D>(out var tiles)) tiles.ProcessTilemapChanges();
+                if (map.TryGetComponent<CompositeCollider2D>(out var composite)) composite.GenerateGeometry();
             }
         }
 

@@ -29,6 +29,9 @@ namespace ChemistryGame
             }
         }
 
+        /// <summary>Acts like a tap on the action button (used by tap-to-interact).</summary>
+        public static void Press() => actionFrame = Time.frameCount;
+
         private const float Radius = 70, Dead = 0.25f;
         private static readonly Vector2 Home = new Vector2(150, 150);
         private RectTransform zone, pad, knob, action;
@@ -85,6 +88,8 @@ namespace ChemistryGame
             action.gameObject.AddComponent<ButtonMotion>();
             actionGroup = action.gameObject.AddComponent<CanvasGroup>();
             action.SetAsFirstSibling();
+            action.gameObject.AddComponent<SafeInset>();
+            zone.gameObject.AddComponent<SafeInset>();
         }
 
         private static RectTransform Round(Transform parent, string name, float size, Color color, bool ring = false)

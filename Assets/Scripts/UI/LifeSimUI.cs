@@ -164,6 +164,12 @@ namespace ChemistryGame
                         bool ok = ResearchProjects.TryAdvance(s, out var message);
                         Render(); status.text = message; status.color = ok ? LabUI.Green : LabUI.Coral;
                     });
+                    // Never a dead end: while the project waits overnight, offer today's order at the mixing bench.
+                    if (current.Kind == StageKind.Wait && !ResearchProjects.Ready(s))
+                    {
+                        status.text += "\nსანამ ელოდები • " + Orders.Objective;
+                        Button(actions.transform, "შერევის მაგიდა", () => { window.Close(); game.Lessons.Bench.Open(); }, true);
+                    }
                     if (current.Kind == StageKind.Equipment && game.Personal.Inside)
                         Button(actions.transform, "ლაბორატორიის მოწყობა", () => { window.Close(); game.Personal.Workshop.Open(); }, true);
                     break;
@@ -367,9 +373,8 @@ namespace ChemistryGame
             var tile = LabUI.Button(grid, "", () => { shown = item; Fill(); }, 86);
             tile.GetComponent<Image>().color = owned ? FoundTile : MissingTile;
             // Undiscovered things show as silhouettes (medals and glassware) so you can guess what's missing.
-            bool shape = Medal(item) || item.Kind == CollectionKind.Reaction || item.Kind == CollectionKind.Sample;
-            var icon = owned || shape ? ItemIcon(tile.transform, item, 56, owned) : LabUI.Icon(tile.transform, LabIcon.Lock, LabUI.Gold);
-            if (!owned && !shape) { icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(0.5f, 0.55f); icon.rectTransform.sizeDelta = Vector2.one * 40; }
+            // Every kind has its own shape (medal, glassware, crystal, book), so a locked tile hints at what it is.
+            ItemIcon(tile.transform, item, 56, owned);
             if (shown != null && shown.ID == item.ID)
             {
                 var mark = LabUI.Object(tile.transform, "არჩეული", typeof(Image)).GetComponent<Image>();
@@ -385,8 +390,12 @@ namespace ChemistryGame
         {
             var image = LabUI.Object(parent, "ხატულა", typeof(Image)).GetComponent<Image>();
             bool glass = item.Kind == CollectionKind.Reaction || item.Kind == CollectionKind.Sample;
-            image.sprite = Medal(item) ? (owned ? UIArt.Medal : UIArt.LockedMedal) : glass ? Glassware.Get(Glassware.ShapeFor(item.ID), item.Color, 0.5f) : DecorArt.Disc();
-            image.color = Medal(item) ? (owned ? Color.Lerp(Color.white, item.Color, 0.25f) : Color.white) : !owned ? new Color(0.2f, 0.26f, 0.23f, 0.55f) : glass ? Color.white : item.Color;
+            image.sprite = Medal(item) ? (owned ? UIArt.Medal : UIArt.LockedMedal) : glass ? Glassware.Get(Glassware.ShapeFor(item.ID), item.Color, 0.5f)
+                : item.Kind == CollectionKind.Mineral ? UIArt.Crystal : item.Kind == CollectionKind.Fact ? LabIcons.Get(LabIcon.Book) : DecorArt.Disc();
+            // Locked: a dark silhouette with a hint of the item's own colour.
+            var shadow = Color.Lerp(new Color(0.2f, 0.26f, 0.23f), item.Color, 0.22f); shadow.a = 0.6f;
+            image.color = Medal(item) ? (owned ? Color.Lerp(Color.white, item.Color, 0.25f) : Color.white) : !owned ? shadow
+                : glass || item.Kind == CollectionKind.Fact ? Color.white : Color.Lerp(item.Color, Color.white, 0.2f);
             image.preserveAspect = true; image.raycastTarget = false;
             var rect = image.rectTransform; rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f); rect.sizeDelta = Vector2.one * size;
             return image;

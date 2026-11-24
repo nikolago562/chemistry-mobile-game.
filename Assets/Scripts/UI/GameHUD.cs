@@ -26,33 +26,14 @@ namespace ChemistryGame
         {
             game = lab;
             worldCamera = Camera.main;
-            var identity = LabUI.Panel(LabUI.Root, "მკვლევრის ბარათი", LabUI.Navy);
-            Anchor(identity.rectTransform, new Vector2(0, 1), new Vector2(16, -14), new Vector2(300, 76));
-            LabUI.Shadow(identity);
-            var badge = LabUI.Panel(identity.transform, "პროფილი", LabUI.Green);
-            Anchor(badge.rectTransform, new Vector2(0, 0.5f), new Vector2(12, 0), new Vector2(54, 54));
-            var icon = LabUI.Icon(badge.transform, LabIcon.Atom, Color.white);
-            LabUI.Fill(icon.rectTransform, 9);
-            var name = LabUI.Text(identity.transform, "ქიმიის ლაბორატორია", 20, Color.white);
-            PlaceText(name.rectTransform, new Vector2(78, -12), new Vector2(210, 27));
-            name.fontStyle = FontStyles.Bold;
-            name.textWrappingMode = TextWrappingModes.NoWrap;
-            name.enableAutoSizing = true;
-            name.fontSizeMin = 12;
-            name.fontSizeMax = 18;
-            title = LabUI.Text(identity.transform, "", 14, new Color32(187, 211, 180, 255));
-            PlaceText(title.rectTransform, new Vector2(78, -42), new Vector2(210, 23));
-            title.textWrappingMode = TextWrappingModes.NoWrap;
-            title.enableAutoSizing = true;
-            title.fontSizeMin = 10;
-            title.fontSizeMax = 14;
-
             var stats = LabUI.Row(LabUI.Root, "რესურსები", 10);
             Anchor((RectTransform)stats.transform, new Vector2(1, 1), new Vector2(-16, -14), new Vector2(570, 68));
             stats.childForceExpandWidth = true;
             coins = Stat(stats.transform, LabIcon.Coin, LabUI.Gold, "ქიმქოინები");
             xp = Stat(stats.transform, LabIcon.Quest, LabUI.Mint, "დღის მიზანი");
             GoalRing((Image)xp.transform.parent.GetComponent<Image>());
+            // The rank title replaces the old identity card: top-right, above today's XP.
+            title = xp.transform.parent.GetComponentsInChildren<TMP_Text>()[0];
             streak = Stat(stats.transform, LabIcon.Flame, LabUI.Coral, "დღიური სერია");
             combo = Stat(stats.transform, LabIcon.Flask, LabUI.Mint, "სწორი პასუხების სერია");
 
@@ -60,7 +41,7 @@ namespace ChemistryGame
             statsRect = (RectTransform)stats.transform;
             // One objective and one progress bar; the main menus sit on a rail at the right edge.
             var tracker = LabUI.Card(LabUI.Root, "აქტიური მიზანი", LabUI.Paper, 14);
-            Anchor(tracker.rectTransform, new Vector2(0, 1), new Vector2(16, -82), new Vector2(300, 112));
+            Anchor(tracker.rectTransform, new Vector2(0, 1), new Vector2(16, -14), new Vector2(300, 112));
             LabUI.Shadow(tracker);
             taskTitle = LabUI.Text(tracker.transform, "", 15, LabUI.Green);
             taskTitle.fontStyle = FontStyles.Bold;
@@ -75,6 +56,15 @@ namespace ChemistryGame
             objective.fontSizeMax = 18;
             LabUI.Size(objective.gameObject, 44);
             progress = LabUI.Progress(tracker.transform, 0, LabUI.Mint);
+            // Tap the card to fold it to its title and bar (and back); folding also blinks the objective in the world.
+            tracker.raycastTarget = true;
+            tracker.gameObject.AddComponent<Button>().onClick.AddListener(() =>
+            {
+                bool fold = objective.gameObject.activeSelf;
+                objective.gameObject.SetActive(!fold);
+                tracker.rectTransform.sizeDelta = new Vector2(300, fold ? 66 : 112);
+                Juice.Bounce(tracker.transform);
+            });
 
             toastCard = LabUI.Panel(LabUI.Root, "შეტყობინება", LabUI.Navy);
             Anchor(toastCard.rectTransform, new Vector2(0.5f, 1), new Vector2(-135, -24), new Vector2(340, 88));
@@ -110,7 +100,6 @@ namespace ChemistryGame
             pointer.rectTransform.pivot = new Vector2(0.5f, 0.5f);
             waypointCard.raycastTarget = false;
             waypointCard.gameObject.SetActive(false);
-            panels["identity"] = Compact(identity.rectTransform);
             panels["stats"] = Compact((RectTransform)stats.transform);
             panels["tracker"] = Compact(tracker.rectTransform);
             panels["menu"] = Compact(MenuRail());
@@ -126,16 +115,25 @@ namespace ChemistryGame
         {
             (LabIcon.Book, "გაკვეთილები", 9), (LabIcon.Trophy, "კოლექცია", 7), (LabIcon.Flask, "კვლევები", 6), (LabIcon.Coin, "მაღაზია", 2),
         };
-        private RectTransform rail;
+        private RectTransform rail, drawer;
+        private bool drawerOpen;
         private RectTransform MenuRail()
         {
+            // One drawer button under the coins; the menus fold out below it, clear of the action button.
+            drawer = LabUI.Button(LabUI.Root, "", () => { rail.gameObject.SetActive(!rail.gameObject.activeSelf); drawerOpen = rail.gameObject.activeSelf; }, 64).GetComponent<RectTransform>();
+            drawer.name = "მენიუს ღილაკი";
+            drawer.GetComponent<Image>().color = LabUI.Navy;
+            Anchor(drawer, new Vector2(1, 1), new Vector2(-16, -92), new Vector2(64, 64));
+            Compact(drawer);
+            var lines = LabUI.Text(drawer, "≡", 34, Color.white);
+            lines.alignment = TextAlignmentOptions.Center; LabUI.Fill(lines.rectTransform);
             var column = LabUI.Column(LabUI.Root, "მენიუ", 10);
             rail = (RectTransform)column.transform;
-            Anchor(rail, new Vector2(1, 0.5f), new Vector2(-16, 50), new Vector2(96, RailMenus.Length * 106 - 10));
+            Anchor(rail, new Vector2(1, 1), new Vector2(-16, -164), new Vector2(96, RailMenus.Length * 106 - 10));
             foreach (var (kind, label, menu) in RailMenus)
             {
                 int m = menu;
-                var button = LabUI.Button(rail, label, () => game.OpenMenu(m), 96);
+                var button = LabUI.Button(rail, label, () => { drawerOpen = false; rail.gameObject.SetActive(false); game.OpenMenu(m); }, 96);
                 button.GetComponent<Image>().color = LabUI.Navy;
                 var art = LabUI.Icon(button.transform, kind, Color.white);
                 Anchor(art.rectTransform, new Vector2(0.5f, 1), new Vector2(0, -10), new Vector2(44, 44));
@@ -208,13 +206,6 @@ namespace ChemistryGame
 
         private void Update()
         {
-            if (lifeSim != null && Time.unscaledTime > lifeSimRefresh)
-            {
-                lifeSimRefresh = Time.unscaledTime + 1;
-                string place = game.Personal != null && game.Personal.Inside ? "პირადი ლაბორატორია • " + PersonalDecor.CalmName
-                    : game.Areas != null ? SchoolAreas.NameOf(game.Areas.Current) : "";
-                lifeSim.text = SchoolCalendar.PartName + " • " + SchoolCalendar.WeatherName + " • " + place + " • " + LabProgress.ReputationTitle;
-            }
             displayedCoins = Mathf.MoveTowards(displayedCoins, targetCoins, Time.unscaledDeltaTime * Mathf.Max(25, Mathf.Abs(targetCoins - displayedCoins) * 8));
             int roundedCoins = Mathf.RoundToInt(displayedCoins);
             if (visibleCoins != roundedCoins) { visibleCoins = roundedCoins; coins.SetText("{0}", roundedCoins); }
@@ -285,10 +276,11 @@ namespace ChemistryGame
         {
             rect.localScale = Vector3.one * Scale;
             rect.gameObject.AddComponent<HudFade>().Initialize(game);
+            rect.gameObject.AddComponent<SafeInset>();
             return rect;
         }
 
-        /// <summary>Pulses a frame around a HUD panel ("stats", "tracker", "dock", "status"); "" clears it.</summary>
+        /// <summary>Pulses a frame around a HUD panel ("stats", "tracker", "menu"); "" clears it.</summary>
         public void Highlight(string id)
         {
             highlighted = id != null && panels.TryGetValue(id, out var rect) ? rect : null;
@@ -317,21 +309,6 @@ namespace ChemistryGame
             highlight.transform.SetAsLastSibling();
         }
 
-        private TMP_Text lifeSim;
-        private float lifeSimRefresh;
-        /// <summary>Small status line: time of day, weather, place, reputation and the calm of the lab.</summary>
-        public void AddLifeSimPanel()
-        {
-            var card = LabUI.Panel(LabUI.Root, "დღის მდგომარეობა", LabUI.Navy);
-            Anchor(card.rectTransform, new Vector2(1, 1), new Vector2(-16, -74), new Vector2(560, 32));
-            panels["status"] = Compact(card.rectTransform);
-            lifeSim = LabUI.Text(card.transform, "", 14, LabUI.Paper);
-            lifeSim.alignment = TextAlignmentOptions.Center;
-            lifeSim.enableAutoSizing = true; lifeSim.fontSizeMin = 10; lifeSim.fontSizeMax = 14;
-            lifeSim.textWrappingMode = TextWrappingModes.NoWrap;
-            LabUI.Fill(lifeSim.rectTransform, 6);
-        }
-
         public void Notify(string message)
         {
             toastCard.transform.SetAsLastSibling();
@@ -342,7 +319,8 @@ namespace ChemistryGame
         {
             var save = GameSaveManager.Instance;
             // The menu rail waits until the intro is done, so the first minute stays uncluttered.
-            if (rail != null && rail.gameObject.activeSelf != save.Data.tutorialCompleted) rail.gameObject.SetActive(save.Data.tutorialCompleted);
+            if (drawer != null && drawer.gameObject.activeSelf != save.Data.tutorialCompleted) drawer.gameObject.SetActive(save.Data.tutorialCompleted);
+            if (rail != null && rail.gameObject.activeSelf != (drawerOpen && save.Data.tutorialCompleted)) rail.gameObject.SetActive(drawerOpen && save.Data.tutorialCompleted);
             targetCoins = save.Data.chemCoins;
             streak.text = save.Data.currentDailyStreak + " დღე";
             int daily = save.Data.dailyXP, goal = Mathf.Max(1, save.Data.xpGoal);
@@ -424,6 +402,27 @@ namespace ChemistryGame
             var body = Rect.MinMaxRect(a.x, a.y, b.x, b.y);
             float target = panel.Overlaps(body) ? 0.22f : 1f;
             group.alpha = Mathf.MoveTowards(group.alpha, target, Time.unscaledDeltaTime * 4);
+        }
+    }
+
+    /// <summary>Keeps a corner-anchored UI element clear of notches and rounded corners (Screen.safeArea).</summary>
+    public sealed class SafeInset : MonoBehaviour
+    {
+        private RectTransform rect;
+        private Vector2 home;
+        private Rect seen;
+        private void Start() { rect = (RectTransform)transform; home = rect.anchoredPosition; Apply(); }
+        private void Update() { if (Screen.safeArea != seen) Apply(); }
+        private void Apply()
+        {
+            seen = Screen.safeArea;
+            var canvas = GetComponentInParent<Canvas>();
+            float scale = canvas != null ? canvas.rootCanvas.scaleFactor : 1;
+            if (scale <= 0) return;
+            float left = seen.xMin, right = Screen.width - seen.xMax, bottom = seen.yMin, top = Screen.height - seen.yMax;
+            var a = rect.anchorMin;
+            var shift = new Vector2(a.x < 0.5f ? left : a.x > 0.5f ? -right : 0, a.y < 0.5f ? bottom : a.y > 0.5f ? -top : 0) / scale;
+            rect.anchoredPosition = home + shift;
         }
     }
 }

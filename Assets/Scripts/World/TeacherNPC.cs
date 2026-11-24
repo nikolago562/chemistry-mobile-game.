@@ -30,7 +30,7 @@ namespace ChemistryGame
         private float hop, talkBlend, angle = 90, workTarget = 90, nextScribble, workUntil, nextPour, nextMarker;
         private bool facePlayer, lookingUp;
         /// <summary>Two places at her desk: by the test tubes and by the colour-changing flask (classroom-local).</summary>
-        private static readonly Vector2[] Spots = { new Vector2(35.1f, 8.6f), new Vector2(36.9f, 8.6f) };
+        private static readonly Vector2[] Spots = SchoolLayout.TeacherSpots;
         private int spot;
         private SpriteRenderer flask;
         /// <summary>True while she is busy at her desk (not talking, not turning to someone).</summary>

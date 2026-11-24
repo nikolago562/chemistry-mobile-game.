@@ -22,6 +22,36 @@ namespace ChemistryGame
             UIFx.Burst(root, point, Party[Random.Range(0, Party.Length)], count);
         }
 
+        /// <summary>
+        /// Shows a result card over a dimmed, input-blocking backdrop inside <paramref name="host"/>: the host
+        /// shakes once, the card pops in, and it leaves on a tap (after a short guard) or after <paramref name="hold"/> seconds.
+        /// </summary>
+        public static IEnumerator Popup(RectTransform host, RectTransform card, float hold = 2.2f)
+        {
+            if (host == null || card == null) yield break;
+            var dim = LabUI.Panel(host, "ფონი", new Color(0.05f, 0.08f, 0.07f, 0.55f));
+            dim.sprite = null; dim.raycastTarget = true;
+            dim.gameObject.AddComponent<UnityEngine.UI.LayoutElement>().ignoreLayout = true;
+            LabUI.Fill(dim.rectTransform);
+            bool tapped = false;
+            dim.gameObject.AddComponent<UnityEngine.UI.Button>().onClick.AddListener(() => tapped = true);
+            card.SetParent(dim.transform, false);
+            var group = dim.gameObject.AddComponent<CanvasGroup>();
+            Vector2 rest = host.anchoredPosition;
+            float leave = -1;
+            for (float t = 0; dim != null; t += Time.unscaledDeltaTime)
+            {
+                float u = Mathf.Clamp01(t / 0.3f);
+                card.localScale = Vector3.one * (t < 0.3f ? Mathf.LerpUnclamped(0.6f, 1, 1 + 2.7f * Mathf.Pow(u - 1, 3) + 1.7f * Mathf.Pow(u - 1, 2)) : 1);
+                host.anchoredPosition = rest + (t < 0.25f ? Random.insideUnitCircle * 6 * (1 - t / 0.25f) : Vector2.zero);
+                if (leave < 0 && (t > hold || tapped && t > 0.35f)) leave = t;
+                if (leave >= 0) { group.alpha = 1 - (t - leave) / 0.25f; if (group.alpha <= 0) break; }
+                yield return null;
+            }
+            if (host != null) host.anchoredPosition = rest;
+            if (dim != null) Object.Destroy(dim.gameObject);
+        }
+
         /// <summary>A quick squash-and-stretch on whatever was just tapped.</summary>
         public static void Bounce(Transform target)
         {

@@ -29,6 +29,13 @@ namespace ChemistryGame
         }
         public void Release() => focus = null;
 
+        /// <summary>Sets the classroom's camera limits (world space); other rooms set their own with <see cref="SetRoom"/>.</summary>
+        public void SetHome(Vector2 min, Vector2 max)
+        {
+            minimum = homeMinimum = min; maximum = homeMaximum = max;
+            limitToClassroom = originalLimit = true;
+        }
+
         public void SetRoom(Vector2 min, Vector2 max, bool personal)
         {
             if (personal && !homeLimit) { homeMinimum = minimum; homeMaximum = maximum; originalLimit = limitToClassroom; }

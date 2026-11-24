@@ -78,6 +78,21 @@ namespace ChemistryGame
             p.Dot(10, 21, Color.white); p.Dot(11, 22, Color.white);
         }, 16, new Vector2(0.5f, 0.5f));
 
+        /// <summary>A faceted crystal cluster (white, tinted per mineral): one tall point flanked by two short ones.</summary>
+        public static Sprite Crystal => crystal ??= PixelArt.Make(20, 22, (x, y) =>
+        {
+            foreach (var (cx, top, half) in new[] { (10, 21, 4), (4, 12, 3), (16, 14, 3) })
+            {
+                int dx = Mathf.Abs(x - cx), shoulder = top - half - 1;
+                bool inside = y >= 1 && (y <= shoulder ? dx <= half : dx <= half - (y - shoulder));
+                if (!inside) continue;
+                bool edge = y == 1 || dx == (y <= shoulder ? half : half - (y - shoulder));
+                return edge ? new Color(0.1f, 0.09f, 0.12f) : x < cx ? Color.white : new Color(0.78f, 0.78f, 0.82f);
+            }
+            return Color.clear;
+        }, new Vector2(0.5f, 0.5f));
+        private static Sprite crystal;
+
         public static Sprite Swatch => swatch ??= DecorArt.Paint("ui:swatch", 24, 24, p =>
         {
             p.Disc(11.5f, 11.5f, 11.6f, AcademyArt.Ink); p.Disc(11.5f, 11.5f, 10.4f, Color.white);

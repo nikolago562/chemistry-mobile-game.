@@ -40,7 +40,7 @@ namespace ChemistryGame
 
         public void Initialize(LabGame lab) => game = lab;
 
-        private static Vector3 Class(LabGame g, float x, float y) => g.classroom.TransformPoint(new Vector3(x, y));
+        private static Vector3 Class(LabGame g, Vector2 local) => g.classroom.TransformPoint(local);
         private static Vector3 Area(LabGame g, string id, float y = 2) => SchoolAreas.Def(id).Origin + new Vector2(0, y);
         private static GuideStep S(string text, Func<LabGame, Vector3?> pan = null, string hud = "", float zoom = 4.6f) =>
             new GuideStep { Text = text, Pan = pan, Hud = hud, Zoom = zoom };
@@ -52,24 +52,15 @@ namespace ChemistryGame
             new GuideLesson
             {
                 ID = "welcome", Title = "პირველი ნაბიჯები", Ready = () => true,
-                // The opening talk: what you can do today (the camera shows it) and what opens later
-                // (a picture of the far room), then the controls and the first task.
+                // The opening talk is short (hands on equipment within half a minute): what you do today,
+                // the controls and the coat. Orders, lessons and what opens later wait in the "tour" talk.
                 Steps = new[]
                 {
-                    S("გამარჯობა, {name}! მე შენი ქიმიის მასწავლებელი ვარ. სანამ დავიწყებთ, გაჩვენებ, რას გააკეთებ აქ დღეს და რა გელოდება მომავალში.", g => g.Dialogue.Teacher.transform.position),
-                    S("დღესვე: შერევის მაგიდაზე ნივთიერებებს შეურევ. ჯერ გამოიცნობ, რა მოხდება, მერე საკუთარი თვალით ნახავ.", g => g.StationPoint(StationType.ReactionTable), "", 5),
+                    S("გამარჯობა, {name}! მე შენი ქიმიის მასწავლებელი ვარ. დღესვე: შერევის მაგიდაზე ნივთიერებებს შეურევ. ჯერ გამოიცნობ, რა მოხდება, მერე საკუთარი თვალით ნახავ.", g => g.StationPoint(StationType.ReactionTable), "", 5),
                     S("რასაც გააკეთებ, ახალ ქილად იქცევა: მარილიანი წყალი, ცისფერი ნალექი... მათაც შეურევ და კიდევ მეტს აღმოაჩენ. სულ " + Mixing.Results.Length + " აღმოჩენაა!", g => g.StationPoint(StationType.ReactionTable), "", 4.2f),
-                    S("დღესვე: დანარჩენ მაგიდებზე ხელით ააწყობ ატომებს და მოლეკულებს, გააკეთებ ფერად ნაყენებს და ხსნარებს.", g => Class(g, 44.75f, -3), "", 5.6f),
-                    S("ყოველდღე: კლასელები სამ შეკვეთას გაძლევენ. შეასრულე და ქიმქოინებს, მეგობრობასა და რეპუტაციას მიიღებ.", g =>
-                        g.Classmates.FirstOrDefault(n => n.gameObject.activeInHierarchy && Vector2.Distance(n.transform.position, g.classroom.position) < 80)?.transform.position
-                        ?? g.Dialogue.Teacher.transform.position, "", 5),
-                    S("ჩემს მაგიდასთან მოკლე გაკვეთილებია, თითო ორ წუთში გაივლი. სავალდებულო არ არის, მაგრამ აგიხსნის, რატომ ხდება ის, რასაც მაგიდებზე ხედავ.", g => g.Dialogue.Teacher.transform.position, "", 4.4f),
-                    Shot("მალე: საკუთარი ლაბორატორია გექნება. იყიდი ხელსაწყოებს — ლიმონის ბატარეას, ბუშტების სარქველს, ალის ტესტს — და ოთახსაც გააფართოებ.", "მალე • შენი ლაბორატორია", g => g.Personal.ExitPosition + new Vector2(0, -2.5f)),
-                    Shot("მალე: სკოლის სხვა ოთახებიც გაიხსნება: სათბურში მცენარეებს მოიყვან, სათავსოში მასალებს აიღებ, კითხვის კუთხეში ფაქტებს ისწავლი.", "მალე • სათბური", g => Area(g, "greenhouse", 1)),
-                    Shot("მომავალში: ყოველ კვირას სამეცნიერო ბაზრობაა. შენს საუკეთესო პროექტს აქ წარადგენ და ჯილდოს მოიგებ.", "მომავალში • გამოფენის დარბაზი", g => Area(g, "exhibition")),
-                    S("ბოლოს: ოქროსფერი მაგიდა ოსტატებისთვისაა. როცა ბევრს ისწავლი, აქ რთულ გამოწვევებს გაივლი და სკოლის ლეგენდა გახდები.", g => Class(g, 37.5f, -21), "", 4.4f),
+                    S("დღესვე: დანარჩენ მაგიდებზე ხელით ააწყობ ატომებს და მოლეკულებს, გააკეთებ ფერად ნაყენებს და ხსნარებს.", g => Class(g, SchoolLayout.P(44.75f, -3)), "", 5.6f),
                     S("ახლა დავიწყოთ! ქვედა მარცხენა ჯოისტიკით (ან WASD-ით) იარე. რასაც მბზინავი ჩარჩო აქვს, იმას „გამოყენების“ ღილაკით (ან [E]-ით) გამოიყენებ.", g => g.player.transform.position),
-                    S("ჯერ უსაფრთხოება: იმ მბზინავ კარადაში დამცავი ხალათი გელოდება.", g => Class(g, g.lockerPosition.x, g.lockerPosition.y + 1), "", 5),
+                    S("ჯერ უსაფრთხოება: იმ მბზინავ კარადაში დამცავი ხალათი გელოდება.", g => Class(g, g.lockerPosition + new Vector2(0, 1)), "", 5),
                 }
             },
             new GuideLesson
@@ -85,8 +76,16 @@ namespace ChemistryGame
                 ID = "tour", Title = "კლასის დათვალიერება", Ready = () => Data.tutorialCompleted,
                 Steps = new[]
                 {
-                    S("თაროზე ხალათებს და ქუდებს იყიდი, კედელზე კი პერიოდული ცხრილი კიდია.", g => Class(g, 60, 2), "", 6),
-                    S("ეს კარი შენს პირად ლაბორატორიაში გადის. წადი და დაათვალიერე!", g => Class(g, 46.5f, 12.5f), "", 4.6f),
+                    S("ყოველდღე: კლასელები სამ შეკვეთას გაძლევენ. შეასრულე და ქიმქოინებს, მეგობრობასა და რეპუტაციას მიიღებ.", g =>
+                        g.Classmates.FirstOrDefault(n => n.gameObject.activeInHierarchy && Vector2.Distance(n.transform.position, g.classroom.position) < 80)?.transform.position
+                        ?? g.Dialogue.Teacher.transform.position, "", 5),
+                    S("ჩემს მაგიდასთან მოკლე გაკვეთილებია, თითო ორ წუთში გაივლი. სავალდებულო არ არის, მაგრამ აგიხსნის, რატომ ხდება ის, რასაც მაგიდებზე ხედავ.", g => g.Dialogue.Teacher.transform.position, "", 4.4f),
+                    Shot("მალე: საკუთარი ლაბორატორია გექნება. იყიდი ხელსაწყოებს — ლიმონის ბატარეას, ბუშტების სარქველს, ალის ტესტს — და ოთახსაც გააფართოებ.", "მალე • შენი ლაბორატორია", g => g.Personal.ExitPosition + new Vector2(0, -2.5f)),
+                    Shot("მალე: სკოლის სხვა ოთახებიც გაიხსნება: სათბურში მცენარეებს მოიყვან, სათავსოში მასალებს აიღებ, კითხვის კუთხეში ფაქტებს ისწავლი.", "მალე • სათბური", g => Area(g, "greenhouse", 1)),
+                    Shot("მომავალში: ყოველ კვირას სამეცნიერო ბაზრობაა. შენს საუკეთესო პროექტს აქ წარადგენ და ჯილდოს მოიგებ.", "მომავალში • გამოფენის დარბაზი", g => Area(g, "exhibition")),
+                    S("ოქროსფერი მაგიდა ოსტატებისთვისაა. როცა ბევრს ისწავლი, აქ რთულ გამოწვევებს გაივლი და სკოლის ლეგენდა გახდები.", g => Class(g, SchoolLayout.QuizBench + new Vector2(0, 1)), "", 4.4f),
+                    S("თაროზე ხალათებს და ქუდებს იყიდი, კედელზე კი პერიოდული ცხრილი კიდია.", g => Class(g, SchoolLayout.PeriodicChart), "", 6),
+                    S("ეს კარი შენს პირად ლაბორატორიაში გადის. წადი და დაათვალიერე!", g => Class(g, SchoolLayout.LabDoor + new Vector2(0, 2.4f)), "", 4.6f),
                 }
             },
             new GuideLesson
@@ -94,7 +93,7 @@ namespace ChemistryGame
                 ID = "lab", Title = "პირადი ლაბორატორია", Ready = () => Data.tutorialCompleted,
                 Steps = new[]
                 {
-                    S("ამ კარიდან შენს პირად ლაბორატორიაში შედიხარ. იქ საკუთარი აღჭურვილობა და ოთახი გექნება.", g => Class(g, 46.5f, 12.5f), "", 4.6f),
+                    S("ამ კარიდან შენს პირად ლაბორატორიაში შედიხარ. იქ საკუთარი აღჭურვილობა და ოთახი გექნება.", g => Class(g, SchoolLayout.LabDoor + new Vector2(0, 2.4f)), "", 4.6f),
                     Shot("კედელთან გეგმის დაფაა: იქ ხელსაწყოს იყიდი და ოთახში დადგამ.", "პირადი ლაბორატორია", g => g.Personal.RoomOrigin + new Vector2(0, 3)),
                     Shot("დადგმული ხელსაწყოს გამოყენება ცდას იწყებს. თუ ქაფი ამოვა, არაუშავს — დაასუფთავე და კიდევ სცადე.", "ხელსაწყოები", g => g.Personal.RoomOrigin + new Vector2(-2, 1)),
                 }
@@ -104,7 +103,7 @@ namespace ChemistryGame
                 ID = "school", Title = "სკოლა და კლასელები", Ready = () => Data.guideLessons.Contains("lab"),
                 Steps = new[]
                 {
-                    S("კლასის ქვედა ნაწილში ფეხსაწმენდია. იქიდან დერეფანში გახვალ.", g => Class(g, SchoolAreas.ClassroomDoor.x, SchoolAreas.ClassroomDoor.y + 1.5f), "", 4.6f),
+                    S("კლასის ქვედა ნაწილში ფეხსაწმენდია. იქიდან დერეფანში გახვალ.", g => Class(g, SchoolAreas.ClassroomDoor + new Vector2(0, 1.5f)), "", 4.6f),
                     Shot("დერეფნიდან ოთხი ოთახია: სათავსო, კითხვის კუთხე, სათბური და გამოფენის დარბაზი.", "დერეფანი", g => Area(g, "hallway")),
                     Shot("სათავსოში ყოველდღე უფასო მასალებს აიღებ. იქ ლაბორანტი ქეთევანიც დაგეხმარება.", "სათავსო", g => Area(g, "storage")),
                     Shot("სათბურში ჯერ მცენარეები მორწყე, მერე მოსავალი აიღე. წვიმიან დღეს კასრში წვიმის წყალიც გროვდება.", "სათბური", g => Area(g, "greenhouse", 1)),
@@ -120,11 +119,11 @@ namespace ChemistryGame
                 ID = "growth", Title = "გრძელი გზა", Ready = () => Data.guideLessons.Contains("school") && (LabProgress.ReputationLevel >= 1 || Data.projects.Any(p => p.timesCompleted > 0)),
                 Steps = new[]
                 {
-                    S("შენი ლაბორატორიის რეპუტაცია იზრდება. ზედა ზოლში შენი წოდება ჩანს.", null, "status"),
+                    S("შენი ლაბორატორიის რეპუტაცია იზრდება. შენი წოდება ზედა მარჯვენა კუთხეში ჩანს.", null, "stats"),
                     S("რეპუტაცია იზრდება პროექტებით, კლასელების თხოვნებითა და ბაზრობებით. ის ახალ ოთახებს, პროექტებს და ნივთებს ხსნის."),
                     Shot("გამოფენის დარბაზში ყოველ კვირას სამეცნიერო ბაზრობა იმართება. დასრულებული პროექტი წარადგინე და კვირის ბოლოს შედეგებს გაიგებ.", "გამოფენის დარბაზი", g => Area(g, "exhibition")),
-                    S("დღე სამ ნაწილად იყოფა: დილა, შუადღე და საღამო. კლასელები დღის სხვადასხვა დროს სხვადასხვა ადგილას არიან.", null, "status"),
-                    S("კვირის განმავლობაში სხვადასხვა მოვლენაა: შეჯიბრი, ინსპექცია, მოგზაური მკვლევარი. ყველაფერი განცხადებების დაფაზე წერია.", g => Class(g, 42.9f, 12), "", 4.6f),
+                    S("დღე სამ ნაწილად იყოფა: დილა, შუადღე და საღამო. კლასელები დღის სხვადასხვა დროს სხვადასხვა ადგილას არიან.", null, ""),
+                    S("კვირის განმავლობაში სხვადასხვა მოვლენაა: შეჯიბრი, ინსპექცია, მოგზაური მკვლევარი. ყველაფერი განცხადებების დაფაზე წერია.", g => Class(g, SchoolLayout.Noticeboard + new Vector2(0, 1.6f)), "", 4.6f),
                     S("და ბოლოს: ყველაფრის ერთ დღეში გაკეთება საჭირო არ არის. ცოტ-ცოტა დაბრუნდი, ლაბორატორია შენ გელოდება.", g => g.Dialogue.Teacher.transform.position),
                 }
             },

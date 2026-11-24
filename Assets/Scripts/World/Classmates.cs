@@ -45,7 +45,7 @@ namespace ChemistryGame
             {
                 ID = "nika", Name = "ნიკა", Genitive = "ნიკას", Role = "გამომგონებელი • ბატარეას აწყობს", Voice = 0.82f,
                 Skin = new Color32(232, 180, 130, 255), Hair = new Color32(60, 40, 30, 255), Shirt = new Color32(230, 160, 60, 255),
-                Schedule = new[] { ("classroom", new Vector2(44.5f, -2.5f)), ("storage", new Vector2(2.5f, 0)), ("hallway", new Vector2(-8, 1)) },
+                Schedule = new[] { ("classroom", SchoolLayout.P(44.5f, -2.5f)), ("storage", new Vector2(2.5f, 0)), ("hallway", SchoolLayout.Hall(-8, 1)) },
                 Activities = new[] { "სადენებს ვახვევ", "ფირფიტებს ვითვლი", "სქემას ვხატავ" },
                 SmallTalk = new[] { "მინდა, საათი ლიმონებით ავამუშავო. უცნაურად ჟღერს, მაგრამ შესაძლებელია.", "იცი, რომ ელექტრონები თუთიიდან სპილენძისკენ მოძრაობს? ბატარეის მთავარი იდეა ესაა.", "გუშინ სადენს იზოლაცია მოვაცილე. სადენი მთელია, არ ინერვიულო." },
                 Story = new[]
@@ -91,7 +91,7 @@ namespace ChemistryGame
             {
                 ID = "giorgi", Name = "გიორგი", Genitive = "გიორგის", Role = "ცდების ეშინია • ფრთხილია", Voice = 0.95f,
                 Skin = new Color32(200, 150, 110, 255), Hair = new Color32(40, 30, 30, 255), Shirt = new Color32(140, 190, 120, 255),
-                Schedule = new[] { ("classroom", new Vector2(29.5f, -3)), ("reading", new Vector2(4.5f, 1.4f)), ("", Vector2.zero) },
+                Schedule = new[] { ("classroom", SchoolLayout.P(29.5f, -3)), ("reading", new Vector2(4.5f, 1.4f)), ("", Vector2.zero) },
                 Activities = new[] { "უსაფრთხოების წესებს ვკითხულობ", "სათვალეს ვიწმენდ", "ცდისთვის ვემზადები" },
                 SmallTalk = new[] { "ხალათი და სათვალე. ხალათი და სათვალე. არ უნდა დამავიწყდეს.", "ერთხელ ქაფი გადმოვიდა და მთელმა კლასმა გაიცინა. მას შემდეგ ცოტა მეშინია.", "მასწავლებელი ამბობს, რომ შეცდომა სწავლის ნაწილია. ვცდილობ, დავიჯერო." },
                 Story = new[]
@@ -114,7 +114,7 @@ namespace ChemistryGame
             {
                 ID = "ana", Name = "ანა", Genitive = "ანას", Role = "ფერებითა და პიგმენტებით დაინტერესებული", Voice = 1.2f,
                 Skin = new Color32(245, 200, 170, 255), Hair = new Color32(180, 70, 90, 255), Shirt = new Color32(200, 120, 200, 255),
-                Schedule = new[] { ("greenhouse", new Vector2(-4, -2)), ("classroom", new Vector2(59.5f, -2)), ("hallway", new Vector2(6, 1)) },
+                Schedule = new[] { ("greenhouse", new Vector2(-4, -2)), ("classroom", SchoolLayout.P(59.5f, -2)), ("hallway", SchoolLayout.Hall(6, 1)) },
                 Activities = new[] { "ფურცლებს ვაგროვებ", "ფერებს ვურევ", "ესკიზს ვხატავ" },
                 SmallTalk = new[] { "იისფერი ჩემი საყვარელი ფერია. ის წითელი კომბოსტოს წვენშიც არის.", "ძველად ლურჯი საღებავი ძალიან ძვირი ღირდა.", "ფერი სინათლისა და ნივთიერების ურთიერთქმედების შედეგია." },
                 Story = new[]
@@ -137,7 +137,7 @@ namespace ChemistryGame
             {
                 ID = "luka", Name = "ლუკა", Genitive = "ლუკას", Role = "შეჯიბრი უყვარს • ბაზრობისთვის ემზადება", Voice = 0.9f,
                 Skin = new Color32(240, 190, 150, 255), Hair = new Color32(220, 180, 90, 255), Shirt = new Color32(80, 110, 190, 255),
-                Schedule = new[] { ("exhibition", new Vector2(4, -1)), ("classroom", new Vector2(45, -12)), ("exhibition", new Vector2(-4, -2)) },
+                Schedule = new[] { ("exhibition", new Vector2(4, -1)), ("classroom", SchoolLayout.P(45, -12)), ("exhibition", new Vector2(-4, -2)) },
                 Activities = new[] { "ჩემს ქულებს ვითვლი", "პრეზენტაციას ვიმეორებ", "წამზომით ვვარჯიშობ" },
                 SmallTalk = new[] { "ამ კვირის ბაზრობაზე პირველი ადგილის აღება მინდა. წინასწარ გეუბნები.", "ჩემი რეკორდი ზედიზედ თორმეტი სწორი პასუხია. სცადე, გადააჭარბო.", "მწვრთნელი მეუბნება, რომ კარგი შედეგისთვის ყოველდღე უნდა ივარჯიშო." },
                 Story = new[]
@@ -160,7 +160,7 @@ namespace ChemistryGame
             {
                 ID = "ketevan", Name = "ქეთევანი", Genitive = "ქეთევანის", Role = "ლაბორანტი • სათავსოზე ზრუნავს", Voice = 1.05f,
                 Skin = new Color32(230, 185, 150, 255), Hair = new Color32(90, 60, 110, 255), Shirt = new Color32(235, 235, 235, 255),
-                Schedule = new[] { ("storage", new Vector2(-3, 1)), ("hallway", new Vector2(11, 1)), ("storage", new Vector2(-3, 1)) },
+                Schedule = new[] { ("storage", new Vector2(-3, 1)), ("hallway", SchoolLayout.Hall(11, 1)), ("storage", new Vector2(-3, 1)) },
                 Activities = new[] { "ბოთლებს წარწერებს ვაკრავ", "მარაგს ვითვლი", "ჭურჭელს ვრეცხავ" },
                 SmallTalk = new[] { "ყველა ბოთლს წარწერა უნდა ჰქონდეს. ეს ჩემი მთავარი წესია.", "დილით ყველა ნიჟარა შევამოწმე. სუფთა ლაბორატორიაში მუშაობა უფრო ადვილია.", "თუ რამე დაგჭირდება, აქ ვარ. ოღონდ თაროებზე წესრიგი არ დაარღვიო." },
                 Story = new[]

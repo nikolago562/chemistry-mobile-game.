@@ -70,6 +70,8 @@ namespace ChemistryGame
         public string ID, Name, Purpose;
         public Vector2 Origin;
         public int HalfWidth;
+        /// <summary>The front (bottom) wall's height; the back wall is <see cref="SchoolAreas.BackWall"/>.</summary>
+        public float Front = -5.7f;
         public int Reputation;
     }
 
@@ -82,19 +84,17 @@ namespace ChemistryGame
         public const float BackWall = 5.5f;
         public static readonly AreaDef[] Defs =
         {
-            new AreaDef { ID = "hallway", Name = "დერეფანი", Purpose = "განცხადებების დაფა, ჯილდოების ვიტრინა და კლასელები", Origin = new Vector2(200, 0), HalfWidth = 15 },
+            new AreaDef { ID = "hallway", Name = "დერეფანი", Purpose = "განცხადებების დაფა, ჯილდოების ვიტრინა და კლასელები", Origin = new Vector2(200, 0), HalfWidth = SchoolLayout.HallHalfWidth, Front = SchoolLayout.HallFront },
             new AreaDef { ID = "storage", Name = "სათავსო", Purpose = "ყოველდღიური მასალები და ლაბორანტი ქეთევანი", Origin = new Vector2(260, 0), HalfWidth = 8 },
             new AreaDef { ID = "reading", Name = "კითხვის კუთხე", Purpose = "ქიმიური ფაქტები და წყნარი დასვენება", Origin = new Vector2(300, 0), HalfWidth = 8 },
             new AreaDef { ID = "greenhouse", Name = "სათბური", Purpose = "მცენარეების მორწყვა, მოსავალი და წვიმის წყალი", Origin = new Vector2(340, 0), HalfWidth = 9 },
             new AreaDef { ID = "exhibition", Name = "გამოფენის დარბაზი", Purpose = "სამეცნიერო ბაზრობა და მოგზაური მკვლევარი", Origin = new Vector2(390, 0), HalfWidth = 11, Reputation = 1 },
         };
-        // Doors on the hallway's back wall, left to right.
-        private static readonly (string to, float x)[] HallwayDoors =
-            { ("classroom", -12), ("storage", -6), ("reading", 0), ("greenhouse", 6), ("exhibition", 12) };
+        private static (string to, float x)[] HallwayDoors => SchoolLayout.HallDoors;
 
         public string Current { get; private set; } = "classroom";
         public bool InArea => Current != "classroom";
-        public static Vector2 ClassroomDoor = new Vector2(46.5f, -23.2f);
+        public static Vector2 ClassroomDoor = SchoolLayout.HallwayDoor;
         private LabGame game;
         private float travelAfter;
         private readonly Dictionary<string, Transform> roots = new Dictionary<string, Transform>();
@@ -172,7 +172,7 @@ namespace ChemistryGame
             else
             {
                 var def = Def(to);
-                camera.SetRoom(def.Origin + new Vector2(-def.HalfWidth - 1, -6), def.Origin + new Vector2(def.HalfWidth + 1, BackWall + 4.6f), true);
+                camera.SetRoom(def.Origin + new Vector2(-def.HalfWidth - 1, def.Front - 0.3f), def.Origin + new Vector2(def.HalfWidth + 1, BackWall + 4.6f), true);
             }
             AmbientAudio.Instance?.Door();
             game.HUD.Notify(NameOf(to) + (to == "classroom" ? "" : " • " + Def(to).Purpose));
@@ -187,9 +187,9 @@ namespace ChemistryGame
             var room = new GameObject(def.Name).transform;
             room.position = def.Origin;
             int w = def.HalfWidth;
-            RoomArt.Build(def.ID, room, w, BackWall);
+            RoomArt.Build(def.ID, room, w, BackWall, def.Front);
             Solid(room, new Vector2(0, BackWall + 0.15f), new Vector2(w * 2 + 2, 0.3f));
-            Solid(room, new Vector2(0, -5.7f), new Vector2(w * 2 + 2, 0.5f), true);
+            Solid(room, new Vector2(0, def.Front), new Vector2(w * 2 + 2, 0.5f), true);
             Solid(room, new Vector2(-w - 0.25f, 0), new Vector2(0.5f, 14), true);
             Solid(room, new Vector2(w + 0.25f, 0), new Vector2(0.5f, 14), true);
             if (def.ID != "hallway") Door(room, 0, "hallway", "დერეფანი");
@@ -242,22 +242,22 @@ namespace ChemistryGame
         private void BuildHallway(Transform room)
         {
             foreach (var door in HallwayDoors) Door(room, door.x, door.to, NameOf(door.to));
-            LabAtmosphere.Instance?.AddWindow(room, new Vector2(-9, BackWall + 2.2f), new Vector2(1.6f, 1.4f));
-            LabAtmosphere.Instance?.AddWindow(room, new Vector2(3, BackWall + 2.2f), new Vector2(1.6f, 1.4f));
-            LabAtmosphere.Instance?.AddWindow(room, new Vector2(9, BackWall + 2.2f), new Vector2(1.6f, 1.4f));
-            var board = LaboratoryArt.Draw(room, "განცხადებების დაფა", new Vector2(-3, BackWall + 1.4f), DecorArt.Noticeboard(), -287);
-            WorldInteractable.Create(room, new Vector2(-3, BackWall - 1.2f), new Vector2(2.4f, 1.6f), 2.2f, () => "[E] განცხადებების დაფა", () => game.Journal.Open());
-            Prop(room, "ჯილდოების ვიტრინა", new Vector2(14, BackWall - 1.6f), DecorArt.TrophyCase(), new Vector2(1.6f, 0.8f));
-            WorldInteractable.Create(room, new Vector2(14, BackWall - 2.6f), new Vector2(2, 1.4f), 2.6f, () => "[E] სკოლის ჯილდოები", () => game.Collection.Open(CollectionKind.Award));
-            Prop(room, "სკამი", new Vector2(-14, -2), DecorArt.Bench(), new Vector2(1.6f, 0.5f));
-            Prop(room, "სკამი", new Vector2(14, -2), DecorArt.Bench(), new Vector2(1.6f, 0.5f));
-            Prop(room, "ქოთნის მცენარე", new Vector2(-14.2f, 4.2f), DecorArt.Plant(1), new Vector2(0.7f, 0.4f));
-            Prop(room, "ქოთნის მცენარე", new Vector2(4.4f, 4.4f), DecorArt.Plant(0), new Vector2(0.7f, 0.4f));
-            var fan = LaboratoryArt.Draw(room, "ვენტილაცია", new Vector2(-1.6f, BackWall + 3f), DecorArt.VentGrille(), -287);
-            LabAtmosphere.Instance?.AddFan(room, new Vector2(-1.6f, BackWall + 3f));
-            LabAtmosphere.Instance?.AddSafetyLight(room, new Vector2(-12, BackWall + 4.3f));
-            LabAtmosphere.Instance?.AddDust(room, new Vector2(0, 1), new Vector2(28, 8));
-            Seasonal(room, new Vector2(0, BackWall + 3.5f), 28);
+            // Compact hallway: five doors share the back wall, so the noticeboard hangs small between two of them
+            // and the trophy case, benches and plants stand along the front.
+            var board = LaboratoryArt.Draw(room, "განცხადებების დაფა", new Vector2(-2.25f, BackWall + 1.6f), DecorArt.Noticeboard(), -287);
+            board.transform.localScale = Vector3.one * 0.68f;
+            WorldInteractable.Create(room, new Vector2(-2.25f, BackWall - 1.2f), new Vector2(1.8f, 1.6f), 2.2f, () => "[E] განცხადებების დაფა", () => game.Journal.Open());
+            Prop(room, "ჯილდოების ვიტრინა", new Vector2(3.2f, SchoolLayout.HallFront + 1.0f), DecorArt.TrophyCase(), new Vector2(1.6f, 0.8f));
+            WorldInteractable.Create(room, new Vector2(3.2f, SchoolLayout.HallFront + 0.55f), new Vector2(2.4f, 1.0f), 2.9f, () => "[E] სკოლის ჯილდოები", () => game.Collection.Open(CollectionKind.Award));
+            Prop(room, "სკამი", new Vector2(-6.5f, SchoolLayout.HallFront + 0.9f), DecorArt.Bench(), new Vector2(1.6f, 0.5f));
+            Prop(room, "სკამი", new Vector2(7.2f, SchoolLayout.HallFront + 0.9f), DecorArt.Bench(), new Vector2(1.6f, 0.5f));
+            Prop(room, "ქოთნის მცენარე", new Vector2(2.25f, 4.4f), DecorArt.Plant(0), new Vector2(0.7f, 0.4f));
+            Prop(room, "ქოთნის მცენარე", new Vector2(-6.75f, 4.4f), DecorArt.Plant(1), new Vector2(0.7f, 0.4f));
+            LaboratoryArt.Draw(room, "ვენტილაცია", new Vector2(6.75f, BackWall + 3.4f), DecorArt.VentGrille(), -287);
+            LabAtmosphere.Instance?.AddFan(room, new Vector2(6.75f, BackWall + 3.4f));
+            LabAtmosphere.Instance?.AddSafetyLight(room, new Vector2(-10.4f, BackWall + 4.3f));
+            LabAtmosphere.Instance?.AddDust(room, new Vector2(0, 1), new Vector2(SchoolLayout.HallHalfWidth * 2 - 2, 6));
+            Seasonal(room, new Vector2(0, BackWall + 3.5f), SchoolLayout.HallHalfWidth * 2 - 2);
         }
 
         // ---------------- storage room ----------------
@@ -405,14 +405,15 @@ namespace ChemistryGame
 
             // The old decorative book stack is replaced by a working collection cabinet and the noticeboards are live.
             RemoveDecorTiles(new Rect(32.2f, 8.9f, 1.6f, 1.8f));
-            var cabinet = Prop(classroom, "კოლექციის კარადა", new Vector2(28.4f, 9.3f), DecorArt.CollectionCabinet(), new Vector2(1.8f, 0.8f));
+            var cabinet = Prop(classroom, "კოლექციის კარადა", SchoolLayout.CollectionCabinet, DecorArt.CollectionCabinet(), new Vector2(1.8f, 0.8f));
             cabinet.gameObject.AddComponent<CollectionShelfView>();
-            WorldInteractable.Create(classroom, new Vector2(28.4f, 8.2f), new Vector2(2.2f, 1.4f), 3.6f, () => "[E] კოლექციის კარადა", () => game.Collection.Open(CollectionKind.Mineral), null, Glow.Reward);
-            WorldInteractable.Create(classroom, new Vector2(42.9f, 10.4f), new Vector2(2.2f, 1.4f), 2.4f, () => "[E] განცხადებების დაფა", () => game.Journal.Open(), null, Glow.Optional);
+            WorldInteractable.Create(classroom, SchoolLayout.CollectionCabinet + new Vector2(0, -1.1f), new Vector2(2.2f, 1.4f), 3.6f, () => "[E] კოლექციის კარადა", () => game.Collection.Open(CollectionKind.Mineral), null, Glow.Reward);
+            LaboratoryArt.Draw(classroom, "განცხადებების დაფა", new Vector2(SchoolLayout.Noticeboard.x, 13.0f), DecorArt.Noticeboard(), 3);
+            WorldInteractable.Create(classroom, SchoolLayout.Noticeboard, new Vector2(2.0f, 1.4f), 2.4f, () => "[E] განცხადებების დაფა", () => game.Journal.Open(), null, Glow.Optional);
             // The periodic table is a wall chart you walk up to, not a menu tab.
-            LaboratoryArt.Draw(classroom, "პერიოდული ცხრილის პლაკატი", new Vector2(57.4f, 13.2f), DecorArt.PeriodicChart(), 4);
-            WorldInteractable.Create(classroom, new Vector2(57.4f, 10.5f), new Vector2(2.6f, 1.2f), 3.9f, () => "[E] პერიოდული ცხრილი", () => game.Periodic.Open(), null, Glow.Optional);
-            Seasonal(classroom, new Vector2(46.5f, 14.95f), 40);
+            LaboratoryArt.Draw(classroom, "პერიოდული ცხრილის პლაკატი", new Vector2(SchoolLayout.PeriodicChart.x, 13.2f), DecorArt.PeriodicChart(), 4);
+            WorldInteractable.Create(classroom, SchoolLayout.PeriodicChart, new Vector2(2.0f, 1.2f), 3.9f, () => "[E] პერიოდული ცხრილი", () => game.Periodic.Open(), null, Glow.Optional);
+            Seasonal(classroom, new Vector2(SchoolLayout.LabDoor.x, 14.95f), SchoolLayout.FloorMaxX - SchoolLayout.FloorMinX);
         }
 
         private static void RemoveDecorTiles(Rect localArea)

@@ -22,7 +22,7 @@ namespace ChemistryGame
                 Mathf.Pow((x - 8.5f) / 8f, 2) + Mathf.Pow((y - 2.5f) / 2.5f, 2) < 1
                     ? new Color(0.12f, 0.07f, 0.06f, 0.32f) : Color.clear);
             accessory = Renderer("სათვალე ან ქუდი", transform, Vector3.zero, 7);
-            desk = Renderer("პირადი მაგიდის დეკორი", game.classroom, new Vector3(52, -12.5f), 7);
+            desk = Renderer("პირადი მაგიდის დეკორი", game.classroom, SchoolLayout.ElementBench + new Vector2(0, 1.5f), 7);
             var label = new GameObject("მოთამაშის წოდება", typeof(RectTransform), typeof(Canvas));
             label.transform.SetParent(transform, false);
             label.transform.localPosition = new Vector3(0, 2.55f);
@@ -72,7 +72,7 @@ namespace ChemistryGame
                 desk.sprite = decor.itemID == "decor_globe" ? PixelArt.Globe()
                     : decor.itemID == "decor_poster" ? PixelArt.Poster() : PixelArt.Flask();
                 desk.color = decor.color;
-                desk.transform.localPosition = new Vector3(52, -12.55f - desk.sprite.bounds.min.y);
+                desk.transform.localPosition = SchoolLayout.ElementBench + new Vector2(0, 1.45f - desk.sprite.bounds.min.y);
             }
             title.richText = false;
             title.text = (data.profileCompleted ? data.playerName + "\n" : "") + game.Rankings.Title;

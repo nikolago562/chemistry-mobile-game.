@@ -63,6 +63,28 @@ namespace ChemistryGame
             }
         }
 
+        /// <summary>What the player tapped and is walking to; it beats every other focus once in range.</summary>
+        public static Focus Tapped;
+        /// <summary>Where to walk to reach this object: the middle of its zone.</summary>
+        public Vector2 Spot => ring.transform.position;
+
+        /// <summary>The visible usable object whose zone (plus a thumb's margin) holds a world point, nearest first.</summary>
+        public static Focus At(Vector2 point)
+        {
+            Focus best = null;
+            float bestDistance = float.MaxValue;
+            foreach (var f in all)
+            {
+                if (f.ring == null || !f.isActiveAndEnabled || f.cachedKind == Glow.Hidden) continue;
+                var bounds = f.ring.bounds;
+                bounds.Expand(new Vector3(1.2f, 1.6f, 0)); // generous: thumbs are wide and props are drawn above their zone
+                if (!bounds.Contains(new Vector3(point.x, point.y, bounds.center.z))) continue;
+                float d = Vector2.Distance(point, bounds.center);
+                if (d < bestDistance) { bestDistance = d; best = f; }
+            }
+            return best;
+        }
+
         /// <summary>Adds a highlight around a zone (local size and offset) of the given object.</summary>
         public static Focus Attach(GameObject owner, Vector2 size, Vector2 offset, Func<Glow> kind, Func<bool> objective = null, params SpriteRenderer[] tinted)
         {
@@ -105,6 +127,7 @@ namespace ChemistryGame
         /// <summary>Lower is better: objective, then nearest interactive, then doors, then optional or finished things.</summary>
         private float Rank()
         {
+            if (ReferenceEquals(this, Tapped)) return -1;
             var kind = Kind();
             float tier = IsObjective ? 0 : kind == Glow.Door ? 200 : kind == Glow.Optional || kind == Glow.Done ? 300 : 100;
             return tier + Distance();

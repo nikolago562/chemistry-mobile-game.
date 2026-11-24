@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace ChemistryGame
 {
@@ -6,7 +7,7 @@ namespace ChemistryGame
     public sealed class PlayerController : MonoBehaviour
     {
         public bool canMove = true;
-        [SerializeField] private float speed = 4.25f;
+        [SerializeField] private float speed = 5.25f; // quicker than the first 4.25 so walks between tables stay short
         [SerializeField] private float acceleration = 28f;
         [SerializeField] private float deceleration = 40f;
         private static readonly int MoveX = Animator.StringToHash("MoveX");
@@ -28,7 +29,7 @@ namespace ChemistryGame
         private void Update()
         {
             canMove = !LabUI.AnyOpen;
-            SetMovement(canMove ? ReadMovement() : Vector2.zero);
+            SetMovement(canMove ? Steer() : Vector2.zero);
             if (!canMove) body.linearVelocity = Vector2.zero;
             // Use displacement after collision resolution: pushing against a wall is not walking.
             float distance = Vector2.Distance(body.position, previousFeet);
@@ -46,6 +47,42 @@ namespace ChemistryGame
             }
             if (!walking) strideDistance = 0;
         }
+        // Tap-to-walk: a tap on the world walks there; a tap on (or near) something usable walks to it and uses it.
+        private Vector2? walkTo;
+        private Focus walkFocus;
+        private float stuck;
+        private Vector2 Steer()
+        {
+            var manual = ReadMovement();
+            var dialogue = LabGame.Instance != null ? LabGame.Instance.Dialogue : null;
+            if (TappedWorld(out var point) && (dialogue == null || !dialogue.IsOpen))
+            {
+                walkFocus = Focus.At(point);
+                walkTo = walkFocus != null ? walkFocus.Spot : point;
+                Focus.Tapped = walkFocus;
+                stuck = 0;
+            }
+            if (manual != Vector2.zero || walkTo == null) { if (manual != Vector2.zero) StopWalk(); return manual; }
+            if (walkFocus != null && walkFocus.IsFocused) { TouchControls.Press(); StopWalk(); return Vector2.zero; }
+            var offset = walkTo.Value - body.position;
+            // shortcut: walks in a straight line and gives up when blocked; add pathfinding if rooms get maze-like.
+            stuck = body.linearVelocity.sqrMagnitude < 0.5f ? stuck + Time.deltaTime : 0;
+            if (offset.magnitude < 0.2f || stuck > 0.45f) { StopWalk(); return Vector2.zero; }
+            return offset.normalized;
+        }
+        private void StopWalk() { walkTo = null; walkFocus = null; Focus.Tapped = null; }
+
+        private static bool TappedWorld(out Vector2 point)
+        {
+            point = default;
+            var camera = Camera.main;
+            if (!Input.GetMouseButtonDown(0) || camera == null) return false;
+            var events = EventSystem.current;
+            if (events != null && (events.IsPointerOverGameObject() || Input.touchCount > 0 && events.IsPointerOverGameObject(Input.GetTouch(0).fingerId))) return false;
+            point = camera.ScreenToWorldPoint(Input.mousePosition);
+            return true;
+        }
+
         public void SetMovement(Vector2 direction)
         {
             Movement = Vector2.ClampMagnitude(direction, 1);

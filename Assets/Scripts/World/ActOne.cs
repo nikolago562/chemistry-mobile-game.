@@ -14,8 +14,8 @@ namespace ChemistryGame
     public sealed class ActOne : MonoBehaviour
     {
         // Classroom-local positions, in open floor so nothing blocks walking.
-        public static readonly Vector2 CartPoint = new Vector2(44.6f, 5.0f), SpillPoint = new Vector2(44.6f, -3f),
-            BottlePoint = new Vector2(59.5f, 3f), KettlePoint = new Vector2(56.3f, 10.55f);
+        public static readonly Vector2 CartPoint = SchoolLayout.P(44.6f, 5.0f), SpillPoint = SchoolLayout.P(44.6f, -3f),
+            BottlePoint = new Vector2(SchoolLayout.RightWall - 3.2f, SchoolLayout.P(0, 3f).y), KettlePoint = SchoolLayout.SinkBench + new Vector2(1.3f, 1.35f);
         public static Mission FirstMix, Safety, States, Steam;
 
         private LabGame game;
